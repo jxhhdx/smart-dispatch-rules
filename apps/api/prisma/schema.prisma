@@ -1,0 +1,214 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  username      String    @unique
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  realName      String?   @map("real_name")
+  phone         String?
+  avatarUrl     String?   @map("avatar_url")
+  roleId        String?   @map("role_id")
+  status        Int       @default(1)
+  lastLoginAt   DateTime? @map("last_login_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  role          Role?     @relation(fields: [roleId], references: [id])
+  createdRules  Rule[]    @relation("CreatedBy")
+  updatedRules  Rule[]    @relation("UpdatedBy")
+  systemLogs    SystemLog[]
+  loginLogs     LoginLog[]
+
+  @@map("users")
+}
+
+model Role {
+  id          String    @id @default(uuid())
+  name        String
+  code        String    @unique
+  description String?
+  status      Int       @default(1)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  users       User[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String    @id @default(uuid())
+  name        String
+  code        String    @unique
+  type        String
+  parentId    String?   @map("parent_id")
+  path        String?
+  sortOrder   Int       @default(0) @map("sort_order")
+  status      Int       @default(1)
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  parent      Permission? @relation("PermissionChildren", fields: [parentId], references: [id])
+  children    Permission[] @relation("PermissionChildren")
+  roles       RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId        String    @map("role_id")
+  permissionId  String    @map("permission_id")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  role          Role      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission    Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model Rule {
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  ruleType      String    @map("rule_type")
+  businessType  String?   @map("business_type")
+  priority      Int       @default(0)
+  status        Int       @default(0)
+  versionId     String?   @map("version_id")
+  effectiveTime DateTime? @map("effective_time")
+  expireTime    DateTime? @map("expire_time")
+  createdBy     String?   @map("created_by")
+  updatedBy     String?   @map("updated_by")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  creator       User?     @relation("CreatedBy", fields: [createdBy], references: [id])
+  updater       User?     @relation("UpdatedBy", fields: [updatedBy], references: [id])
+  versions      RuleVersion[]
+
+  @@map("rules")
+}
+
+model RuleVersion {
+  id            String    @id @default(uuid())
+  ruleId        String    @map("rule_id")
+  version       Int
+  configJson    Json      @map("config_json")
+  description   String?
+  status        Int       @default(0)
+  publishedAt   DateTime? @map("published_at")
+  publishedBy   String?   @map("published_by")
+  createdBy     String?   @map("created_by")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  rule          Rule      @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  conditions    RuleCondition[]
+  actions       RuleAction[]
+
+  @@unique([ruleId, version])
+  @@map("rule_versions")
+}
+
+model RuleCondition {
+  id              String    @id @default(uuid())
+  ruleVersionId   String    @map("rule_version_id")
+  parentId        String?   @map("parent_id")
+  conditionType   String    @default("simple") @map("condition_type")
+  field           String?
+  operator        String?
+  value           String?
+  valueType       String    @default("string") @map("value_type")
+  logicType       String    @default("AND") @map("logic_type")
+  sortOrder       Int       @default(0) @map("sort_order")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  ruleVersion     RuleVersion @relation(fields: [ruleVersionId], references: [id], onDelete: Cascade)
+  parent          RuleCondition? @relation("ConditionChildren", fields: [parentId], references: [id])
+  children        RuleCondition[] @relation("ConditionChildren")
+
+  @@map("rule_conditions")
+}
+
+model RuleAction {
+  id            String    @id @default(uuid())
+  ruleVersionId String    @map("rule_version_id")
+  actionType    String    @map("action_type")
+  configJson    Json      @map("config_json")
+  sortOrder     Int       @default(0) @map("sort_order")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  ruleVersion   RuleVersion @relation(fields: [ruleVersionId], references: [id], onDelete: Cascade)
+
+  @@map("rule_actions")
+}
+
+model SystemLog {
+  id            String    @id @default(uuid())
+  userId        String?   @map("user_id")
+  username      String?
+  action        String
+  module        String
+  description   String?
+  params        Json?
+  result        Json?
+  ipAddress     String?   @map("ip_address")
+  userAgent     String?   @map("user_agent")
+  durationMs    Int?      @map("duration_ms")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  user          User?     @relation(fields: [userId], references: [id])
+
+  @@map("system_logs")
+}
+
+model LoginLog {
+  id            String    @id @default(uuid())
+  userId        String?   @map("user_id")
+  username      String?
+  loginType     String    @default("password") @map("login_type")
+  ipAddress     String?   @map("ip_address")
+  userAgent     String?   @map("user_agent")
+  status        Int       @default(1)
+  failReason    String?   @map("fail_reason")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  user          User?     @relation(fields: [userId], references: [id])
+
+  @@map("login_logs")
+}
+
+model DispatchStatistic {
+  id                String    @id @default(uuid())
+  statDate          DateTime  @map("stat_date")
+  statHour          Int?      @map("stat_hour")
+  totalOrders       Int       @default(0) @map("total_orders")
+  dispatchedOrders  Int       @default(0) @map("dispatched_orders")
+  successOrders     Int       @default(0) @map("success_orders")
+  failedOrders      Int       @default(0) @map("failed_orders")
+  timeoutOrders     Int       @default(0) @map("timeout_orders")
+  dispatchRate      Decimal?  @map("dispatch_rate") @db.Decimal(5, 2)
+  successRate       Decimal?  @map("success_rate") @db.Decimal(5, 2)
+  ontimeRate        Decimal?  @map("ontime_rate") @db.Decimal(5, 2)
+  avgDispatchTime   Int?      @map("avg_dispatch_time")
+  avgDeliveryTime   Int?      @map("avg_delivery_time")
+  avgAcceptTime     Int?      @map("avg_accept_time")
+  avgDistance       Decimal?  @map("avg_distance") @db.Decimal(8, 2)
+  totalDistance     Decimal?  @map("total_distance") @db.Decimal(10, 2)
+  activeRiders      Int?      @map("active_riders")
+  avgRiderLoad      Decimal?  @map("avg_rider_load") @db.Decimal(3, 2)
+  rulesTriggered    Json?     @map("rules_triggered")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@unique([statDate, statHour])
+  @@map("dispatch_statistics")
+}

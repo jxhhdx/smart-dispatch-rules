@@ -1,0 +1,25 @@
+{
+  "name": "smart-dispatch-rules",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:migrate": "cd apps/api && npx prisma migrate dev",
+    "db:generate": "cd apps/api && npx prisma generate",
+    "db:studio": "cd apps/api && npx prisma studio",
+    "db:seed": "cd apps/api && npx prisma db seed"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.0",
+    "turbo": "^1.12.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
