@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "Intelligent Dispatch Rule Management System",
+    "description": "Smart dispatch rule management system based on NestJS + React"
+  },
+  "button": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "reset": "Reset",
+    "export": "Export",
+    "import": "Import",
+    "refresh": "Refresh",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "table": {
+    "action": "Action",
+    "noData": "No Data",
+    "total": "Total {{count}} items",
+    "pageSize": "{{size}} per page"
+  },
+  "status": {
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "message": {
+    "success": "Operation successful",
+    "error": "Operation failed",
+    "confirmDelete": "Are you sure you want to delete? This action cannot be undone",
+    "loading": "Loading...",
+    "welcome": "Welcome back",
+    "goodbye": "Goodbye"
+  }
+}

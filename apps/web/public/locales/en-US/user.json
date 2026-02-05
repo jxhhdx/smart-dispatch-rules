@@ -1,0 +1,47 @@
+{
+  "title": "User Management",
+  "list": "User List",
+  "create": "Create User",
+  "edit": "Edit User",
+  "detail": "User Detail",
+  "field": {
+    "id": "ID",
+    "username": "Username",
+    "email": "Email",
+    "realName": "Real Name",
+    "phone": "Phone",
+    "role": "Role",
+    "status": "Status",
+    "createdAt": "Created At",
+    "lastLoginAt": "Last Login",
+    "password": "Password",
+    "confirmPassword": "Confirm Password"
+  },
+  "placeholder": {
+    "username": "Please enter username",
+    "email": "Please enter email",
+    "realName": "Please enter real name",
+    "phone": "Please enter phone number",
+    "password": "Please enter password",
+    "confirmPassword": "Please confirm password",
+    "search": "Search by username/email/phone"
+  },
+  "validation": {
+    "usernameRequired": "Username is required",
+    "usernameLength": "Username must be 3-20 characters",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Please enter a valid email address",
+    "passwordRequired": "Password is required",
+    "passwordLength": "Password must be at least 8 characters",
+    "passwordConfirm": "Passwords do not match",
+    "roleRequired": "Please select a role"
+  },
+  "message": {
+    "createSuccess": "User created successfully",
+    "updateSuccess": "User updated successfully",
+    "deleteSuccess": "User deleted successfully",
+    "deleteConfirm": "Are you sure to delete user {{username}}?",
+    "deleteSelfError": "Cannot delete your own account",
+    "statusChangeSuccess": "Status updated successfully"
+  }
+}

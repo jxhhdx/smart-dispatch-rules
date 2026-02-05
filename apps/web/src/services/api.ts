@@ -13,6 +13,10 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
+    // 添加语言头部
+    const lang = localStorage.getItem('i18nextLng') || navigator.language || 'zh-CN'
+    config.headers['Accept-Language'] = lang
+    config.headers['X-Locale'] = lang
     return config
   },
   (error) => {

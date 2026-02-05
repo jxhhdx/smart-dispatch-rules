@@ -1,0 +1,29 @@
+{
+  "title": "角色管理",
+  "list": "角色列表",
+  "create": "新建角色",
+  "edit": "编辑角色",
+  "field": {
+    "id": "ID",
+    "name": "角色名称",
+    "code": "角色编码",
+    "description": "描述",
+    "status": "状态",
+    "permissions": "权限",
+    "createdAt": "创建时间"
+  },
+  "permission": {
+    "title": "权限配置",
+    "menu": "菜单权限",
+    "button": "按钮权限",
+    "api": "接口权限"
+  },
+  "message": {
+    "createSuccess": "角色创建成功",
+    "updateSuccess": "角色更新成功",
+    "deleteSuccess": "角色删除成功",
+    "deleteConfirm": "确定要删除角色 {{name}} 吗？",
+    "notFound": "角色不存在",
+    "codeExists": "角色编码已存在"
+  }
+}

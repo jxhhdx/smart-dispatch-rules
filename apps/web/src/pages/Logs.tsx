@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Table, Tabs, DatePicker, Input, Button } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { logApi } from '../services/api'
 import dayjs from 'dayjs'
 
@@ -16,6 +17,7 @@ export default function Logs() {
     keyword: '',
     dateRange: null as any,
   })
+  const { t } = useTranslation(['menu', 'common'])
 
   const fetchSystemLogs = async (page = 1, pageSize = 10) => {
     setLoading(true)
@@ -68,30 +70,30 @@ export default function Logs() {
   }, [activeTab])
 
   const systemLogColumns = [
-    { title: '时间', dataIndex: 'createdAt', render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
-    { title: '用户', dataIndex: 'username' },
-    { title: '模块', dataIndex: 'module' },
-    { title: '操作', dataIndex: 'action' },
-    { title: '描述', dataIndex: 'description' },
-    { title: 'IP地址', dataIndex: 'ipAddress' },
+    { title: 'Time', dataIndex: 'createdAt', render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
+    { title: 'User', dataIndex: 'username' },
+    { title: 'Module', dataIndex: 'module' },
+    { title: 'Action', dataIndex: 'action' },
+    { title: 'Description', dataIndex: 'description' },
+    { title: 'IP Address', dataIndex: 'ipAddress' },
   ]
 
   const loginLogColumns = [
-    { title: '时间', dataIndex: 'createdAt', render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
-    { title: '用户名', dataIndex: 'username' },
-    { title: '登录类型', dataIndex: 'loginType' },
-    { title: '状态', dataIndex: 'status', render: (s: number) => s === 1 ? '成功' : '失败' },
-    { title: 'IP地址', dataIndex: 'ipAddress' },
-    { title: '失败原因', dataIndex: 'failReason' },
+    { title: 'Time', dataIndex: 'createdAt', render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
+    { title: 'Username', dataIndex: 'username' },
+    { title: 'Login Type', dataIndex: 'loginType' },
+    { title: 'Status', dataIndex: 'status', render: (s: number) => s === 1 ? t('common:status.success') : t('common:status.error') },
+    { title: 'IP Address', dataIndex: 'ipAddress' },
+    { title: 'Fail Reason', dataIndex: 'failReason' },
   ]
 
   return (
     <div>
-      <h2 style={{ marginBottom: 16 }}>操作日志</h2>
+      <h2 style={{ marginBottom: 16 }}>{t('menu:systemLogs')}</h2>
 
       <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
         <Input
-          placeholder={activeTab === 'operation' ? '搜索模块' : '搜索用户名'}
+          placeholder={activeTab === 'operation' ? 'Search Module' : 'Search Username'}
           value={searchParams.keyword}
           onChange={(e) => setSearchParams({ ...searchParams, keyword: e.target.value })}
           style={{ width: 200 }}
@@ -103,6 +105,7 @@ export default function Logs() {
         />
         <Button
           type="primary"
+          icon={<SearchOutlined />}
           onClick={() => {
             setPagination({ ...pagination, current: 1 })
             if (activeTab === 'operation') {
@@ -112,12 +115,12 @@ export default function Logs() {
             }
           }}
         >
-          查询
+          {t('common:button.search')}
         </Button>
       </div>
 
       <Tabs activeKey={activeTab} onChange={setActiveTab}>
-        <Tabs.TabPane tab="系统操作日志" key="operation">
+        <Tabs.TabPane tab="System Operation Logs" key="operation">
           <Table
             columns={systemLogColumns}
             dataSource={systemLogs}
@@ -127,7 +130,7 @@ export default function Logs() {
             onChange={(p) => fetchSystemLogs(p.current, p.pageSize)}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="登录日志" key="login">
+        <Tabs.TabPane tab="Login Logs" key="login">
           <Table
             columns={loginLogColumns}
             dataSource={loginLogs}

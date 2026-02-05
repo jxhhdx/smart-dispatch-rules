@@ -1,0 +1,40 @@
+{
+  "common": {
+    "required": "{{field}}不能为空",
+    "minLength": "{{field}}至少需要{{min}}个字符",
+    "maxLength": "{{field}}不能超过{{max}}个字符",
+    "min": "{{field}}不能小于{{min}}",
+    "max": "{{field}}不能大于{{max}}",
+    "email": "请输入有效的邮箱地址",
+    "phone": "请输入有效的手机号码",
+    "pattern": "{{field}}格式不正确",
+    "unique": "{{field}}已存在",
+    "confirm": "两次输入的{{field}}不一致"
+  },
+  "user": {
+    "username": {
+      "required": "用户名不能为空",
+      "minLength": "用户名至少需要3个字符",
+      "maxLength": "用户名不能超过20个字符",
+      "pattern": "用户名只能包含字母、数字和下划线"
+    },
+    "password": {
+      "required": "密码不能为空",
+      "minLength": "密码至少需要8个字符",
+      "complexity": "密码必须包含字母和数字"
+    },
+    "email": {
+      "required": "邮箱不能为空",
+      "invalid": "请输入有效的邮箱地址"
+    }
+  },
+  "rule": {
+    "name": {
+      "required": "规则名称不能为空",
+      "maxLength": "规则名称不能超过100个字符"
+    },
+    "priority": {
+      "range": "优先级必须在0-999之间"
+    }
+  }
+}

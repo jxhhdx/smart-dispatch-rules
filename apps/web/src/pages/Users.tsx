@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Table, Button, Space, Modal, Form, Input, Select, message, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { userApi, roleApi } from '../services/api'
 
 interface User {
@@ -28,6 +29,7 @@ export default function Users() {
     pageSize: 10,
     total: 0,
   })
+  const { t } = useTranslation(['user', 'common'])
 
   const fetchUsers = async (page = 1, pageSize = 10) => {
     setLoading(true)
@@ -62,40 +64,40 @@ export default function Users() {
     try {
       if (editingUser) {
         await userApi.update(editingUser.id, values)
-        message.success('更新成功')
+        message.success(t('user:message.updateSuccess'))
       } else {
         await userApi.create(values)
-        message.success('创建成功')
+        message.success(t('user:message.createSuccess'))
       }
       setModalVisible(false)
       fetchUsers(pagination.current, pagination.pageSize)
     } catch (error: any) {
-      message.error(error.response?.data?.message || '操作失败')
+      message.error(error.response?.data?.message || t('common:message.error'))
     }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await userApi.delete(id)
-      message.success('删除成功')
+      message.success(t('user:message.deleteSuccess'))
       fetchUsers(pagination.current, pagination.pageSize)
     } catch (error: any) {
-      message.error(error.response?.data?.message || '删除失败')
+      message.error(error.response?.data?.message || t('common:message.error'))
     }
   }
 
   const columns = [
-    { title: '用户名', dataIndex: 'username' },
-    { title: '邮箱', dataIndex: 'email' },
-    { title: '姓名', dataIndex: 'realName' },
-    { title: '角色', dataIndex: ['role', 'name'] },
+    { title: t('user:field.username'), dataIndex: 'username' },
+    { title: t('user:field.email'), dataIndex: 'email' },
+    { title: t('user:field.realName'), dataIndex: 'realName' },
+    { title: t('user:field.role'), dataIndex: ['role', 'name'] },
     {
-      title: '状态',
+      title: t('user:field.status'),
       dataIndex: 'status',
-      render: (status: number) => status === 1 ? '启用' : '禁用',
+      render: (status: number) => status === 1 ? t('common:status.enabled') : t('common:status.disabled'),
     },
     {
-      title: '操作',
+      title: t('common:table.action'),
       render: (_: any, record: User) => (
         <Space>
           <Button
@@ -108,8 +110,7 @@ export default function Users() {
             }}
           />
           <Popconfirm
-            title="确认删除"
-            description="确定要删除该用户吗？"
+            title={t('common:message.confirmDelete')}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />} />
@@ -122,7 +123,7 @@ export default function Users() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2>用户管理</h2>
+        <h2>{t('user:title')}</h2>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -132,7 +133,7 @@ export default function Users() {
             setModalVisible(true)
           }}
         >
-          新建用户
+          {t('user:create')}
         </Button>
       </div>
 
@@ -146,43 +147,54 @@ export default function Users() {
       />
 
       <Modal
-        title={editingUser ? '编辑用户' : '新建用户'}
+        title={editingUser ? t('user:edit') : t('user:create')}
         open={modalVisible}
         onOk={() => form.submit()}
         onCancel={() => setModalVisible(false)}
+        okText={t('common:button.save')}
+        cancelText={t('common:button.cancel')}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="username"
-            label="用户名"
-            rules={[{ required: true }]}
+            label={t('user:field.username')}
+            rules={[{ required: true, message: t('user:validation.usernameRequired') }]}
           >
-            <Input disabled={!!editingUser} />
+            <Input disabled={!!editingUser} placeholder={t('user:placeholder.username')} />
           </Form.Item>
           <Form.Item
             name="email"
-            label="邮箱"
-            rules={[{ required: true, type: 'email' }]}
+            label={t('user:field.email')}
+            rules={[
+              { required: true, message: t('user:validation.emailRequired') },
+              { type: 'email', message: t('user:validation.emailInvalid') }
+            ]}
           >
-            <Input />
+            <Input placeholder={t('user:placeholder.email')} />
           </Form.Item>
           {!editingUser && (
             <Form.Item
               name="password"
-              label="密码"
-              rules={[{ required: true, min: 6 }]}
+              label={t('user:field.password')}
+              rules={[
+                { required: true, message: t('user:validation.passwordRequired') },
+                { min: 6, message: t('user:validation.passwordLength') }
+              ]}
             >
-              <Input.Password />
+              <Input.Password placeholder={t('user:placeholder.password')} />
             </Form.Item>
           )}
-          <Form.Item name="realName" label="姓名">
-            <Input />
+          <Form.Item name="realName" label={t('user:field.realName')}>
+            <Input placeholder={t('user:placeholder.realName')} />
           </Form.Item>
-          <Form.Item name="phone" label="电话">
-            <Input />
+          <Form.Item name="phone" label={t('user:field.phone')}>
+            <Input placeholder={t('user:placeholder.phone')} />
           </Form.Item>
-          <Form.Item name="roleId" label="角色">
-            <Select options={roles.map(r => ({ label: r.name, value: r.id }))} />
+          <Form.Item name="roleId" label={t('user:field.role')}>
+            <Select 
+              options={roles.map(r => ({ label: r.name, value: r.id }))}
+              placeholder={t('common:form.select')}
+            />
           </Form.Item>
         </Form>
       </Modal>

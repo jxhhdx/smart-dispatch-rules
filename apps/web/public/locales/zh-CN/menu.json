@@ -1,0 +1,19 @@
+{
+  "menu": {
+    "dashboard": "仪表盘",
+    "rules": "规则管理",
+    "rulesList": "规则列表",
+    "rulesCreate": "新建规则",
+    "statistics": "统计报表",
+    "statisticsDispatch": "派单统计",
+    "statisticsRiders": "骑手统计",
+    "statisticsRules": "规则统计",
+    "system": "系统管理",
+    "systemUsers": "用户管理",
+    "systemRoles": "角色管理",
+    "systemLogs": "操作日志",
+    "settings": "个人设置",
+    "language": "语言设置",
+    "logout": "退出登录"
+  }
+}

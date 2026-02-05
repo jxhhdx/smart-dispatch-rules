@@ -1,0 +1,45 @@
+{
+  "title": "角色管理",
+  "list": "角色列表",
+  "create": "新建角色",
+  "edit": "编辑角色",
+  "permission": "权限配置",
+  "field": {
+    "id": "ID",
+    "name": "角色名称",
+    "code": "角色编码",
+    "description": "描述",
+    "status": "状态",
+    "permissions": "权限",
+    "createdAt": "创建时间",
+    "userCount": "用户数量"
+  },
+  "placeholder": {
+    "name": "请输入角色名称",
+    "code": "请输入角色编码",
+    "description": "请输入角色描述",
+    "search": "搜索角色名称/编码"
+  },
+  "permission": {
+    "title": "权限配置",
+    "menu": "菜单权限",
+    "button": "按钮权限",
+    "api": "接口权限",
+    "selectAll": "全选",
+    "expandAll": "展开全部",
+    "collapseAll": "收起全部"
+  },
+  "validation": {
+    "nameRequired": "角色名称不能为空",
+    "codeRequired": "角色编码不能为空",
+    "codePattern": "角色编码只能包含字母、数字和下划线"
+  },
+  "message": {
+    "createSuccess": "角色创建成功",
+    "updateSuccess": "角色更新成功",
+    "deleteSuccess": "角色删除成功",
+    "deleteConfirm": "确定要删除角色 {{name}} 吗？",
+    "deleteHasUsers": "该角色下还有用户，无法删除",
+    "permissionUpdateSuccess": "权限配置已保存"
+  }
+}

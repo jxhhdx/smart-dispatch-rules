@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Table, Button, Space, Modal, Form, Input, Checkbox, message, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { roleApi } from '../services/api'
 
 interface Role {
@@ -19,6 +20,7 @@ export default function Roles() {
   const [editingRole, setEditingRole] = useState<Role | null>(null)
   const [form] = Form.useForm()
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
+  const { t } = useTranslation(['role', 'common'])
 
   const fetchRoles = async () => {
     setLoading(true)
@@ -49,35 +51,35 @@ export default function Roles() {
       const data = { ...values, permissionIds: selectedPermissions }
       if (editingRole) {
         await roleApi.update(editingRole.id, data)
-        message.success('更新成功')
+        message.success(t('role:message.updateSuccess'))
       } else {
         await roleApi.create(data)
-        message.success('创建成功')
+        message.success(t('role:message.createSuccess'))
       }
       setModalVisible(false)
       fetchRoles()
     } catch (error: any) {
-      message.error(error.response?.data?.message || '操作失败')
+      message.error(error.response?.data?.message || t('common:message.error'))
     }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await roleApi.delete(id)
-      message.success('删除成功')
+      message.success(t('role:message.deleteSuccess'))
       fetchRoles()
     } catch (error: any) {
-      message.error(error.response?.data?.message || '删除失败')
+      message.error(error.response?.data?.message || t('common:message.error'))
     }
   }
 
   const columns = [
-    { title: '角色名称', dataIndex: 'name' },
-    { title: '角色编码', dataIndex: 'code' },
-    { title: '描述', dataIndex: 'description' },
-    { title: '用户数', dataIndex: ['_count', 'users'] },
+    { title: t('role:field.name'), dataIndex: 'name' },
+    { title: t('role:field.code'), dataIndex: 'code' },
+    { title: t('role:field.description'), dataIndex: 'description' },
+    { title: t('role:field.userCount'), dataIndex: ['_count', 'users'] },
     {
-      title: '操作',
+      title: t('common:table.action'),
       render: (_: any, record: Role) => (
         <Space>
           <Button
@@ -91,8 +93,7 @@ export default function Roles() {
             }}
           />
           <Popconfirm
-            title="确认删除"
-            description="确定要删除该角色吗？"
+            title={t('common:message.confirmDelete')}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />} />
@@ -105,7 +106,7 @@ export default function Roles() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2>角色管理</h2>
+        <h2>{t('role:title')}</h2>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -116,7 +117,7 @@ export default function Roles() {
             setModalVisible(true)
           }}
         >
-          新建角色
+          {t('role:create')}
         </Button>
       </div>
 
@@ -128,31 +129,36 @@ export default function Roles() {
       />
 
       <Modal
-        title={editingRole ? '编辑角色' : '新建角色'}
+        title={editingRole ? t('role:edit') : t('role:create')}
         open={modalVisible}
         onOk={() => form.submit()}
         onCancel={() => setModalVisible(false)}
         width={600}
+        okText={t('common:button.save')}
+        cancelText={t('common:button.cancel')}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
             name="name"
-            label="角色名称"
-            rules={[{ required: true }]}
+            label={t('role:field.name')}
+            rules={[{ required: true, message: t('role:validation.nameRequired') }]}
           >
-            <Input />
+            <Input placeholder={t('role:placeholder.name')} />
           </Form.Item>
           <Form.Item
             name="code"
-            label="角色编码"
-            rules={[{ required: true }]}
+            label={t('role:field.code')}
+            rules={[
+              { required: true, message: t('role:validation.codeRequired') },
+              { pattern: /^[a-zA-Z0-9_]+$/, message: t('role:validation.codePattern') }
+            ]}
           >
-            <Input disabled={!!editingRole} />
+            <Input disabled={!!editingRole} placeholder={t('role:placeholder.code')} />
           </Form.Item>
-          <Form.Item name="description" label="描述">
-            <Input.TextArea />
+          <Form.Item name="description" label={t('role:field.description')}>
+            <Input.TextArea placeholder={t('role:placeholder.description')} />
           </Form.Item>
-          <Form.Item label="权限">
+          <Form.Item label={t('role:permission.title')}>
             <Checkbox.Group
               value={selectedPermissions}
               onChange={(values) => setSelectedPermissions(values as string[])}

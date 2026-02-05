@@ -1,0 +1,63 @@
+{
+  "app": {
+    "name": "Intelligent Dispatch Rule Management System",
+    "description": "Smart dispatch rule management system based on NestJS + React"
+  },
+  "button": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "reset": "Reset",
+    "export": "Export",
+    "import": "Import",
+    "refresh": "Refresh",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "more": "More",
+    "loading": "Loading..."
+  },
+  "table": {
+    "action": "Action",
+    "noData": "No Data",
+    "total": "Total {{count}} items",
+    "pageSize": "{{size}} per page"
+  },
+  "form": {
+    "required": "Required",
+    "optional": "Optional",
+    "placeholder": "Please enter",
+    "select": "Please select"
+  },
+  "status": {
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "active": "Active",
+    "inactive": "Inactive",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "message": {
+    "success": "Operation successful",
+    "error": "Operation failed",
+    "warning": "Warning",
+    "info": "Info",
+    "confirmDelete": "Are you sure you want to delete? This action cannot be undone",
+    "confirmSubmit": "Are you sure you want to submit?",
+    "loading": "Loading...",
+    "welcome": "Welcome back",
+    "goodbye": "Goodbye",
+    "sessionExpired": "Session expired, please login again"
+  },
+  "time": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "custom": "Custom"
+  }
+}

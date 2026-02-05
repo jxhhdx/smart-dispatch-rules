@@ -1,0 +1,40 @@
+{
+  "common": {
+    "required": "{{field}} is required",
+    "minLength": "{{field}} must be at least {{min}} characters",
+    "maxLength": "{{field}} cannot exceed {{max}} characters",
+    "min": "{{field}} cannot be less than {{min}}",
+    "max": "{{field}} cannot be greater than {{max}}",
+    "email": "Please enter a valid email address",
+    "phone": "Please enter a valid phone number",
+    "pattern": "{{field}} format is invalid",
+    "unique": "{{field}} already exists",
+    "confirm": "The two {{field}} entries do not match"
+  },
+  "user": {
+    "username": {
+      "required": "Username is required",
+      "minLength": "Username must be at least 3 characters",
+      "maxLength": "Username cannot exceed 20 characters",
+      "pattern": "Username can only contain letters, numbers and underscores"
+    },
+    "password": {
+      "required": "Password is required",
+      "minLength": "Password must be at least 8 characters",
+      "complexity": "Password must contain both letters and numbers"
+    },
+    "email": {
+      "required": "Email is required",
+      "invalid": "Please enter a valid email address"
+    }
+  },
+  "rule": {
+    "name": {
+      "required": "Rule name is required",
+      "maxLength": "Rule name cannot exceed 100 characters"
+    },
+    "priority": {
+      "range": "Priority must be between 0 and 999"
+    }
+  }
+}

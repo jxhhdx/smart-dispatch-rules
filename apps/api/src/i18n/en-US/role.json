@@ -1,0 +1,29 @@
+{
+  "title": "Role Management",
+  "list": "Role List",
+  "create": "Create Role",
+  "edit": "Edit Role",
+  "field": {
+    "id": "ID",
+    "name": "Role Name",
+    "code": "Role Code",
+    "description": "Description",
+    "status": "Status",
+    "permissions": "Permissions",
+    "createdAt": "Created At"
+  },
+  "permission": {
+    "title": "Permission Configuration",
+    "menu": "Menu Permissions",
+    "button": "Button Permissions",
+    "api": "API Permissions"
+  },
+  "message": {
+    "createSuccess": "Role created successfully",
+    "updateSuccess": "Role updated successfully",
+    "deleteSuccess": "Role deleted successfully",
+    "deleteConfirm": "Are you sure to delete role {{name}}?",
+    "notFound": "Role not found",
+    "codeExists": "Role code already exists"
+  }
+}

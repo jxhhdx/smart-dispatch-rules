@@ -10,26 +10,29 @@ import {
   LogoutOutlined,
   DownOutlined,
 } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/auth'
+import LanguageSwitch from './LanguageSwitch'
 
 const { Header, Sider, Content } = AntLayout
-
-const menuItems = [
-  { key: '/', icon: <DashboardOutlined />, label: '仪表盘' },
-  { key: '/rules', icon: <FileTextOutlined />, label: '规则管理' },
-  { key: '/users', icon: <UserOutlined />, label: '用户管理' },
-  { key: '/roles', icon: <TeamOutlined />, label: '角色管理' },
-  { key: '/logs', icon: <FileSearchOutlined />, label: '操作日志' },
-]
 
 export default function Layout() {
   const [collapsed, _setCollapsed] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
+  const { t } = useTranslation(['menu', 'auth'])
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
+
+  const menuItems = [
+    { key: '/', icon: <DashboardOutlined />, label: t('menu:dashboard') },
+    { key: '/rules', icon: <FileTextOutlined />, label: t('menu:rules') },
+    { key: '/users', icon: <UserOutlined />, label: t('menu:systemUsers') },
+    { key: '/roles', icon: <TeamOutlined />, label: t('menu:systemRoles') },
+    { key: '/logs', icon: <FileSearchOutlined />, label: t('menu:systemLogs') },
+  ]
 
   const handleMenuClick = (key: string) => {
     navigate(key)
@@ -39,7 +42,7 @@ export default function Layout() {
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: '退出登录',
+      label: t('auth:logout.title'),
       onClick: logout,
     },
   ]
@@ -49,7 +52,7 @@ export default function Layout() {
       <Sider trigger={null} collapsible collapsed={collapsed} theme="light">
         <div style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <h1 style={{ fontSize: collapsed ? 14 : 18, margin: 0, color: '#1677ff' }}>
-            {collapsed ? 'SDR' : '智能派单规则'}
+            {collapsed ? 'SDR' : t('menu:rules')}
           </h1>
         </div>
         <Menu
@@ -60,7 +63,8 @@ export default function Layout() {
         />
       </Sider>
       <AntLayout>
-        <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 24 }}>
+        <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 24, gap: 16 }}>
+          <LanguageSwitch />
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
             <Button type="text">
               <Avatar size="small" icon={<UserOutlined />} style={{ marginRight: 8 }} />

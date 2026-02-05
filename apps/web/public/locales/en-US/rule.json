@@ -1,0 +1,95 @@
+{
+  "title": "Rule Management",
+  "list": "Rule List",
+  "create": "Create Rule",
+  "edit": "Edit Rule",
+  "detail": "Rule Detail",
+  "simulate": "Simulate Execution",
+  "field": {
+    "id": "ID",
+    "name": "Rule Name",
+    "description": "Description",
+    "ruleType": "Rule Type",
+    "businessType": "Business Type",
+    "priority": "Priority",
+    "status": "Status",
+    "version": "Current Version",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At",
+    "createdBy": "Created By"
+  },
+  "type": {
+    "distance": "Distance Rule",
+    "workload": "Workload Rule",
+    "rating": "Rating Rule",
+    "urgency": "Urgency Rule",
+    "orderValue": "Order Value",
+    "vipCustomer": "VIP Customer",
+    "capability": "Capability Match",
+    "timeWindow": "Time Window",
+    "composite": "Composite Rule"
+  },
+  "status": {
+    "draft": "Draft",
+    "published": "Published",
+    "offline": "Offline"
+  },
+  "condition": {
+    "title": "Condition Configuration",
+    "addCondition": "Add Condition",
+    "addGroup": "Add Condition Group",
+    "field": "Field",
+    "operator": "Operator",
+    "value": "Value",
+    "logicType": "Logic",
+    "and": "AND",
+    "or": "OR",
+    "delete": "Delete Condition",
+    "group": "Condition Group"
+  },
+  "action": {
+    "title": "Action Configuration",
+    "addAction": "Add Action",
+    "type": {
+      "filter": "Filter Riders",
+      "sort": "Sort",
+      "limit": "Limit Count",
+      "assign": "Assign",
+      "notify": "Notify",
+      "escalate": "Escalate"
+    }
+  },
+  "version": {
+    "title": "Version Management",
+    "current": "Current Version",
+    "history": "Version History",
+    "publish": "Publish Version",
+    "rollback": "Rollback Version",
+    "create": "Create Version",
+    "version": "Version {{version}}"
+  },
+  "placeholder": {
+    "name": "Please enter rule name",
+    "description": "Please enter description",
+    "search": "Search by rule name"
+  },
+  "validation": {
+    "nameRequired": "Rule name is required",
+    "typeRequired": "Please select rule type",
+    "priorityRequired": "Please enter priority",
+    "conditionRequired": "Please configure at least one condition",
+    "actionRequired": "Please configure at least one action"
+  },
+  "message": {
+    "createSuccess": "Rule created successfully",
+    "updateSuccess": "Rule updated successfully",
+    "deleteSuccess": "Rule deleted successfully",
+    "publishSuccess": "Rule published successfully",
+    "rollbackSuccess": "Rule rolled back successfully",
+    "deleteConfirm": "Are you sure to delete rule \"{{name}}\"?",
+    "publishConfirm": "Are you sure to publish this rule? It will take effect immediately",
+    "offlineConfirm": "Are you sure to offline this rule?",
+    "simulateSuccess": "Simulation completed successfully",
+    "cannotEditPublished": "Published rules cannot be edited directly, please create a new version"
+  }
+}

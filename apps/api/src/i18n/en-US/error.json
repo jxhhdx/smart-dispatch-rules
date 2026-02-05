@@ -1,0 +1,16 @@
+{
+  "common": {
+    "internalError": "System is busy, please try again later",
+    "badRequest": "Bad request parameters",
+    "notFound": "Resource not found",
+    "conflict": "Data conflict",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "validationError": "Data validation failed"
+  },
+  "database": {
+    "connection": "Database connection failed",
+    "query": "Data query failed",
+    "unique": "Data already exists"
+  }
+}

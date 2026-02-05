@@ -1,0 +1,19 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "rules": "Rule Management",
+    "rulesList": "Rule List",
+    "rulesCreate": "Create Rule",
+    "statistics": "Statistics",
+    "statisticsDispatch": "Dispatch Statistics",
+    "statisticsRiders": "Rider Statistics",
+    "statisticsRules": "Rule Statistics",
+    "system": "System Management",
+    "systemUsers": "User Management",
+    "systemRoles": "Role Management",
+    "systemLogs": "Operation Logs",
+    "settings": "Settings",
+    "language": "Language",
+    "logout": "Logout"
+  }
+}

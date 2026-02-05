@@ -1,0 +1,30 @@
+{
+  "title": "User Management",
+  "list": "User List",
+  "create": "Create User",
+  "edit": "Edit User",
+  "detail": "User Detail",
+  "field": {
+    "id": "ID",
+    "username": "Username",
+    "email": "Email",
+    "realName": "Real Name",
+    "phone": "Phone",
+    "role": "Role",
+    "status": "Status",
+    "createdAt": "Created At",
+    "lastLoginAt": "Last Login",
+    "password": "Password",
+    "confirmPassword": "Confirm Password"
+  },
+  "message": {
+    "createSuccess": "User created successfully",
+    "updateSuccess": "User updated successfully",
+    "deleteSuccess": "User deleted successfully",
+    "deleteConfirm": "Are you sure to delete user {{username}}?",
+    "notFound": "User not found",
+    "alreadyExists": "Username or email already exists",
+    "deleteSelf": "Cannot delete your own account",
+    "disabled": "Account has been disabled"
+  }
+}

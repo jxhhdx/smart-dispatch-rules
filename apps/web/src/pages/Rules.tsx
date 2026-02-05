@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Table, Button, Space, Modal, Form, Input, Select, Tag, message, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 import { ruleApi } from '../services/api'
 
 interface Rule {
@@ -11,24 +12,6 @@ interface Rule {
   businessType?: string
   priority: number
   status: number
-}
-
-const statusMap: Record<number, { text: string; color: string }> = {
-  0: { text: '草稿', color: 'default' },
-  1: { text: '已发布', color: 'success' },
-  2: { text: '已下线', color: 'error' },
-}
-
-const ruleTypeMap: Record<string, string> = {
-  distance: '距离规则',
-  workload: '负载规则',
-  rating: '评分规则',
-  urgency: '紧急规则',
-  order_value: '订单价值',
-  vip_customer: 'VIP客户',
-  capability: '能力匹配',
-  time_window: '时间窗口',
-  composite: '组合规则',
 }
 
 export default function Rules() {
@@ -44,6 +27,20 @@ export default function Rules() {
     pageSize: 10,
     total: 0,
   })
+  const { t } = useTranslation(['rule', 'common'])
+
+  // 规则类型选项
+  const ruleTypeOptions = [
+    { value: 'distance', label: t('rule:type.distance') },
+    { value: 'workload', label: t('rule:type.workload') },
+    { value: 'rating', label: t('rule:type.rating') },
+    { value: 'urgency', label: t('rule:type.urgency') },
+    { value: 'order_value', label: t('rule:type.orderValue') },
+    { value: 'vip_customer', label: t('rule:type.vipCustomer') },
+    { value: 'capability', label: t('rule:type.capability') },
+    { value: 'time_window', label: t('rule:type.timeWindow') },
+    { value: 'composite', label: t('rule:type.composite') },
+  ]
 
   const fetchRules = async (page = 1, pageSize = 10) => {
     setLoading(true)
@@ -68,25 +65,25 @@ export default function Rules() {
     try {
       if (editingRule) {
         await ruleApi.update(editingRule.id, values)
-        message.success('更新成功')
+        message.success(t('rule:message.updateSuccess'))
       } else {
         await ruleApi.create(values)
-        message.success('创建成功')
+        message.success(t('rule:message.createSuccess'))
       }
       setModalVisible(false)
       fetchRules(pagination.current, pagination.pageSize)
     } catch (error: any) {
-      message.error(error.response?.data?.message || '操作失败')
+      message.error(error.response?.data?.message || t('common:message.error'))
     }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await ruleApi.delete(id)
-      message.success('删除成功')
+      message.success(t('rule:message.deleteSuccess'))
       fetchRules(pagination.current, pagination.pageSize)
     } catch (error: any) {
-      message.error(error.response?.data?.message || '删除失败')
+      message.error(error.response?.data?.message || t('common:message.error'))
     }
   }
 
@@ -96,21 +93,35 @@ export default function Rules() {
       setDetailRule(res.data)
       setDetailVisible(true)
     } catch (error) {
-      message.error('获取详情失败')
+      message.error(t('common:message.error'))
     }
   }
 
+  const getStatusTag = (status: number) => {
+    const statusMap: Record<number, { text: string; color: string }> = {
+      0: { text: t('rule:status.draft'), color: 'default' },
+      1: { text: t('rule:status.published'), color: 'success' },
+      2: { text: t('rule:status.offline'), color: 'error' },
+    }
+    const statusInfo = statusMap[status]
+    return <Tag color={statusInfo?.color}>{statusInfo?.text}</Tag>
+  }
+
+  const getRuleTypeLabel = (type: string) => {
+    return ruleTypeOptions.find(opt => opt.value === type)?.label || type
+  }
+
   const columns = [
-    { title: '规则名称', dataIndex: 'name' },
-    { title: '规则类型', dataIndex: 'ruleType', render: (type: string) => ruleTypeMap[type] || type },
-    { title: '优先级', dataIndex: 'priority' },
+    { title: t('rule:field.name'), dataIndex: 'name' },
+    { title: t('rule:field.ruleType'), dataIndex: 'ruleType', render: (type: string) => getRuleTypeLabel(type) },
+    { title: t('rule:field.priority'), dataIndex: 'priority' },
     {
-      title: '状态',
+      title: t('rule:field.status'),
       dataIndex: 'status',
-      render: (status: number) => <Tag color={statusMap[status]?.color}>{statusMap[status]?.text}</Tag>,
+      render: (status: number) => getStatusTag(status),
     },
     {
-      title: '操作',
+      title: t('common:table.action'),
       width: 200,
       render: (_: any, record: Rule) => (
         <Space>
@@ -129,8 +140,7 @@ export default function Rules() {
             }}
           />
           <Popconfirm
-            title="确认删除"
-            description="确定要删除该规则吗？"
+            title={t('common:message.confirmDelete')}
             onConfirm={() => handleDelete(record.id)}
           >
             <Button type="text" danger icon={<DeleteOutlined />} />
@@ -143,7 +153,7 @@ export default function Rules() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2>规则管理</h2>
+        <h2>{t('rule:title')}</h2>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -153,7 +163,7 @@ export default function Rules() {
             setModalVisible(true)
           }}
         >
-          新建规则
+          {t('rule:create')}
         </Button>
       </div>
 
@@ -167,39 +177,50 @@ export default function Rules() {
       />
 
       <Modal
-        title={editingRule ? '编辑规则' : '新建规则'}
+        title={editingRule ? t('rule:edit') : t('rule:create')}
         open={modalVisible}
         onOk={() => form.submit()}
         onCancel={() => setModalVisible(false)}
+        okText={t('common:button.save')}
+        cancelText={t('common:button.cancel')}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
-          <Form.Item name="name" label="规则名称" rules={[{ required: true }]}>
-            <Input />
+          <Form.Item 
+            name="name" 
+            label={t('rule:field.name')} 
+            rules={[{ required: true, message: t('rule:validation.nameRequired') }]}
+          >
+            <Input placeholder={t('rule:placeholder.name')} />
           </Form.Item>
-          <Form.Item name="ruleType" label="规则类型" rules={[{ required: true }]}>
-            <Select options={Object.entries(ruleTypeMap).map(([value, label]) => ({ value, label }))} />
+          <Form.Item 
+            name="ruleType" 
+            label={t('rule:field.ruleType')} 
+            rules={[{ required: true, message: t('rule:validation.typeRequired') }]}
+          >
+            <Select options={ruleTypeOptions} placeholder={t('common:form.select')} />
           </Form.Item>
-          <Form.Item name="businessType" label="业务类型">
+          <Form.Item name="businessType" label={t('rule:field.businessType')}>
             <Select
               allowClear
+              placeholder={t('common:form.select')}
               options={[
-                { value: 'food_delivery', label: '外卖配送' },
-                { value: 'grocery_delivery', label: '生鲜配送' },
-                { value: 'medicine_delivery', label: '药品配送' },
+                { value: 'food_delivery', label: 'Food Delivery' },
+                { value: 'grocery_delivery', label: 'Grocery Delivery' },
+                { value: 'medicine_delivery', label: 'Medicine Delivery' },
               ]}
             />
           </Form.Item>
-          <Form.Item name="priority" label="优先级" initialValue={0}>
+          <Form.Item name="priority" label={t('rule:field.priority')} initialValue={0}>
             <Input type="number" />
           </Form.Item>
-          <Form.Item name="description" label="描述">
-            <Input.TextArea />
+          <Form.Item name="description" label={t('rule:field.description')}>
+            <Input.TextArea placeholder={t('rule:placeholder.description')} />
           </Form.Item>
         </Form>
       </Modal>
 
       <Modal
-        title="规则详情"
+        title={t('rule:detail')}
         open={detailVisible}
         onCancel={() => setDetailVisible(false)}
         footer={null}
@@ -207,14 +228,14 @@ export default function Rules() {
       >
         {detailRule && (
           <div>
-            <p><strong>规则名称：</strong>{detailRule.name}</p>
-            <p><strong>规则类型：</strong>{ruleTypeMap[detailRule.ruleType]}</p>
-            <p><strong>描述：</strong>{detailRule.description || '-'}</p>
-            <p><strong>状态：</strong><Tag color={statusMap[detailRule.status]?.color}>{statusMap[detailRule.status]?.text}</Tag></p>
-            <p><strong>版本历史：</strong></p>
+            <p><strong>{t('rule:field.name')}:</strong>{detailRule.name}</p>
+            <p><strong>{t('rule:field.ruleType')}:</strong>{getRuleTypeLabel(detailRule.ruleType)}</p>
+            <p><strong>{t('rule:field.description')}:</strong>{detailRule.description || '-'}</p>
+            <p><strong>{t('rule:field.status')}:</strong>{getStatusTag(detailRule.status)}</p>
+            <p><strong>{t('rule:version.history')}:</strong></p>
             {detailRule.versions?.map((v: any) => (
               <div key={v.id} style={{ marginLeft: 20, padding: 10, background: '#f5f5f5', marginBottom: 10, borderRadius: 4 }}>
-                <p>版本 {v.version} - {v.status === 1 ? '当前版本' : v.status === 0 ? '草稿' : '已下线'}</p>
+                <p>{t('rule:version.version', { version: v.version })} - {v.status === 1 ? t('rule:status.published') : v.status === 0 ? t('rule:status.draft') : t('rule:status.offline')}</p>
                 <p style={{ fontSize: 12, color: '#666' }}>{v.description}</p>
               </div>
             ))}

@@ -5,16 +5,19 @@ import {
   TeamOutlined,
   CheckCircleOutlined,
 } from '@ant-design/icons'
+import { useTranslation } from 'react-i18next'
 
 export default function Dashboard() {
+  const { t } = useTranslation('menu')
+
   return (
     <div>
-      <h2 style={{ marginBottom: 24 }}>仪表盘</h2>
+      <h2 style={{ marginBottom: 24 }}>{t('menu:dashboard')}</h2>
       <Row gutter={16}>
         <Col span={6}>
           <Card>
             <Statistic
-              title="总用户数"
+              title="Total Users"
               value={12}
               prefix={<UserOutlined />}
             />
@@ -23,7 +26,7 @@ export default function Dashboard() {
         <Col span={6}>
           <Card>
             <Statistic
-              title="规则总数"
+              title="Total Rules"
               value={8}
               prefix={<FileTextOutlined />}
             />
@@ -32,7 +35,7 @@ export default function Dashboard() {
         <Col span={6}>
           <Card>
             <Statistic
-              title="角色数"
+              title="Roles"
               value={3}
               prefix={<TeamOutlined />}
             />
@@ -41,7 +44,7 @@ export default function Dashboard() {
         <Col span={6}>
           <Card>
             <Statistic
-              title="已发布规则"
+              title="Published Rules"
               value={5}
               prefix={<CheckCircleOutlined />}
             />
@@ -51,19 +54,19 @@ export default function Dashboard() {
 
       <Row gutter={16} style={{ marginTop: 24 }}>
         <Col span={12}>
-          <Card title="系统公告">
-            <p>欢迎使用智能派单规则管理系统！</p>
-            <p>本系统用于管理外卖配送场景下的派单策略规则。</p>
-            <p>技术栈：React + NestJS + PostgreSQL</p>
+          <Card title="System Announcement">
+            <p>Welcome to the Intelligent Dispatch Rule Management System!</p>
+            <p>This system is used to manage dispatch strategy rules for food delivery scenarios.</p>
+            <p>Tech Stack: React + NestJS + PostgreSQL</p>
           </Card>
         </Col>
         <Col span={12}>
-          <Card title="快速开始">
+          <Card title="Quick Start">
             <ul>
-              <li>在「规则管理」中创建和配置派单规则</li>
-              <li>在「用户管理」中管理系统用户</li>
-              <li>在「角色管理」中配置权限角色</li>
-              <li>在「操作日志」中查看系统操作记录</li>
+              <li>Create and configure dispatch rules in {t('menu:rules')}</li>
+              <li>Manage system users in {t('menu:systemUsers')}</li>
+              <li>Configure permission roles in {t('menu:systemRoles')}</li>
+              <li>View system operation logs in {t('menu:systemLogs')}</li>
             </ul>
           </Card>
         </Col>

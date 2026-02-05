@@ -1,0 +1,84 @@
+{
+  "title": "规则管理",
+  "list": "规则列表",
+  "create": "新建规则",
+  "edit": "编辑规则",
+  "detail": "规则详情",
+  "simulate": "模拟执行",
+  "field": {
+    "id": "ID",
+    "name": "规则名称",
+    "description": "规则描述",
+    "ruleType": "规则类型",
+    "businessType": "业务类型",
+    "priority": "优先级",
+    "status": "状态",
+    "version": "当前版本",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "createdBy": "创建人"
+  },
+  "type": {
+    "distance": "距离规则",
+    "workload": "负载规则",
+    "rating": "评分规则",
+    "urgency": "紧急规则",
+    "orderValue": "订单价值",
+    "vipCustomer": "VIP客户",
+    "capability": "能力匹配",
+    "timeWindow": "时间窗口",
+    "composite": "组合规则"
+  },
+  "status": {
+    "draft": "草稿",
+    "published": "已发布",
+    "offline": "已下线"
+  },
+  "condition": {
+    "title": "条件配置",
+    "addCondition": "添加条件",
+    "addGroup": "添加条件组",
+    "field": "字段",
+    "operator": "操作符",
+    "value": "值",
+    "logicType": "逻辑关系",
+    "and": "且",
+    "or": "或"
+  },
+  "action": {
+    "title": "动作配置",
+    "type": {
+      "filter": "筛选骑手",
+      "sort": "排序",
+      "limit": "限制数量",
+      "assign": "指定分配",
+      "notify": "发送通知",
+      "escalate": "升级处理"
+    }
+  },
+  "version": {
+    "title": "版本管理",
+    "current": "当前版本",
+    "history": "历史版本",
+    "publish": "发布版本",
+    "rollback": "回滚版本",
+    "create": "创建版本"
+  },
+  "message": {
+    "createSuccess": "规则创建成功",
+    "updateSuccess": "规则更新成功",
+    "deleteSuccess": "规则删除成功",
+    "publishSuccess": "规则发布成功",
+    "rollbackSuccess": "规则回滚成功",
+    "deleteConfirm": "确定要删除规则"{{name}}"吗？",
+    "publishConfirm": "确定要发布此规则吗？发布后规则将立即生效",
+    "offlineConfirm": "确定要下线此规则吗？",
+    "simulateSuccess": "模拟执行成功",
+    "notFound": "规则不存在",
+    "nameExists": "规则名称已存在",
+    "invalidCondition": "条件配置无效",
+    "publishFailed": "规则发布失败",
+    "rollbackFailed": "规则回滚失败",
+    "cannotEditPublished": "已发布规则不能直接编辑，请创建新版本"
+  }
+}

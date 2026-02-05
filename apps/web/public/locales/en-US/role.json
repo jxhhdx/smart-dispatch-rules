@@ -1,0 +1,45 @@
+{
+  "title": "Role Management",
+  "list": "Role List",
+  "create": "Create Role",
+  "edit": "Edit Role",
+  "permission": "Permission Configuration",
+  "field": {
+    "id": "ID",
+    "name": "Role Name",
+    "code": "Role Code",
+    "description": "Description",
+    "status": "Status",
+    "permissions": "Permissions",
+    "createdAt": "Created At",
+    "userCount": "User Count"
+  },
+  "placeholder": {
+    "name": "Please enter role name",
+    "code": "Please enter role code",
+    "description": "Please enter description",
+    "search": "Search by role name/code"
+  },
+  "permission": {
+    "title": "Permission Configuration",
+    "menu": "Menu Permissions",
+    "button": "Button Permissions",
+    "api": "API Permissions",
+    "selectAll": "Select All",
+    "expandAll": "Expand All",
+    "collapseAll": "Collapse All"
+  },
+  "validation": {
+    "nameRequired": "Role name is required",
+    "codeRequired": "Role code is required",
+    "codePattern": "Role code can only contain letters, numbers and underscores"
+  },
+  "message": {
+    "createSuccess": "Role created successfully",
+    "updateSuccess": "Role updated successfully",
+    "deleteSuccess": "Role deleted successfully",
+    "deleteConfirm": "Are you sure to delete role {{name}}?",
+    "deleteHasUsers": "Cannot delete role with existing users",
+    "permissionUpdateSuccess": "Permissions saved successfully"
+  }
+}
