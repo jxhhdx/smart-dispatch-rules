@@ -63,7 +63,24 @@ jobs:
           echo "✅ API deployed successfully!"
           echo "Deployment URL: ${{ secrets.VERCEL_API_URL }}"
 
-      - name: Notify Deployment Failure
+      - name: Send Success Notification
+        if: success()
+        run: |
+          python skills/notification/notify.py \
+            --message "API 部署成功" \
+            --status success \
+            --details "部署时间: $(date '+%Y-%m-%d %H:%M:%S')\\n提交: ${{ github.sha }}\\n分支: ${{ github.ref_name }}"
+        env:
+          NOTIFY_CONFIG: ${{ secrets.NOTIFY_CONFIG }}
+        continue-on-error: true
+
+      - name: Send Failure Notification
         if: failure()
         run: |
-          echo "❌ API deployment failed!"
+          python skills/notification/notify.py \
+            --message "API 部署失败" \
+            --status failure \
+            --details "部署时间: $(date '+%Y-%m-%d %H:%M:%S')\\n提交: ${{ github.sha }}\\n分支: ${{ github.ref_name }}\\n查看日志: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        env:
+          NOTIFY_CONFIG: ${{ secrets.NOTIFY_CONFIG }}
+        continue-on-error: true

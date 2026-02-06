@@ -146,9 +146,48 @@ jobs:
     needs: [deploy-api, deploy-web]
     if: always()
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
       - name: Deployment Summary
         run: |
           echo "📋 Deployment Summary"
           echo "===================="
           echo "API: ${{ needs.deploy-api.result == 'success' && '✅ Success' || needs.deploy-api.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }}"
           echo "Web: ${{ needs.deploy-web.result == 'success' && '✅ Success' || needs.deploy-web.result == 'skipped' && '⏭️ Skipped' || '❌ Failed' }}"
+
+      - name: Send Email Notification
+        run: |
+          API_STATUS="${{ needs.deploy-api.result }}"
+          WEB_STATUS="${{ needs.deploy-web.result }}"
+          
+          # 确定整体状态
+          if [[ "$API_STATUS" == "success" && "$WEB_STATUS" == "success" ]]; then
+            OVERALL_STATUS="success"
+            MESSAGE="全量部署成功"
+          elif [[ "$API_STATUS" == "skipped" && "$WEB_STATUS" == "skipped" ]]; then
+            OVERALL_STATUS="skipped"
+            MESSAGE="部署已跳过"
+          else
+            OVERALL_STATUS="failure"
+            MESSAGE="部署部分失败"
+          fi
+          
+          DETAILS="部署时间: $(date '+%Y-%m-%d %H:%M:%S')\\n"
+          DETAILS+="API状态: $API_STATUS\\n"
+          DETAILS+="Web状态: $WEB_STATUS\\n"
+          DETAILS+="提交: ${{ github.sha }}\\n"
+          DETAILS+="查看详情: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          python skills/notification/notify.py \
+            --message "$MESSAGE" \
+            --status "$OVERALL_STATUS" \
+            --details "$DETAILS"
+        env:
+          NOTIFY_CONFIG: ${{ secrets.NOTIFY_CONFIG }}
+        continue-on-error: true

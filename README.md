@@ -166,6 +166,24 @@ npm run dev --filter=web
 | Preview | PR | 创建预览环境 |
 | Deploy All | 手动触发 | 同时部署前后端 |
 
+### 📧 邮件通知
+
+部署完成后会自动发送邮件通知：
+
+```bash
+# 配置邮件
+cp skills/notification/config.example.json skills/notification/config.json
+# 编辑 config.json 填入邮箱信息
+
+# 测试邮件发送
+python skills/notification/notify.py --test
+
+# 本地使用
+python skills/notification/notify.py --message "构建完成" --status success
+```
+
+需要在 GitHub Secrets 中添加 `NOTIFY_CONFIG` (base64 编码的配置文件)。
+
 ## License
 
 MIT
