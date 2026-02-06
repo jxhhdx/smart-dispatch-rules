@@ -16,6 +16,8 @@ import * as path from 'path';
       fallbacks: {
         'zh-*': 'zh-CN',
         'en-*': 'en-US',
+        'ja-*': 'ja-JP',
+        'ko-*': 'ko-KR',
       },
       loader: I18nJsonLoader,
       loaderOptions: {

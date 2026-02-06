@@ -9,7 +9,7 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'zh-CN',
-    supportedLngs: ['zh-CN', 'en-US'],
+    supportedLngs: ['zh-CN', 'en-US', 'ja-JP', 'ko-KR'],
     
     detection: {
       order: ['localStorage', 'cookie', 'navigator', 'htmlTag'],
@@ -54,4 +54,6 @@ export const getCurrentLanguage = () => {
 export const supportedLanguages = [
   { key: 'zh-CN', label: '简体中文', flag: '🇨🇳' },
   { key: 'en-US', label: 'English', flag: '🇺🇸' },
+  { key: 'ja-JP', label: '日本語', flag: '🇯🇵' },
+  { key: 'ko-KR', label: '한국어', flag: '🇰🇷' },
 ];

@@ -1,0 +1,29 @@
+{
+  "title": "ロール管理",
+  "list": "ロール一覧",
+  "create": "ロール作成",
+  "edit": "ロール編集",
+  "field": {
+    "id": "ID",
+    "name": "ロール名",
+    "code": "ロールコード",
+    "description": "説明",
+    "status": "状態",
+    "permissions": "権限",
+    "createdAt": "作成日時"
+  },
+  "permission": {
+    "title": "権限設定",
+    "menu": "メニュー権限",
+    "button": "ボタン権限",
+    "api": "API権限"
+  },
+  "message": {
+    "createSuccess": "ロール作成に成功しました",
+    "updateSuccess": "ロール更新に成功しました",
+    "deleteSuccess": "ロール削除に成功しました",
+    "deleteConfirm": "ロール「{{name}}」を削除してもよろしいですか？",
+    "notFound": "ロールが見つかりません",
+    "codeExists": "ロールコードは既に存在します"
+  }
+}

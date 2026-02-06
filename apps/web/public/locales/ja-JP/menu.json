@@ -1,0 +1,19 @@
+{
+  "menu": {
+    "dashboard": "ダッシュボード",
+    "rules": "ルール管理",
+    "rulesList": "ルール一覧",
+    "rulesCreate": "ルール作成",
+    "statistics": "統計",
+    "statisticsDispatch": "配車統計",
+    "statisticsRiders": "ライダー統計",
+    "statisticsRules": "ルール統計",
+    "system": "システム管理",
+    "systemUsers": "ユーザー管理",
+    "systemRoles": "ロール管理",
+    "systemLogs": "操作ログ",
+    "settings": "設定",
+    "language": "言語",
+    "logout": "ログアウト"
+  }
+}

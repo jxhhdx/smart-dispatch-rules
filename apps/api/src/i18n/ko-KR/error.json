@@ -1,0 +1,16 @@
+{
+  "common": {
+    "internalError": "시스템이 혼잡합니다. 잠시 후 다시 시도하세요",
+    "badRequest": "잘못된 요청 파라미터입니다",
+    "notFound": "리소스를 찾을 수 없습니다",
+    "conflict": "데이터 충돌",
+    "unauthorized": "인증되지 않은 접근",
+    "forbidden": "접근이 금지되었습니다",
+    "validationError": "데이터 검증에 실패했습니다"
+  },
+  "database": {
+    "connection": "데이터베이스 연결에 실패했습니다",
+    "query": "데이터 조회에 실패했습니다",
+    "unique": "데이터가 이미 존재합니다"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "title": "규칙 관리",
+  "list": "규칙 목록",
+  "create": "규칙 생성",
+  "edit": "규칙 편집",
+  "detail": "규칙 상세",
+  "simulate": "실행 시뮬레이션",
+  "field": {
+    "id": "ID",
+    "name": "규칙명",
+    "description": "설명",
+    "ruleType": "규칙 유형",
+    "businessType": "업무 유형",
+    "priority": "우선순위",
+    "status": "상태",
+    "version": "현재 버전",
+    "createdAt": "생성일",
+    "updatedAt": "업데이트 일시",
+    "createdBy": "생성자"
+  },
+  "type": {
+    "distance": "거리 규칙",
+    "workload": "작업량 규칙",
+    "rating": "평점 규칙",
+    "urgency": "긴급 규칙",
+    "orderValue": "주문 금액",
+    "vipCustomer": "VIP 고객",
+    "capability": "역량 매칭",
+    "timeWindow": "시간 창",
+    "composite": "복합 규칙"
+  },
+  "status": {
+    "draft": "초안",
+    "published": "게시됨",
+    "offline": "오프라인"
+  },
+  "condition": {
+    "title": "조건 설정",
+    "addCondition": "조건 추가",
+    "addGroup": "조건 그룹 추가",
+    "field": "필드",
+    "operator": "연산자",
+    "value": "값",
+    "logicType": "논리",
+    "and": "AND",
+    "or": "OR"
+  },
+  "action": {
+    "title": "작업 설정",
+    "type": {
+      "filter": "라이더 필터",
+      "sort": "정렬",
+      "limit": "개수 제한",
+      "assign": "할당",
+      "notify": "알림",
+      "escalate": "에스컬레이션"
+    }
+  },
+  "version": {
+    "title": "버전 관리",
+    "current": "현재 버전",
+    "history": "버전 기록",
+    "publish": "버전 게시",
+    "rollback": "버전 롤백",
+    "create": "버전 생성"
+  },
+  "message": {
+    "createSuccess": "규칙 생성 성공",
+    "updateSuccess": "규칙 업데이트 성공",
+    "deleteSuccess": "규칙 삭제 성공",
+    "publishSuccess": "규칙 게시 성공",
+    "rollbackSuccess": "규칙 롤백 성공",
+    "deleteConfirm": "규칙 \"{{name}}\"을 삭제하시겠습니까?",
+    "publishConfirm": "이 규칙을 게시하시겠습니까? 게시 후 즉시 적용됩니다",
+    "offlineConfirm": "이 규칙을 오프라인으로 전환하시겠습니까?",
+    "simulateSuccess": "시뮬레이션이 성공했습니다",
+    "notFound": "규칙을 찾을 수 없습니다",
+    "nameExists": "규칙명이 이미 존재합니다",
+    "invalidCondition": "조건 설정이 유효하지 않습니다",
+    "publishFailed": "규칙 게시에 실패했습니다",
+    "rollbackFailed": "규칙 롤백에 실패했습니다",
+    "cannotEditPublished": "게시된 규칙은 직접 편집할 수 없습니다. 새 버전을 생성하세요"
+  }
+}

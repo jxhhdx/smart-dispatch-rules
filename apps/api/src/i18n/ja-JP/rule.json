@@ -1,0 +1,84 @@
+{
+  "title": "ルール管理",
+  "list": "ルール一覧",
+  "create": "ルール作成",
+  "edit": "ルール編集",
+  "detail": "ルール詳細",
+  "simulate": "実行シミュレーション",
+  "field": {
+    "id": "ID",
+    "name": "ルール名",
+    "description": "説明",
+    "ruleType": "ルールタイプ",
+    "businessType": "業務タイプ",
+    "priority": "優先度",
+    "status": "状態",
+    "version": "現在のバージョン",
+    "createdAt": "作成日時",
+    "updatedAt": "更新日時",
+    "createdBy": "作成者"
+  },
+  "type": {
+    "distance": "距離ルール",
+    "workload": "負荷ルール",
+    "rating": "評価ルール",
+    "urgency": "緊急ルール",
+    "orderValue": "注文金額",
+    "vipCustomer": "VIP顧客",
+    "capability": "能力マッチ",
+    "timeWindow": "時間帯",
+    "composite": "複合ルール"
+  },
+  "status": {
+    "draft": "下書き",
+    "published": "公開済み",
+    "offline": "オフライン"
+  },
+  "condition": {
+    "title": "条件設定",
+    "addCondition": "条件を追加",
+    "addGroup": "条件グループを追加",
+    "field": "フィールド",
+    "operator": "演算子",
+    "value": "値",
+    "logicType": "論理",
+    "and": "AND",
+    "or": "OR"
+  },
+  "action": {
+    "title": "アクション設定",
+    "type": {
+      "filter": "ライダーをフィルタ",
+      "sort": "並び替え",
+      "limit": "件数制限",
+      "assign": "割り当て",
+      "notify": "通知",
+      "escalate": "エスカレーション"
+    }
+  },
+  "version": {
+    "title": "バージョン管理",
+    "current": "現在のバージョン",
+    "history": "バージョン履歴",
+    "publish": "バージョン公開",
+    "rollback": "バージョンのロールバック",
+    "create": "バージョン作成"
+  },
+  "message": {
+    "createSuccess": "ルール作成に成功しました",
+    "updateSuccess": "ルール更新に成功しました",
+    "deleteSuccess": "ルール削除に成功しました",
+    "publishSuccess": "ルールを公開しました",
+    "rollbackSuccess": "ルールをロールバックしました",
+    "deleteConfirm": "ルール「{{name}}」を削除してもよろしいですか？",
+    "publishConfirm": "このルールを公開しますか？公開後すぐに有効になります",
+    "offlineConfirm": "このルールをオフラインにしますか？",
+    "simulateSuccess": "シミュレーションが成功しました",
+    "notFound": "ルールが見つかりません",
+    "nameExists": "ルール名は既に存在します",
+    "invalidCondition": "条件設定が無効です",
+    "publishFailed": "ルールの公開に失敗しました",
+    "rollbackFailed": "ルールのロールバックに失敗しました",
+    "cannotEditPublished": "公開済みルールは直接編集できません。新しいバージョンを作成してください"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "title": "ユーザー管理",
+  "list": "ユーザー一覧",
+  "create": "ユーザー作成",
+  "edit": "ユーザー編集",
+  "detail": "ユーザー詳細",
+  "field": {
+    "id": "ID",
+    "username": "ユーザー名",
+    "email": "メール",
+    "realName": "氏名",
+    "phone": "電話番号",
+    "role": "ロール",
+    "status": "状態",
+    "createdAt": "作成日時",
+    "lastLoginAt": "最終ログイン",
+    "password": "パスワード",
+    "confirmPassword": "パスワード確認"
+  },
+  "placeholder": {
+    "username": "ユーザー名を入力してください",
+    "email": "メールを入力してください",
+    "realName": "氏名を入力してください",
+    "phone": "電話番号を入力してください",
+    "password": "パスワードを入力してください",
+    "confirmPassword": "パスワードを再入力してください",
+    "search": "ユーザー名/メール/電話番号で検索"
+  },
+  "validation": {
+    "usernameRequired": "ユーザー名は必須です",
+    "usernameLength": "ユーザー名は3〜20文字です",
+    "emailRequired": "メールは必須です",
+    "emailInvalid": "有効なメールアドレスを入力してください",
+    "passwordRequired": "パスワードは必須です",
+    "passwordLength": "パスワードは8文字以上です",
+    "passwordConfirm": "パスワードが一致しません",
+    "roleRequired": "ロールを選択してください"
+  },
+  "message": {
+    "createSuccess": "ユーザー作成に成功しました",
+    "updateSuccess": "ユーザー更新に成功しました",
+    "deleteSuccess": "ユーザー削除に成功しました",
+    "deleteConfirm": "ユーザー「{{username}}」を削除してもよろしいですか？",
+    "deleteSelfError": "自分のアカウントは削除できません",
+    "statusChangeSuccess": "ステータスを更新しました"
+  }
+}

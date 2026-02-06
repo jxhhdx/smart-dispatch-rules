@@ -86,7 +86,7 @@
     "deleteSuccess": "规则删除成功",
     "publishSuccess": "规则发布成功",
     "rollbackSuccess": "规则回滚成功",
-    "deleteConfirm": "确定要删除规则"{{name}}"吗？",
+    "deleteConfirm": "确定要删除规则“{{name}}”吗？",
     "publishConfirm": "确定要发布此规则吗？发布后规则将立即生效",
     "offlineConfirm": "确定要下线此规则吗？",
     "simulateSuccess": "模拟执行成功",

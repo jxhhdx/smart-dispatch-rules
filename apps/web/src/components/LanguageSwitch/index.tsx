@@ -6,7 +6,12 @@ import { supportedLanguages, changeLanguage } from '../../i18n';
 
 const LanguageSwitch: React.FC<{ type?: 'dropdown' | 'button' }> = ({ type = 'dropdown' }) => {
   const { i18n } = useTranslation();
-  const currentLang = supportedLanguages.find(l => l.key === i18n.language) || supportedLanguages[0];
+  const resolvedLanguage = i18n.resolvedLanguage || i18n.language || '';
+  const isActiveLanguage = (key: string) => {
+    const base = key.split('-')[0];
+    return resolvedLanguage === key || resolvedLanguage.startsWith(base);
+  };
+  const currentLang = supportedLanguages.find(l => isActiveLanguage(l.key)) || supportedLanguages[0];
 
   const handleChange = (key: string) => {
     changeLanguage(key);
@@ -31,7 +36,7 @@ const LanguageSwitch: React.FC<{ type?: 'dropdown' | 'button' }> = ({ type = 'dr
         {supportedLanguages.map(lang => (
           <Button
             key={lang.key}
-            type={i18n.language === lang.key ? 'primary' : 'default'}
+            type={isActiveLanguage(lang.key) ? 'primary' : 'default'}
             size="small"
             onClick={() => handleChange(lang.key)}
           >

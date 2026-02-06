@@ -1,0 +1,30 @@
+{
+  "title": "ユーザー管理",
+  "list": "ユーザー一覧",
+  "create": "ユーザー作成",
+  "edit": "ユーザー編集",
+  "detail": "ユーザー詳細",
+  "field": {
+    "id": "ID",
+    "username": "ユーザー名",
+    "email": "メール",
+    "realName": "氏名",
+    "phone": "電話番号",
+    "role": "ロール",
+    "status": "状態",
+    "createdAt": "作成日時",
+    "lastLoginAt": "最終ログイン",
+    "password": "パスワード",
+    "confirmPassword": "パスワード確認"
+  },
+  "message": {
+    "createSuccess": "ユーザー作成に成功しました",
+    "updateSuccess": "ユーザー更新に成功しました",
+    "deleteSuccess": "ユーザー削除に成功しました",
+    "deleteConfirm": "ユーザー「{{username}}」を削除してもよろしいですか？",
+    "notFound": "ユーザーが見つかりません",
+    "alreadyExists": "ユーザー名またはメールが既に存在します",
+    "deleteSelf": "自分のアカウントは削除できません",
+    "disabled": "アカウントは無効化されています"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "스마트 배차 규칙 관리 시스템",
+    "description": "NestJS + React 기반의 스마트 배차 규칙 관리 시스템"
+  },
+  "button": {
+    "submit": "제출",
+    "cancel": "취소",
+    "save": "저장",
+    "delete": "삭제",
+    "edit": "편집",
+    "create": "생성",
+    "search": "검색",
+    "reset": "초기화",
+    "export": "내보내기",
+    "import": "가져오기",
+    "refresh": "새로고침",
+    "close": "닫기",
+    "confirm": "확인",
+    "back": "뒤로"
+  },
+  "table": {
+    "action": "작업",
+    "noData": "데이터 없음",
+    "total": "총 {{count}}건",
+    "pageSize": "페이지당 {{size}}건"
+  },
+  "status": {
+    "enabled": "사용",
+    "disabled": "비활성화",
+    "active": "활성",
+    "inactive": "비활성"
+  },
+  "message": {
+    "success": "작업이 성공했습니다",
+    "error": "작업이 실패했습니다",
+    "confirmDelete": "삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다",
+    "loading": "로딩 중...",
+    "welcome": "다시 오신 것을 환영합니다",
+    "goodbye": "안녕히 가세요"
+  }
+}

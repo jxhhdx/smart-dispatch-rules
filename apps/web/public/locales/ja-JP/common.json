@@ -1,0 +1,63 @@
+{
+  "app": {
+    "name": "インテリジェント配車ルール管理システム",
+    "description": "NestJS + React に基づくスマート配車ルール管理システム"
+  },
+  "button": {
+    "submit": "送信",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "search": "検索",
+    "reset": "リセット",
+    "export": "エクスポート",
+    "import": "インポート",
+    "refresh": "更新",
+    "close": "閉じる",
+    "confirm": "確認",
+    "back": "戻る",
+    "more": "もっと",
+    "loading": "読み込み中..."
+  },
+  "table": {
+    "action": "操作",
+    "noData": "データなし",
+    "total": "合計 {{count}} 件",
+    "pageSize": "1ページ {{size}} 件"
+  },
+  "form": {
+    "required": "必須",
+    "optional": "任意",
+    "placeholder": "入力してください",
+    "select": "選択してください"
+  },
+  "status": {
+    "enabled": "有効",
+    "disabled": "無効",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
+    "yes": "はい",
+    "no": "いいえ"
+  },
+  "message": {
+    "success": "操作が成功しました",
+    "error": "操作に失敗しました",
+    "warning": "警告",
+    "info": "情報",
+    "confirmDelete": "削除してもよろしいですか？この操作は元に戻せません",
+    "confirmSubmit": "送信してもよろしいですか？",
+    "loading": "読み込み中...",
+    "welcome": "おかえりなさい",
+    "goodbye": "さようなら",
+    "sessionExpired": "セッションが期限切れです。再度ログインしてください"
+  },
+  "time": {
+    "today": "今日",
+    "yesterday": "昨日",
+    "thisWeek": "今週",
+    "thisMonth": "今月",
+    "custom": "カスタム"
+  }
+}

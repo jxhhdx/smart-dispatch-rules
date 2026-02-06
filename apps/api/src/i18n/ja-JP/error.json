@@ -1,0 +1,16 @@
+{
+  "common": {
+    "internalError": "システムが混雑しています。しばらくしてから再試行してください",
+    "badRequest": "リクエストパラメータが不正です",
+    "notFound": "リソースが見つかりません",
+    "conflict": "データの競合",
+    "unauthorized": "未認証のアクセス",
+    "forbidden": "アクセスが禁止されています",
+    "validationError": "データ検証に失敗しました"
+  },
+  "database": {
+    "connection": "データベース接続に失敗しました",
+    "query": "データクエリに失敗しました",
+    "unique": "データが既に存在します"
+  }
+}

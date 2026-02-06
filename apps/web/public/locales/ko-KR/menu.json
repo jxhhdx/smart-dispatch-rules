@@ -1,0 +1,19 @@
+{
+  "menu": {
+    "dashboard": "대시보드",
+    "rules": "규칙 관리",
+    "rulesList": "규칙 목록",
+    "rulesCreate": "규칙 생성",
+    "statistics": "통계",
+    "statisticsDispatch": "배차 통계",
+    "statisticsRiders": "라이더 통계",
+    "statisticsRules": "규칙 통계",
+    "system": "시스템 관리",
+    "systemUsers": "사용자 관리",
+    "systemRoles": "역할 관리",
+    "systemLogs": "작업 로그",
+    "settings": "설정",
+    "language": "언어",
+    "logout": "로그아웃"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "common": {
+    "required": "{{field}}は必須です",
+    "minLength": "{{field}}は少なくとも{{min}}文字が必要です",
+    "maxLength": "{{field}}は{{max}}文字を超えられません",
+    "min": "{{field}}は{{min}}未満にできません",
+    "max": "{{field}}は{{max}}を超えられません",
+    "email": "有効なメールアドレスを入力してください",
+    "phone": "有効な電話番号を入力してください",
+    "pattern": "{{field}}の形式が正しくありません",
+    "unique": "{{field}}は既に存在します",
+    "confirm": "2つの{{field}}が一致しません"
+  },
+  "user": {
+    "username": {
+      "required": "ユーザー名は必須です",
+      "minLength": "ユーザー名は3文字以上です",
+      "maxLength": "ユーザー名は20文字を超えられません",
+      "pattern": "ユーザー名は英数字とアンダースコアのみ使用できます"
+    },
+    "password": {
+      "required": "パスワードは必須です",
+      "minLength": "パスワードは8文字以上です",
+      "complexity": "パスワードは文字と数字を含める必要があります"
+    },
+    "email": {
+      "required": "メールは必須です",
+      "invalid": "有効なメールアドレスを入力してください"
+    }
+  },
+  "rule": {
+    "name": {
+      "required": "ルール名は必須です",
+      "maxLength": "ルール名は100文字を超えられません"
+    },
+    "priority": {
+      "range": "優先度は0〜999の間でなければなりません"
+    }
+  }
+}

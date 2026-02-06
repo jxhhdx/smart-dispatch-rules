@@ -1,0 +1,40 @@
+{
+  "common": {
+    "required": "{{field}}은(는) 필수입니다",
+    "minLength": "{{field}}은(는) 최소 {{min}}자 이상이어야 합니다",
+    "maxLength": "{{field}}은(는) {{max}}자를 초과할 수 없습니다",
+    "min": "{{field}}은(는) {{min}}보다 작을 수 없습니다",
+    "max": "{{field}}은(는) {{max}}보다 클 수 없습니다",
+    "email": "유효한 이메일 주소를 입력하세요",
+    "phone": "유효한 전화번호를 입력하세요",
+    "pattern": "{{field}} 형식이 올바르지 않습니다",
+    "unique": "{{field}}이(가) 이미 존재합니다",
+    "confirm": "두 {{field}}이(가) 일치하지 않습니다"
+  },
+  "user": {
+    "username": {
+      "required": "사용자명이 필요합니다",
+      "minLength": "사용자명은 최소 3자입니다",
+      "maxLength": "사용자명은 20자를 초과할 수 없습니다",
+      "pattern": "사용자명은 영문, 숫자, 밑줄만 가능합니다"
+    },
+    "password": {
+      "required": "비밀번호가 필요합니다",
+      "minLength": "비밀번호는 8자 이상입니다",
+      "complexity": "비밀번호는 문자와 숫자를 모두 포함해야 합니다"
+    },
+    "email": {
+      "required": "이메일이 필요합니다",
+      "invalid": "유효한 이메일 주소를 입력하세요"
+    }
+  },
+  "rule": {
+    "name": {
+      "required": "규칙명이 필요합니다",
+      "maxLength": "규칙명은 100자를 초과할 수 없습니다"
+    },
+    "priority": {
+      "range": "우선순위는 0~999 사이여야 합니다"
+    }
+  }
+}

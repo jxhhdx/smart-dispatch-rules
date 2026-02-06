@@ -1,0 +1,29 @@
+{
+  "title": "역할 관리",
+  "list": "역할 목록",
+  "create": "역할 생성",
+  "edit": "역할 편집",
+  "field": {
+    "id": "ID",
+    "name": "역할명",
+    "code": "역할 코드",
+    "description": "설명",
+    "status": "상태",
+    "permissions": "권한",
+    "createdAt": "생성일"
+  },
+  "permission": {
+    "title": "권한 설정",
+    "menu": "메뉴 권한",
+    "button": "버튼 권한",
+    "api": "API 권한"
+  },
+  "message": {
+    "createSuccess": "역할 생성 성공",
+    "updateSuccess": "역할 업데이트 성공",
+    "deleteSuccess": "역할 삭제 성공",
+    "deleteConfirm": "역할 \"{{name}}\"을 삭제하시겠습니까?",
+    "notFound": "역할을 찾을 수 없습니다",
+    "codeExists": "역할 코드가 이미 존재합니다"
+  }
+}
