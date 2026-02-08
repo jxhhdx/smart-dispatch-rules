@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { I18nValidationExceptionFilter } from 'nestjs-i18n';
+// import { I18nValidationExceptionFilter } from 'nestjs-i18n';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
@@ -34,10 +34,10 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
-    {
-      provide: APP_FILTER,
-      useClass: I18nValidationExceptionFilter,
-    },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: I18nValidationExceptionFilter,
+    // },
     {
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
