@@ -1,5 +1,6 @@
 {
   "name": "smart-dispatch-rules",
+  "version": "1.0.0",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -10,12 +11,23 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "turbo run test",
+    "test:unit": "cd apps/api && npm run test:unit",
+    "test:e2e:api": "cd apps/api && npm run test:e2e",
+    "test:e2e:ui": "playwright test",
+    "test:e2e:ui:headed": "playwright test --headed",
+    "test:e2e:ui:debug": "playwright test --debug",
+    "test:e2e:ui:report": "playwright show-report",
+    "test:all": "npm run test:unit && npm run test:e2e:api && npm run test:e2e:ui",
     "db:migrate": "cd apps/api && npx prisma migrate dev",
     "db:generate": "cd apps/api && npx prisma generate",
     "db:studio": "cd apps/api && npx prisma studio",
-    "db:seed": "cd apps/api && npx prisma db seed"
+    "db:seed": "cd apps/api && npx prisma db seed",
+    "playwright:install": "playwright install",
+    "playwright:install:browsers": "playwright install chromium firefox webkit"
   },
   "devDependencies": {
+    "@playwright/test": "^1.41.0",
     "prettier": "^3.2.0",
     "turbo": "^1.12.0"
   },
