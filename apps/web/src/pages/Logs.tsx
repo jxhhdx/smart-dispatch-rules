@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Table, Tabs, DatePicker, Input, Button } from 'antd'
+import { Table, Tabs, DatePicker, Input, Button, Card, Space, Typography } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { logApi } from '../services/api'
 import dayjs from 'dayjs'
 
 const { RangePicker } = DatePicker
+const { Title } = Typography
 
 export default function Logs() {
   const [activeTab, setActiveTab] = useState('operation')
@@ -69,78 +70,109 @@ export default function Logs() {
     }
   }, [activeTab])
 
+  const handleSearch = () => {
+    setPagination({ ...pagination, current: 1 })
+    if (activeTab === 'operation') {
+      fetchSystemLogs(1, pagination.pageSize)
+    } else {
+      fetchLoginLogs(1, pagination.pageSize)
+    }
+  }
+
   const systemLogColumns = [
-    { title: 'Time', dataIndex: 'createdAt', render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
-    { title: 'User', dataIndex: 'username' },
-    { title: 'Module', dataIndex: 'module' },
-    { title: 'Action', dataIndex: 'action' },
-    { title: 'Description', dataIndex: 'description' },
-    { title: 'IP Address', dataIndex: 'ipAddress' },
+    { title: 'Time', dataIndex: 'createdAt', width: 170, render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
+    { title: 'User', dataIndex: 'username', width: 120 },
+    { title: 'Module', dataIndex: 'module', width: 120 },
+    { title: 'Action', dataIndex: 'action', width: 120 },
+    { title: 'Description', dataIndex: 'description', ellipsis: true },
+    { title: 'IP Address', dataIndex: 'ipAddress', width: 140 },
   ]
 
   const loginLogColumns = [
-    { title: 'Time', dataIndex: 'createdAt', render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
-    { title: 'Username', dataIndex: 'username' },
-    { title: 'Login Type', dataIndex: 'loginType' },
-    { title: 'Status', dataIndex: 'status', render: (s: number) => s === 1 ? t('common:status.success') : t('common:status.error') },
-    { title: 'IP Address', dataIndex: 'ipAddress' },
-    { title: 'Fail Reason', dataIndex: 'failReason' },
+    { title: 'Time', dataIndex: 'createdAt', width: 170, render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
+    { title: 'Username', dataIndex: 'username', width: 120 },
+    { title: 'Login Type', dataIndex: 'loginType', width: 120 },
+    { title: 'Status', dataIndex: 'status', width: 100, render: (s: number) => s === 1 ? t('common:status.success') : t('common:status.error') },
+    { title: 'IP Address', dataIndex: 'ipAddress', width: 140 },
+    { title: 'Fail Reason', dataIndex: 'failReason', ellipsis: true },
+  ]
+
+  const tabItems = [
+    {
+      key: 'operation',
+      label: 'System Operation Logs',
+      children: (
+        <Table
+          columns={systemLogColumns}
+          dataSource={systemLogs}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `${t('common:table.total')} ${total} ${t('common:table.items')}`,
+          }}
+          onChange={(p) => fetchSystemLogs(p.current, p.pageSize)}
+        />
+      ),
+    },
+    {
+      key: 'login',
+      label: 'Login Logs',
+      children: (
+        <Table
+          columns={loginLogColumns}
+          dataSource={loginLogs}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `${t('common:table.total')} ${total} ${t('common:table.items')}`,
+          }}
+          onChange={(p) => fetchLoginLogs(p.current, p.pageSize)}
+        />
+      ),
+    },
   ]
 
   return (
-    <div>
-      <h2 style={{ marginBottom: 16 }}>{t('menu:systemLogs')}</h2>
-
-      <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-        <Input
-          placeholder={activeTab === 'operation' ? 'Search Module' : 'Search Username'}
-          value={searchParams.keyword}
-          onChange={(e) => setSearchParams({ ...searchParams, keyword: e.target.value })}
-          style={{ width: 200 }}
-          prefix={<SearchOutlined />}
-        />
-        <RangePicker
-          value={searchParams.dateRange}
-          onChange={(dates) => setSearchParams({ ...searchParams, dateRange: dates })}
-        />
-        <Button
-          type="primary"
-          icon={<SearchOutlined />}
-          onClick={() => {
-            setPagination({ ...pagination, current: 1 })
-            if (activeTab === 'operation') {
-              fetchSystemLogs(1, pagination.pageSize)
-            } else {
-              fetchLoginLogs(1, pagination.pageSize)
-            }
-          }}
-        >
-          {t('common:button.search')}
-        </Button>
-      </div>
-
-      <Tabs activeKey={activeTab} onChange={setActiveTab}>
-        <Tabs.TabPane tab="System Operation Logs" key="operation">
-          <Table
-            columns={systemLogColumns}
-            dataSource={systemLogs}
-            rowKey="id"
-            loading={loading}
-            pagination={pagination}
-            onChange={(p) => fetchSystemLogs(p.current, p.pageSize)}
+    <Space direction="vertical" size={16} style={{ display: 'flex' }}>
+      <Title level={4} style={{ margin: 0 }}>{t('menu:systemLogs')}</Title>
+      
+      <Card bordered={false}>
+        <Space direction="vertical" size={16} style={{ display: 'flex' }}>
+          <Space wrap>
+            <Input
+              placeholder={activeTab === 'operation' ? 'Search Module' : 'Search Username'}
+              value={searchParams.keyword}
+              onChange={(e) => setSearchParams({ ...searchParams, keyword: e.target.value })}
+              style={{ width: 200 }}
+              prefix={<SearchOutlined />}
+              allowClear
+            />
+            <RangePicker
+              value={searchParams.dateRange}
+              onChange={(dates) => setSearchParams({ ...searchParams, dateRange: dates })}
+            />
+            <Button
+              type="primary"
+              icon={<SearchOutlined />}
+              onClick={handleSearch}
+            >
+              {t('common:button.search')}
+            </Button>
+          </Space>
+          
+          <Tabs 
+            activeKey={activeTab} 
+            onChange={setActiveTab}
+            items={tabItems}
           />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab="Login Logs" key="login">
-          <Table
-            columns={loginLogColumns}
-            dataSource={loginLogs}
-            rowKey="id"
-            loading={loading}
-            pagination={pagination}
-            onChange={(p) => fetchLoginLogs(p.current, p.pageSize)}
-          />
-        </Tabs.TabPane>
-      </Tabs>
-    </div>
+        </Space>
+      </Card>
+    </Space>
   )
 }

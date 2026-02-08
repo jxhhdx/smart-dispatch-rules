@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Table, Button, Space, Modal, Form, Input, Checkbox, message, Popconfirm } from 'antd'
+import { Table, Button, Space, Modal, Form, Input, Checkbox, Card, Typography, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { roleApi } from '../services/api'
+
+const { Title } = Typography
 
 interface Role {
   id: string
@@ -51,37 +53,36 @@ export default function Roles() {
       const data = { ...values, permissionIds: selectedPermissions }
       if (editingRole) {
         await roleApi.update(editingRole.id, data)
-        message.success(t('role:message.updateSuccess'))
       } else {
         await roleApi.create(data)
-        message.success(t('role:message.createSuccess'))
       }
       setModalVisible(false)
       fetchRoles()
     } catch (error: any) {
-      message.error(error.response?.data?.message || t('common:message.error'))
+      // 错误已在 api 拦截器中处理
     }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await roleApi.delete(id)
-      message.success(t('role:message.deleteSuccess'))
       fetchRoles()
     } catch (error: any) {
-      message.error(error.response?.data?.message || t('common:message.error'))
+      // 错误已在 api 拦截器中处理
     }
   }
 
   const columns = [
-    { title: t('role:field.name'), dataIndex: 'name' },
+    { title: t('role:field.name'), dataIndex: 'name', ellipsis: true },
     { title: t('role:field.code'), dataIndex: 'code' },
-    { title: t('role:field.description'), dataIndex: 'description' },
-    { title: t('role:field.userCount'), dataIndex: ['_count', 'users'] },
+    { title: t('role:field.description'), dataIndex: 'description', ellipsis: true },
+    { title: t('role:field.userCount'), dataIndex: ['_count', 'users'], width: 120 },
     {
       title: t('common:table.action'),
+      width: 120,
+      fixed: 'right' as const,
       render: (_: any, record: Role) => (
-        <Space>
+        <Space size={0}>
           <Button
             type="text"
             icon={<EditOutlined />}
@@ -104,29 +105,33 @@ export default function Roles() {
   ]
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2>{t('role:title')}</h2>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            setEditingRole(null)
-            form.resetFields()
-            setSelectedPermissions([])
-            setModalVisible(true)
-          }}
-        >
-          {t('role:create')}
-        </Button>
-      </div>
-
-      <Table
-        columns={columns}
-        dataSource={roles}
-        rowKey="id"
-        loading={loading}
-      />
+    <Space direction="vertical" size={16} style={{ display: 'flex' }}>
+      <Card 
+        bordered={false}
+        title={<Title level={4} style={{ margin: 0 }}>{t('role:title')}</Title>}
+        extra={
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setEditingRole(null)
+              form.resetFields()
+              setSelectedPermissions([])
+              setModalVisible(true)
+            }}
+          >
+            {t('role:create')}
+          </Button>
+        }
+      >
+        <Table
+          columns={columns}
+          dataSource={roles}
+          rowKey="id"
+          loading={loading}
+          pagination={false}
+        />
+      </Card>
 
       <Modal
         title={editingRole ? t('role:edit') : t('role:create')}
@@ -156,17 +161,22 @@ export default function Roles() {
             <Input disabled={!!editingRole} placeholder={t('role:placeholder.code')} />
           </Form.Item>
           <Form.Item name="description" label={t('role:field.description')}>
-            <Input.TextArea placeholder={t('role:placeholder.description')} />
+            <Input.TextArea rows={3} placeholder={t('role:placeholder.description')} />
           </Form.Item>
           <Form.Item label={t('role:permission.title')}>
             <Checkbox.Group
               value={selectedPermissions}
               onChange={(values) => setSelectedPermissions(values as string[])}
-              options={permissions.map(p => ({ label: p.name, value: p.id }))}
-            />
+            >
+              <Space direction="vertical" size={8}>
+                {permissions.map(p => (
+                  <Checkbox key={p.id} value={p.id}>{p.name}</Checkbox>
+                ))}
+              </Space>
+            </Checkbox.Group>
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </Space>
   )
 }

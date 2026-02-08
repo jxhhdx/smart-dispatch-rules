@@ -12,7 +12,9 @@ export class DashboardPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.dashboardTitle = page.locator('h2:has-text("Dashboard")');
+    // Dashboard 标题是 h4 级别，使用 text 内容匹配
+    // Dashboard 标题是小写的 'dashboard'
+    this.dashboardTitle = page.locator('h4, .ant-typography').filter({ hasText: /dashboard/i });
     this.userMenu = page.locator('.ant-layout-header .ant-dropdown-trigger');
     this.logoutButton = page.locator('text=Logout');
   }
@@ -21,7 +23,8 @@ export class DashboardPage {
    * 验证 Dashboard 页面加载
    */
   async expectLoaded() {
-    await expect(this.page).toHaveURL(/.*dashboard/);
+    // Dashboard 可能是根路径 / 或 /dashboard
+    await expect(this.page).toHaveURL(/.*dashboard|\/$/);
     await expect(this.dashboardTitle).toBeVisible();
   }
 

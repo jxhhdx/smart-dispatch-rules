@@ -27,7 +27,7 @@
     "playwright:install:browsers": "playwright install chromium firefox webkit"
   },
   "devDependencies": {
-    "@playwright/test": "^1.41.0",
+    "@playwright/test": "^1.58.2",
     "prettier": "^3.2.0",
     "turbo": "^1.12.0"
   },

@@ -24,7 +24,12 @@ build
 .env
 .env.local
 .env.*.local
+.env.test
 !.env.example
+
+# Playwright browsers (downloaded binaries)
+chrome-mac-arm64.zip
+chromium-*.zip
 
 # IDE
 .idea

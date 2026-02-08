@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { Layout as AntLayout, Menu, Button, Dropdown, Avatar, theme } from 'antd'
+import { Layout as AntLayout, Menu, Button, Dropdown, Avatar, Space, theme } from 'antd'
 import {
   DashboardOutlined,
   FileTextOutlined,
@@ -9,6 +9,8 @@ import {
   FileSearchOutlined,
   LogoutOutlined,
   DownOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/auth'
@@ -17,7 +19,7 @@ import LanguageSwitch from './LanguageSwitch'
 const { Header, Sider, Content } = AntLayout
 
 export default function Layout() {
-  const [collapsed, _setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
@@ -49,10 +51,35 @@ export default function Layout() {
 
   return (
     <AntLayout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed} theme="light">
-        <div style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <h1 style={{ fontSize: collapsed ? 14 : 18, margin: 0, color: '#1677ff' }}>
-            {collapsed ? 'SDR' : t('menu:rules')}
+      <Sider 
+        trigger={null} 
+        collapsible 
+        collapsed={collapsed} 
+        theme="light"
+        style={{
+          boxShadow: '2px 0 8px rgba(0, 0, 0, 0.06)',
+          zIndex: 10,
+        }}
+      >
+        <div 
+          style={{ 
+            height: 64, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            borderBottom: '1px solid rgba(0, 0, 0, 0.06)',
+          }}
+        >
+          <h1 style={{ 
+            fontSize: collapsed ? 16 : 18, 
+            margin: 0, 
+            color: '#1677ff',
+            fontWeight: 600,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>
+            {collapsed ? 'SDR' : t('menu:appName')}
           </h1>
         </div>
         <Menu
@@ -60,29 +87,58 @@ export default function Layout() {
           selectedKeys={[location.pathname]}
           items={menuItems}
           onClick={({ key }) => handleMenuClick(key)}
+          style={{ borderRight: 0 }}
         />
       </Sider>
       <AntLayout>
-        <Header style={{ padding: 0, background: colorBgContainer, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 24, gap: 16 }}>
-          <LanguageSwitch />
-          <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-            <Button type="text">
-              <Avatar size="small" icon={<UserOutlined />} style={{ marginRight: 8 }} />
-              {user?.realName || user?.username}
-              <DownOutlined style={{ marginLeft: 8 }} />
-            </Button>
-          </Dropdown>
+        <Header 
+          style={{ 
+            padding: '0 24px', 
+            background: colorBgContainer, 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.03)',
+            zIndex: 9,
+          }}
+        >
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{ fontSize: 16 }}
+          />
+          <Space size={16}>
+            <LanguageSwitch />
+            <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+              <Button type="text">
+                <Avatar 
+                  size="small" 
+                  icon={<UserOutlined />} 
+                  style={{ marginRight: 8, backgroundColor: '#1677ff' }} 
+                />
+                <span style={{ marginRight: 8 }}>{user?.realName || user?.username}</span>
+                <DownOutlined style={{ fontSize: 10 }} />
+              </Button>
+            </Dropdown>
+          </Space>
         </Header>
         <Content
           style={{
             margin: 24,
-            padding: 24,
             minHeight: 280,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
           }}
         >
-          <Outlet />
+          <div 
+            style={{
+              padding: 24,
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+              minHeight: '100%',
+            }}
+          >
+            <Outlet />
+          </div>
         </Content>
       </AntLayout>
     </AntLayout>

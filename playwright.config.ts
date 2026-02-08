@@ -51,7 +51,13 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { 
+        ...devices['Desktop Chrome'],
+        // 如需指定本地 Chromium 路径，设置环境变量 PLAYWRIGHT_CHROMIUM_PATH
+        launchOptions: process.env.PLAYWRIGHT_CHROMIUM_PATH ? {
+          executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH,
+        } : {},
+      },
     },
     {
       name: 'firefox',

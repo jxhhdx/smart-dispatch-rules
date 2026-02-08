@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Table, Button, Space, Modal, Form, Input, Select, message, Popconfirm } from 'antd'
+import { Table, Button, Space, Modal, Form, Input, Select, Card, Typography, Popconfirm, Tag } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { userApi, roleApi } from '../services/api'
+
+const { Title } = Typography
 
 interface User {
   id: string
@@ -64,42 +66,46 @@ export default function Users() {
     try {
       if (editingUser) {
         await userApi.update(editingUser.id, values)
-        message.success(t('user:message.updateSuccess'))
       } else {
         await userApi.create(values)
-        message.success(t('user:message.createSuccess'))
       }
       setModalVisible(false)
       fetchUsers(pagination.current, pagination.pageSize)
     } catch (error: any) {
-      message.error(error.response?.data?.message || t('common:message.error'))
+      // 错误已在 api 拦截器中处理
     }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await userApi.delete(id)
-      message.success(t('user:message.deleteSuccess'))
       fetchUsers(pagination.current, pagination.pageSize)
     } catch (error: any) {
-      message.error(error.response?.data?.message || t('common:message.error'))
+      // 错误已在 api 拦截器中处理
     }
   }
 
   const columns = [
-    { title: t('user:field.username'), dataIndex: 'username' },
-    { title: t('user:field.email'), dataIndex: 'email' },
+    { title: t('user:field.username'), dataIndex: 'username', ellipsis: true },
+    { title: t('user:field.email'), dataIndex: 'email', ellipsis: true },
     { title: t('user:field.realName'), dataIndex: 'realName' },
     { title: t('user:field.role'), dataIndex: ['role', 'name'] },
     {
       title: t('user:field.status'),
       dataIndex: 'status',
-      render: (status: number) => status === 1 ? t('common:status.enabled') : t('common:status.disabled'),
+      width: 100,
+      render: (status: number) => (
+        <Tag color={status === 1 ? 'success' : 'default'}>
+          {status === 1 ? t('common:status.enabled') : t('common:status.disabled')}
+        </Tag>
+      ),
     },
     {
       title: t('common:table.action'),
+      width: 120,
+      fixed: 'right' as const,
       render: (_: any, record: User) => (
-        <Space>
+        <Space size={0}>
           <Button
             type="text"
             icon={<EditOutlined />}
@@ -121,30 +127,38 @@ export default function Users() {
   ]
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2>{t('user:title')}</h2>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            setEditingUser(null)
-            form.resetFields()
-            setModalVisible(true)
+    <Space direction="vertical" size={16} style={{ display: 'flex' }}>
+      <Card 
+        bordered={false}
+        title={<Title level={4} style={{ margin: 0 }}>{t('user:title')}</Title>}
+        extra={
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setEditingUser(null)
+              form.resetFields()
+              setModalVisible(true)
+            }}
+          >
+            {t('user:create')}
+          </Button>
+        }
+      >
+        <Table
+          columns={columns}
+          dataSource={users}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `${t('common:table.total')} ${total} ${t('common:table.items')}`,
           }}
-        >
-          {t('user:create')}
-        </Button>
-      </div>
-
-      <Table
-        columns={columns}
-        dataSource={users}
-        rowKey="id"
-        loading={loading}
-        pagination={pagination}
-        onChange={(p) => fetchUsers(p.current, p.pageSize)}
-      />
+          onChange={(p) => fetchUsers(p.current, p.pageSize)}
+        />
+      </Card>
 
       <Modal
         title={editingUser ? t('user:edit') : t('user:create')}
@@ -153,6 +167,7 @@ export default function Users() {
         onCancel={() => setModalVisible(false)}
         okText={t('common:button.save')}
         cancelText={t('common:button.cancel')}
+        width={520}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item
@@ -192,12 +207,13 @@ export default function Users() {
           </Form.Item>
           <Form.Item name="roleId" label={t('user:field.role')}>
             <Select 
+              allowClear
               options={roles.map(r => ({ label: r.name, value: r.id }))}
               placeholder={t('common:form.select')}
             />
           </Form.Item>
         </Form>
       </Modal>
-    </div>
+    </Space>
   )
 }

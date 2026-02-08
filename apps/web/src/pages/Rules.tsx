@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-import { Table, Button, Space, Modal, Form, Input, Select, Tag, message, Popconfirm } from 'antd'
+import { Table, Button, Space, Modal, Form, Input, Select, Tag, Card, Typography, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { ruleApi } from '../services/api'
+
+const { Title } = Typography
 
 interface Rule {
   id: string
@@ -65,25 +67,22 @@ export default function Rules() {
     try {
       if (editingRule) {
         await ruleApi.update(editingRule.id, values)
-        message.success(t('rule:message.updateSuccess'))
       } else {
         await ruleApi.create(values)
-        message.success(t('rule:message.createSuccess'))
       }
       setModalVisible(false)
       fetchRules(pagination.current, pagination.pageSize)
     } catch (error: any) {
-      message.error(error.response?.data?.message || t('common:message.error'))
+      // 错误已在 api 拦截器中处理
     }
   }
 
   const handleDelete = async (id: string) => {
     try {
       await ruleApi.delete(id)
-      message.success(t('rule:message.deleteSuccess'))
       fetchRules(pagination.current, pagination.pageSize)
     } catch (error: any) {
-      message.error(error.response?.data?.message || t('common:message.error'))
+      // 错误已在 api 拦截器中处理
     }
   }
 
@@ -93,7 +92,7 @@ export default function Rules() {
       setDetailRule(res.data)
       setDetailVisible(true)
     } catch (error) {
-      message.error(t('common:message.error'))
+      // 错误已在 api 拦截器中处理
     }
   }
 
@@ -112,19 +111,21 @@ export default function Rules() {
   }
 
   const columns = [
-    { title: t('rule:field.name'), dataIndex: 'name' },
+    { title: t('rule:field.name'), dataIndex: 'name', ellipsis: true },
     { title: t('rule:field.ruleType'), dataIndex: 'ruleType', render: (type: string) => getRuleTypeLabel(type) },
-    { title: t('rule:field.priority'), dataIndex: 'priority' },
+    { title: t('rule:field.priority'), dataIndex: 'priority', width: 100 },
     {
       title: t('rule:field.status'),
       dataIndex: 'status',
+      width: 120,
       render: (status: number) => getStatusTag(status),
     },
     {
       title: t('common:table.action'),
-      width: 200,
+      width: 150,
+      fixed: 'right' as const,
       render: (_: any, record: Rule) => (
-        <Space>
+        <Space size={0}>
           <Button
             type="text"
             icon={<EyeOutlined />}
@@ -151,30 +152,38 @@ export default function Rules() {
   ]
 
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2>{t('rule:title')}</h2>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => {
-            setEditingRule(null)
-            form.resetFields()
-            setModalVisible(true)
+    <Space direction="vertical" size={16} style={{ display: 'flex' }}>
+      <Card 
+        bordered={false}
+        title={<Title level={4} style={{ margin: 0 }}>{t('rule:title')}</Title>}
+        extra={
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => {
+              setEditingRule(null)
+              form.resetFields()
+              setModalVisible(true)
+            }}
+          >
+            {t('rule:create')}
+          </Button>
+        }
+      >
+        <Table
+          columns={columns}
+          dataSource={rules}
+          rowKey="id"
+          loading={loading}
+          pagination={{
+            ...pagination,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total) => `${t('common:table.total')} ${total} ${t('common:table.items')}`,
           }}
-        >
-          {t('rule:create')}
-        </Button>
-      </div>
-
-      <Table
-        columns={columns}
-        dataSource={rules}
-        rowKey="id"
-        loading={loading}
-        pagination={pagination}
-        onChange={(p) => fetchRules(p.current, p.pageSize)}
-      />
+          onChange={(p) => fetchRules(p.current, p.pageSize)}
+        />
+      </Card>
 
       <Modal
         title={editingRule ? t('rule:edit') : t('rule:create')}
@@ -183,6 +192,7 @@ export default function Rules() {
         onCancel={() => setModalVisible(false)}
         okText={t('common:button.save')}
         cancelText={t('common:button.cancel')}
+        width={600}
       >
         <Form form={form} onFinish={handleSubmit} layout="vertical">
           <Form.Item 
@@ -214,7 +224,7 @@ export default function Rules() {
             <Input type="number" />
           </Form.Item>
           <Form.Item name="description" label={t('rule:field.description')}>
-            <Input.TextArea placeholder={t('rule:placeholder.description')} />
+            <Input.TextArea rows={3} placeholder={t('rule:placeholder.description')} />
           </Form.Item>
         </Form>
       </Modal>
@@ -227,21 +237,26 @@ export default function Rules() {
         width={800}
       >
         {detailRule && (
-          <div>
-            <p><strong>{t('rule:field.name')}:</strong>{detailRule.name}</p>
-            <p><strong>{t('rule:field.ruleType')}:</strong>{getRuleTypeLabel(detailRule.ruleType)}</p>
-            <p><strong>{t('rule:field.description')}:</strong>{detailRule.description || '-'}</p>
-            <p><strong>{t('rule:field.status')}:</strong>{getStatusTag(detailRule.status)}</p>
-            <p><strong>{t('rule:version.history')}:</strong></p>
+          <Space direction="vertical" style={{ display: 'flex' }}>
+            <Typography.Text><strong>{t('rule:field.name')}:</strong> {detailRule.name}</Typography.Text>
+            <Typography.Text><strong>{t('rule:field.ruleType')}:</strong> {getRuleTypeLabel(detailRule.ruleType)}</Typography.Text>
+            <Typography.Text><strong>{t('rule:field.description')}:</strong> {detailRule.description || '-'}</Typography.Text>
+            <Typography.Text><strong>{t('rule:field.status')}:</strong> {getStatusTag(detailRule.status)}</Typography.Text>
+            <Typography.Text strong>{t('rule:version.history')}:</Typography.Text>
             {detailRule.versions?.map((v: any) => (
-              <div key={v.id} style={{ marginLeft: 20, padding: 10, background: '#f5f5f5', marginBottom: 10, borderRadius: 4 }}>
-                <p>{t('rule:version.version', { version: v.version })} - {v.status === 1 ? t('rule:status.published') : v.status === 0 ? t('rule:status.draft') : t('rule:status.offline')}</p>
-                <p style={{ fontSize: 12, color: '#666' }}>{v.description}</p>
-              </div>
+              <Card key={v.id} size="small" style={{ marginLeft: 16 }}>
+                <Space direction="vertical" size={4}>
+                  <Typography.Text>
+                    {t('rule:version.version', { version: v.version })} - 
+                    {v.status === 1 ? t('rule:status.published') : v.status === 0 ? t('rule:status.draft') : t('rule:status.offline')}
+                  </Typography.Text>
+                  <Typography.Text type="secondary" style={{ fontSize: 12 }}>{v.description}</Typography.Text>
+                </Space>
+              </Card>
             ))}
-          </div>
+          </Space>
         )}
       </Modal>
-    </div>
+    </Space>
   )
 }

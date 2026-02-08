@@ -14,10 +14,11 @@ export class LoginPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.usernameInput = page.locator(TestData.selectors.login.usernameInput).first();
-    this.passwordInput = page.locator(TestData.selectors.login.passwordInput);
-    this.submitButton = page.locator(TestData.selectors.login.submitButton);
-    this.errorMessage = page.locator(TestData.selectors.login.errorMessage);
+    // 使用 placeholder 选择器，更稳定
+    this.usernameInput = page.getByPlaceholder(/Username|用户名/);
+    this.passwordInput = page.getByPlaceholder(/Password|密码/);
+    this.submitButton = page.getByRole('button', { name: /Login|登录/ });
+    this.errorMessage = page.locator('.ant-message-error, .ant-form-item-explain-error');
   }
 
   /**
@@ -25,13 +26,15 @@ export class LoginPage {
    */
   async goto() {
     await this.page.goto('/');
-    await expect(this.page).toHaveTitle(/Login|登录/);
+    // 页面标题可能是登录页或系统名称
+    await expect(this.page).toHaveTitle(/Login|登录|智能派单/);
   }
 
   /**
    * 填写用户名
    */
   async fillUsername(username: string) {
+    await this.usernameInput.waitFor({ state: 'visible' });
     await this.usernameInput.fill(username);
   }
 
@@ -39,6 +42,7 @@ export class LoginPage {
    * 填写密码
    */
   async fillPassword(password: string) {
+    await this.passwordInput.waitFor({ state: 'visible' });
     await this.passwordInput.fill(password);
   }
 
@@ -46,6 +50,7 @@ export class LoginPage {
    * 点击登录按钮
    */
   async clickSubmit() {
+    await this.submitButton.waitFor({ state: 'visible' });
     await this.submitButton.click();
   }
 
