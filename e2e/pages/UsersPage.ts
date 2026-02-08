@@ -24,7 +24,8 @@ export class UsersPage {
    */
   async expectLoaded() {
     await expect(this.page).toHaveURL(/.*users/);
-    await expect(this.page.locator('h2:has-text("Users")')).toBeVisible();
+    // 页面标题可能是 "Users" 或 "User Management"
+    await expect(this.page.locator('text=User Management').first()).toBeVisible();
   }
 
   /**

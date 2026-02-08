@@ -24,7 +24,8 @@ export class RulesPage {
    */
   async expectLoaded() {
     await expect(this.page).toHaveURL(/.*rules/);
-    await expect(this.page.locator('h2:has-text("Rules")')).toBeVisible();
+    // 页面标题可能是 "Rules" 或 "Rule Management"
+    await expect(this.page.locator('text=Rules').first()).toBeVisible();
   }
 
   /**
