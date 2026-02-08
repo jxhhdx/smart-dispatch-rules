@@ -15,8 +15,10 @@ export class DashboardPage {
     // Dashboard 标题是 h4 级别，使用 text 内容匹配
     // Dashboard 标题是小写的 'dashboard'
     this.dashboardTitle = page.locator('h4, .ant-typography').filter({ hasText: /dashboard/i });
-    this.userMenu = page.locator('.ant-layout-header .ant-dropdown-trigger');
-    this.logoutButton = page.locator('text=Logout');
+    // 用户菜单按钮（包含 user 图标和管理员文字）
+    this.userMenu = page.locator('.ant-layout-header').getByText(/管理员|admin/).first();
+    // 登出按钮在下拉菜单中
+    this.logoutButton = page.getByRole('menuitem', { name: /Logout|登出/ });
   }
 
   /**
@@ -46,7 +48,7 @@ export class DashboardPage {
    * 导航到用户管理
    */
   async navigateToUsers() {
-    await this.clickMenu('Users');
+    await this.clickMenu('systemUsers');
     await expect(this.page).toHaveURL(/.*users/);
   }
 
@@ -54,7 +56,7 @@ export class DashboardPage {
    * 导航到规则管理
    */
   async navigateToRules() {
-    await this.clickMenu('Rules');
+    await this.clickMenu('rules');
     await expect(this.page).toHaveURL(/.*rules/);
   }
 
@@ -62,7 +64,7 @@ export class DashboardPage {
    * 导航到角色管理
    */
   async navigateToRoles() {
-    await this.clickMenu('Roles');
+    await this.clickMenu('systemRoles');
     await expect(this.page).toHaveURL(/.*roles/);
   }
 
@@ -70,7 +72,7 @@ export class DashboardPage {
    * 导航到系统日志
    */
   async navigateToLogs() {
-    await this.clickMenu('Logs');
+    await this.clickMenu('systemLogs');
     await expect(this.page).toHaveURL(/.*logs/);
   }
 
@@ -79,6 +81,8 @@ export class DashboardPage {
    */
   async logout() {
     await this.userMenu.click();
+    // 等待下拉菜单出现
+    await this.logoutButton.waitFor({ state: 'visible' });
     await this.logoutButton.click();
     await expect(this.page).toHaveURL(/.*login/);
   }

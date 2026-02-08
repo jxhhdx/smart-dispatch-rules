@@ -1,4 +1,23 @@
 import { defineConfig, devices } from '@playwright/test';
+import * as fs from 'fs';
+import * as path from 'path';
+
+/**
+ * 加载本地环境变量
+ */
+function loadEnvFile() {
+  const envPath = path.resolve(__dirname, '.env.playwright');
+  if (fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, 'utf-8');
+    content.split('\n').forEach(line => {
+      const match = line.match(/^([^#][^=]*)=(.*)$/);
+      if (match) {
+        process.env[match[1]] = match[2].replace(/^["']|["']$/g, '');
+      }
+    });
+  }
+}
+loadEnvFile();
 
 /**
  * Playwright 配置文件

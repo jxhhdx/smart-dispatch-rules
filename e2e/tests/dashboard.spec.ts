@@ -23,21 +23,21 @@ test.describe('Dashboard 页面测试', () => {
     // 检查具体的统计项
     await expect(page.locator('text=Total Users')).toBeVisible();
     await expect(page.locator('text=Total Rules')).toBeVisible();
-    await expect(page.locator('text=Roles')).toBeVisible();
+    await expect(page.locator('text=Published Rules')).toBeVisible();
   });
 
   test('🧭 左侧菜单导航正常', async ({ page }) => {
     // 测试 Users 菜单
     await dashboardPage.navigateToUsers();
-    await expect(page.locator('h2:has-text("Users")')).toBeVisible();
+    await expect(page.locator('text=User Management').first()).toBeVisible();
     
     // 返回 Dashboard
-    await dashboardPage.clickMenu('Dashboard');
+    await dashboardPage.clickMenu('dashboard');
     await dashboardPage.expectLoaded();
     
     // 测试 Rules 菜单
     await dashboardPage.navigateToRules();
-    await expect(page.locator('h2:has-text("Rules")')).toBeVisible();
+    await expect(page.locator('text=Rules').first()).toBeVisible();
   });
 
   test('🌐 语言切换功能', async ({ page }) => {
@@ -70,10 +70,8 @@ test.describe('Dashboard 页面测试', () => {
     // 点击用户头像/菜单
     await dashboardPage.userMenu.click();
     
-    // 检查下拉菜单项
-    await expect(page.locator('text=Profile')).toBeVisible();
-    await expect(page.locator('text=Settings')).toBeVisible();
-    await expect(page.locator('text=Logout')).toBeVisible();
+    // 检查下拉菜单中有 Logout 选项（实际 UI 只有 Logout）
+    await expect(page.getByRole('menuitem').filter({ hasText: /Logout/ })).toBeVisible();
   });
 
   test('🚪 登出功能正常', async ({ page }) => {
