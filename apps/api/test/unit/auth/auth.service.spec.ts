@@ -42,7 +42,7 @@ describe('AuthService', () => {
       const mockUser = {
         id: 'test-id',
         username: MockData.users.admin.username,
-        passwordHash: MockData.users.admin.passwordHash,
+        passwordHash: await bcrypt.hash(MockData.users.admin.password, 10),
         status: 1,
         role: {
           code: 'super_admin',
@@ -80,6 +80,24 @@ describe('AuthService', () => {
       const result = await service.validateUser('disabled', 'password');
       expect(result).toBeNull();
     });
+
+    it('should return null for wrong password', async () => {
+      const mockUser = {
+        id: 'test-id',
+        username: MockData.users.admin.username,
+        passwordHash: await bcrypt.hash('correctpassword', 10),
+        status: 1,
+        role: { code: 'super_admin' },
+      };
+
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockUser as any);
+
+      const result = await service.validateUser(
+        MockData.users.admin.username,
+        'wrongpassword',
+      );
+      expect(result).toBeNull();
+    });
   });
 
   describe('login', () => {
@@ -96,6 +114,8 @@ describe('AuthService', () => {
         },
       };
 
+      jest.spyOn(prisma.user, 'update').mockResolvedValue(mockUser as any);
+
       const result = await service.login(mockUser as any);
 
       expect(result).toHaveProperty('access_token');
@@ -103,35 +123,81 @@ describe('AuthService', () => {
       expect(result.user.username).toBe(MockData.users.admin.username);
       expect(jwtService.sign).toHaveBeenCalled();
     });
-  });
 
-  describe('logout', () => {
-    it('should handle logout gracefully', async () => {
-      const result = await service.logout('test-user-id');
-      expect(result).toBeDefined();
-    });
-  });
-
-  describe('refreshToken', () => {
-    it('should refresh token for valid user', async () => {
+    it('should update last login time', async () => {
       const mockUser = {
         id: 'test-id',
         username: 'admin',
+        email: 'admin@test.com',
         role: { code: 'super_admin' },
+      };
+
+      const updateSpy = jest.spyOn(prisma.user, 'update').mockResolvedValue(mockUser as any);
+
+      await service.login(mockUser as any);
+
+      expect(updateSpy).toHaveBeenCalledWith({
+        where: { id: mockUser.id },
+        data: { lastLoginAt: expect.any(Date) },
+      });
+    });
+  });
+
+  describe('getProfile', () => {
+    it('should return user profile with permissions', async () => {
+      const mockUser = {
+        id: 'test-id',
+        username: 'admin',
+        email: 'admin@test.com',
+        passwordHash: 'hash',
+        role: {
+          id: 'role-id',
+          name: '超级管理员',
+          code: 'super_admin',
+          permissions: [
+            { permission: { code: 'user:read' } },
+            { permission: { code: 'user:write' } },
+          ],
+        },
       };
 
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockUser as any);
 
-      const result = await service.refreshToken('test-id');
+      const result = await service.getProfile('test-id');
 
-      expect(result).toHaveProperty('access_token');
-      expect(result).toHaveProperty('user');
+      expect(result).toBeDefined();
+      expect(result.username).toBe('admin');
+      expect(result).toHaveProperty('permissions');
+      expect(result.permissions).toContain('user:read');
+      expect(result.permissions).toContain('user:write');
+      expect(result).not.toHaveProperty('passwordHash');
     });
 
-    it('should throw error for non-existent user', async () => {
+    it('should throw UnauthorizedException for non-existent user', async () => {
       jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.refreshToken('invalid-id')).rejects.toThrow();
+      await expect(service.getProfile('invalid-id')).rejects.toThrow('用户不存在');
+    });
+
+    it('should return empty permissions if role has no permissions', async () => {
+      const mockUser = {
+        id: 'test-id',
+        username: 'admin',
+        email: 'admin@test.com',
+        passwordHash: 'hash',
+        role: {
+          id: 'role-id',
+          name: '超级管理员',
+          code: 'super_admin',
+          permissions: [],
+        },
+      };
+
+      jest.spyOn(prisma.user, 'findUnique').mockResolvedValue(mockUser as any);
+
+      const result = await service.getProfile('test-id');
+
+      expect(result.permissions).toEqual([]);
     });
   });
 });

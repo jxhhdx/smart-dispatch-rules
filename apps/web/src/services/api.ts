@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { Modal } from 'antd'
 import { useAuthStore } from '../stores/auth'
 
 const api = axios.create({
@@ -24,16 +25,58 @@ api.interceptors.request.use(
   }
 )
 
+// 401 处理状态，避免重复弹窗
+let isShowingReLoginModal = false
+
+// 显示重新登录弹窗
+const showReLoginModal = () => {
+  if (isShowingReLoginModal) return
+  isShowingReLoginModal = true
+  
+  Modal.confirm({
+    title: '登录已过期',
+    content: '您的登录状态已过期，请重新登录',
+    okText: '去登录',
+    cancelText: '取消',
+    onOk: () => {
+      isShowingReLoginModal = false
+      useAuthStore.getState().logout()
+    },
+    onCancel: () => {
+      isShowingReLoginModal = false
+    },
+  })
+}
+
 // 响应拦截器
 api.interceptors.response.use(
   (response) => {
     return response.data
   },
   (error) => {
-    if (error.response?.status === 401) {
-      useAuthStore.getState().logout()
+    const status = error.response?.status
+    const isLoginRequest = error.config?.url?.includes('/auth/login')
+
+    // 返回标准化错误对象，包含后端返回的错误信息
+    const standardizedError = {
+      ...error,
+      message: error.response?.data?.message || error.message || '请求失败，请稍后重试',
+      code: error.response?.data?.code || status || 500,
+      data: error.response?.data,
     }
-    return Promise.reject(error)
+
+    // 401 未授权处理
+    if (status === 401) {
+      if (isLoginRequest) {
+        // 登录接口的 401：密码错误，让调用方显示错误消息
+        // 不执行 logout，只是传递错误
+      } else {
+        // 其他接口的 401：Token 过期，显示重新登录弹窗
+        showReLoginModal()
+      }
+    }
+
+    return Promise.reject(standardizedError)
   }
 )
 

@@ -10,8 +10,6 @@ describe('AuthController', () => {
   const mockAuthService = {
     validateUser: jest.fn(),
     login: jest.fn(),
-    logout: jest.fn(),
-    refreshToken: jest.fn(),
     getProfile: jest.fn(),
   };
 
@@ -52,40 +50,22 @@ describe('AuthController', () => {
         user: mockUser,
       };
 
-      mockAuthService.validateUser.mockResolvedValue(mockUser);
       mockAuthService.login.mockResolvedValue(mockLoginResult);
 
-      const result = await controller.login(loginDto);
+      const mockReq = { user: mockUser };
+      const result = await controller.login(mockReq as any, loginDto);
 
       expect(result).toEqual(mockLoginResult);
-      expect(mockAuthService.validateUser).toHaveBeenCalledWith(
-        loginDto.username,
-        loginDto.password,
-      );
       expect(mockAuthService.login).toHaveBeenCalledWith(mockUser);
-    });
-
-    it('should throw error for invalid credentials', async () => {
-      const loginDto: LoginDto = {
-        username: 'admin',
-        password: 'wrong',
-      };
-
-      mockAuthService.validateUser.mockResolvedValue(null);
-
-      await expect(controller.login(loginDto)).rejects.toThrow();
     });
   });
 
   describe('POST /logout', () => {
     it('should logout successfully', async () => {
-      const mockReq = { user: { userId: 'test-id' } };
-      mockAuthService.logout.mockResolvedValue({ success: true });
-
-      const result = await controller.logout(mockReq as any);
+      const result = await controller.logout();
 
       expect(result).toBeDefined();
-      expect(mockAuthService.logout).toHaveBeenCalledWith('test-id');
+      expect(result.message).toBe('退出成功');
     });
   });
 
@@ -109,18 +89,23 @@ describe('AuthController', () => {
 
   describe('POST /refresh', () => {
     it('should refresh token', async () => {
-      const mockReq = { user: { userId: 'test-id' } };
-      const mockResult = {
-        access_token: 'new-token',
-        user: { id: 'test-id' },
+      const mockUser = {
+        id: 'test-id',
+        username: 'admin',
       };
 
-      mockAuthService.refreshToken.mockResolvedValue(mockResult);
+      const mockResult = {
+        access_token: 'new-token',
+        user: mockUser,
+      };
 
-      const result = await controller.refreshToken(mockReq as any);
+      mockAuthService.login.mockResolvedValue(mockResult);
+
+      const mockReq = { user: mockUser };
+      const result = await controller.refresh(mockReq as any);
 
       expect(result).toEqual(mockResult);
-      expect(mockAuthService.refreshToken).toHaveBeenCalledWith('test-id');
+      expect(mockAuthService.login).toHaveBeenCalledWith(mockUser);
     });
   });
 });

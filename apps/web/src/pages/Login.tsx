@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Form, Input, Button, Card, Typography, Space, theme } from 'antd'
+import { Form, Input, Button, Card, Typography, Space, theme, message } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/auth'
@@ -19,9 +19,12 @@ export default function Login() {
     setLoading(true)
     try {
       await login(values.username, values.password)
+      message.success(t('auth:login.success') || '登录成功')
       navigate('/')
     } catch (error: any) {
-      // 错误已在 api 拦截器中处理
+      // 显示错误消息 - 优先使用后端返回的错误消息
+      const errorMessage = error.message || error.response?.data?.message || t('auth:login.error') || '登录失败，请检查用户名和密码'
+      message.error(errorMessage)
     } finally {
       setLoading(false)
     }

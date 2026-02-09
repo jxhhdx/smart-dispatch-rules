@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { Layout as AntLayout, Menu, Button, Dropdown, Avatar, Space, theme } from 'antd'
 import {
@@ -28,13 +28,14 @@ export default function Layout() {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
 
-  const menuItems = [
+  // 使用 useMemo 确保语言切换时菜单重新渲染
+  const menuItems = useMemo(() => [
     { key: '/', icon: <DashboardOutlined />, label: t('menu:dashboard') },
     { key: '/rules', icon: <FileTextOutlined />, label: t('menu:rules') },
     { key: '/users', icon: <UserOutlined />, label: t('menu:systemUsers') },
     { key: '/roles', icon: <TeamOutlined />, label: t('menu:systemRoles') },
     { key: '/logs', icon: <FileSearchOutlined />, label: t('menu:systemLogs') },
-  ]
+  ], [t])
 
   const handleMenuClick = (key: string) => {
     navigate(key)

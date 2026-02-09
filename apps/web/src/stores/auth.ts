@@ -32,9 +32,14 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       login: async (username: string, password: string) => {
-        const response = await authApi.login(username, password)
-        const { access_token, user } = response.data
-        set({ token: access_token, user, isAuthenticated: true })
+        try {
+          const response = await authApi.login(username, password)
+          const { access_token, user } = response.data
+          set({ token: access_token, user, isAuthenticated: true })
+        } catch (error: any) {
+          // 确保错误被传播到调用方
+          throw error
+        }
       },
 
       logout: () => {

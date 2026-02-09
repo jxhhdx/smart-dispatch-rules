@@ -1,0 +1,130 @@
+2026-02-09T14:16:46.614853Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".turbo/cookies/.turbo-cookie")}
+2026-02-09T14:16:46.614862Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T14:16:46.715687Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".turbo/cookies/1.cookie")}
+2026-02-09T14:16:46.715698Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T14:16:47.115974Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/vite.config.ts.timestamp-1770646607064-bfa7cb6814d47.mjs")}
+2026-02-09T14:16:47.115984Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:17:39.115109Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/vite.config.ts.timestamp-1770646659087-1695373ea0f4.mjs")}
+2026-02-09T14:17:39.115136Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:17:39.158101Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-02-09T14:19:50.613455Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/vite.config.ts.timestamp-1770646790511-c9d20c060bf73.mjs")}
+2026-02-09T14:19:50.613482Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:19:50.613511Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-02-09T14:24:57.909210Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("bug_list.md")}
+2026-02-09T14:24:57.909240Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T14:25:10.107774Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("bug_list.md")}
+2026-02-09T14:25:10.107783Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T14:25:28.108492Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("bug_list.md")}
+2026-02-09T14:25:28.108502Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T14:27:13.207688Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/services/api.ts")}
+2026-02-09T14:27:13.207708Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:27:29.206683Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/services/api.ts")}
+2026-02-09T14:27:29.206693Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:27:33.907998Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/components/Layout.tsx")}
+2026-02-09T14:27:33.908010Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:28:01.106432Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/components/Layout.tsx")}
+2026-02-09T14:28:01.106447Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:28:27.907834Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/package.json")}
+2026-02-09T14:28:27.909988Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:28:28.707629Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("package-lock.json")}
+2026-02-09T14:28:28.707641Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T14:28:33.807306Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/vitest.config.ts")}
+2026-02-09T14:28:33.807316Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:28:35.405511Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/test")}
+2026-02-09T14:28:35.405520Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:28:35.445685Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-02-09T14:28:43.305974Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/test/setup.ts")}
+2026-02-09T14:28:43.306019Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:29:03.506183Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/services/api.test.ts")}
+2026-02-09T14:29:03.506193Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:29:28.211741Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/components/Layout.test.tsx")}
+2026-02-09T14:29:28.211753Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:29:51.812107Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/pages/Login.test.tsx")}
+2026-02-09T14:29:51.812122Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:29:55.912968Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/package.json")}
+2026-02-09T14:29:55.912989Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:30:21.513202Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/services/api.test.ts")}
+2026-02-09T14:30:21.513214Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:30:41.311325Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/components/Layout.test.tsx")}
+2026-02-09T14:30:41.311338Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:31:04.112011Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/pages/Login.test.tsx")}
+2026-02-09T14:31:04.112019Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:31:12.612138Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/test/setup.ts")}
+2026-02-09T14:31:12.612147Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:31:16.412380Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/vitest.config.ts")}
+2026-02-09T14:31:16.412391Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:31:41.211594Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("bug_list.md")}
+2026-02-09T14:31:41.211610Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T14:39:54.705132Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/vite.config.ts.timestamp-1770647994667-84cb9097717c9.mjs")}
+2026-02-09T14:39:54.705166Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:39:54.812414Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-02-09T14:41:24.103786Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/vite.config.ts.timestamp-1770648084049-25a4fce3e438f.mjs")}
+2026-02-09T14:41:24.103809Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:41:24.127998Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-02-09T14:43:24.602355Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/pages/Login.tsx")}
+2026-02-09T14:43:24.602390Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:43:40.402791Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/pages/Login.tsx")}
+2026-02-09T14:43:40.402800Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:43:46.802519Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/pages/Login.test.tsx")}
+2026-02-09T14:43:46.802527Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:46:01.353072Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/services/api.ts")}
+2026-02-09T14:46:01.353097Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:46:20.253264Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/services/api.ts")}
+2026-02-09T14:46:20.253275Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:46:32.753530Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/pages/Login.tsx")}
+2026-02-09T14:46:32.753544Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:46:40.252848Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/stores/auth.ts")}
+2026-02-09T14:46:40.252861Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:47:34.353571Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/services/api.test.ts")}
+2026-02-09T14:47:34.353582Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:48:37.552551Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/pages/Login.test.tsx")}
+2026-02-09T14:48:37.552566Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:49:34.152069Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/src/components/Layout.test.tsx")}
+2026-02-09T14:49:34.152085Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T14:51:05.851956Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/e2e/auth-error-messages.e2e-spec.ts")}
+2026-02-09T14:51:05.851979Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:52:04.950569Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/e2e/i18n-menu.e2e-spec.ts")}
+2026-02-09T14:52:04.950577Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:53:37.851553Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/auth/auth.service.spec.ts")}
+2026-02-09T14:53:37.851585Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:54:01.050450Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/auth/auth.controller.spec.ts")}
+2026-02-09T14:54:01.050462Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:54:42.652087Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/users/users.service.spec.ts")}
+2026-02-09T14:54:42.652096Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:56:17.049574Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/roles/roles.service.spec.ts")}
+2026-02-09T14:56:17.049585Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:56:39.550485Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/roles/roles.service.spec.ts")}
+2026-02-09T14:56:39.550505Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:57:03.649720Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/roles/roles.service.spec.ts")}
+2026-02-09T14:57:03.649729Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:57:10.349769Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/users/users.service.spec.ts")}
+2026-02-09T14:57:10.349779Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:58:37.849445Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/rules/rules.service.spec.ts")}
+2026-02-09T14:58:37.849457Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:59:01.849298Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/test/unit/rules/rules.service.spec.ts")}
+2026-02-09T14:59:01.849321Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:59:36.249458Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/jest.config.js")}
+2026-02-09T14:59:36.249468Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T14:59:46.549415Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/api/src/generated"), AnchoredSystemPathBuf("apps/api/src/generated/i18n.generated.ts")}
+2026-02-09T14:59:46.549453Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }}))
+2026-02-09T15:00:33.249120Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("bug_list.md")}
+2026-02-09T15:00:33.249134Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T15:05:16.947573Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("scripts/start-local.sh")}
+2026-02-09T15:05:16.947595Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T15:06:26.047478Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("scripts/stop-local.sh")}
+2026-02-09T15:06:26.047486Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T15:06:44.347314Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("scripts/start-local.sh"), AnchoredSystemPathBuf("scripts/stop-local.sh")}
+2026-02-09T15:06:44.347323Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T15:07:01.546855Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("bug_list.md")}
+2026-02-09T15:07:01.546863Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T15:07:32.247465Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".backend.pid"), AnchoredSystemPathBuf("apps/api/.migration-done")}
+2026-02-09T15:07:32.247475Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/api"), path: AnchoredSystemPathBuf("apps/api") }, WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T15:07:36.446023Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".frontend.pid")}
+2026-02-09T15:07:36.446035Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T15:07:36.745794Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("apps/web/vite.config.ts.timestamp-1770649656645-3cd477b0046b6.mjs")}
+2026-02-09T15:07:36.745803Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@smart-dispatch/web"), path: AnchoredSystemPathBuf("apps/web") }}))
+2026-02-09T15:07:36.745822Z  WARN turborepo_lib::package_changes_watcher: hashes are the same, no need to rerun
+2026-02-09T15:07:52.447843Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".frontend.pid")}
+2026-02-09T15:07:52.447855Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2026-02-09T15:07:52.546713Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".backend.pid")}
+2026-02-09T15:07:52.546723Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))

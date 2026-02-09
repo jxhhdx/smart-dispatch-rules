@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect } from 'react'
+import { App as AntApp } from 'antd'
 import { useAuthStore } from './stores/auth'
 import Layout from './components/Layout'
 import Login from './pages/Login'
@@ -17,16 +18,18 @@ function App() {
   }, [])
 
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
-        <Route index element={<Dashboard />} />
-        <Route path="rules" element={<Rules />} />
-        <Route path="users" element={<Users />} />
-        <Route path="roles" element={<Roles />} />
-        <Route path="logs" element={<Logs />} />
-      </Route>
-    </Routes>
+    <AntApp>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
+          <Route index element={<Dashboard />} />
+          <Route path="rules" element={<Rules />} />
+          <Route path="users" element={<Users />} />
+          <Route path="roles" element={<Roles />} />
+          <Route path="logs" element={<Logs />} />
+        </Route>
+      </Routes>
+    </AntApp>
   )
 }
 
