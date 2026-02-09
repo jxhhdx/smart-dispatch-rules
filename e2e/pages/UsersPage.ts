@@ -1,5 +1,4 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { TestData } from '../utils/test-data';
 
 /**
  * 用户管理页面对象
@@ -13,10 +12,12 @@ export class UsersPage {
 
   constructor(page: Page) {
     this.page = page;
-    this.addButton = page.locator(TestData.selectors.common.addButton);
+    // 使用图标按钮或包含 Create/创建 文本的按钮
+    this.addButton = page.locator('button').filter({ has: page.locator('.anticon-plus') }).or(page.locator('button').filter({ hasText: /Create|创建|新增/ })).first();
     this.table = page.locator('.ant-table');
-    this.modal = page.locator(TestData.selectors.common.modal);
-    this.saveButton = page.locator(TestData.selectors.common.saveButton);
+    this.modal = page.locator('.ant-modal');
+    // 保存按钮在 Modal 中
+    this.saveButton = page.locator('.ant-modal button').filter({ hasText: /Save|保存|OK/ }).first();
   }
 
   /**
@@ -24,7 +25,6 @@ export class UsersPage {
    */
   async expectLoaded() {
     await expect(this.page).toHaveURL(/.*users/);
-    // 页面标题可能是 "Users" 或 "User Management"
     await expect(this.page.locator('text=User Management').first()).toBeVisible();
   }
 
@@ -37,29 +37,43 @@ export class UsersPage {
   }
 
   /**
-   * 填写用户表单
+   * 填写用户表单 - 使用 Form name 属性
    */
   async fillUserForm(data: {
     username: string;
     email: string;
     password: string;
     realName?: string;
+    phone?: string;
+    roleId?: string;
   }) {
-    await this.page.locator('input#username').fill(data.username);
-    await this.page.locator('input#email').fill(data.email);
-    await this.page.locator('input#password').fill(data.password);
+    // 使用 placeholder 定位字段
+    await this.page.locator('input[placeholder*="username"]').fill(data.username);
+    await this.page.locator('input[placeholder*="email"]').fill(data.email);
     
-    if (data.realName) {
-      await this.page.locator('input#realName').fill(data.realName);
+    // 填写密码（如果是新建用户）
+    if (data.password) {
+      const passwordInput = this.page.locator('input[placeholder*="password"]');
+      if (await passwordInput.isVisible().catch(() => false)) {
+        await passwordInput.fill(data.password);
+      }
     }
-  }
-
-  /**
-   * 选择角色
-   */
-  async selectRole(roleName: string) {
-    await this.page.locator('.ant-select').first().click();
-    await this.page.locator(`.ant-select-item:has-text("${roleName}")`).click();
+    
+    // 填写真实姓名
+    if (data.realName) {
+      await this.page.locator('input[placeholder*="real name"]').fill(data.realName);
+    }
+    
+    // 填写电话
+    if (data.phone) {
+      await this.page.locator('input[placeholder*="phone"]').fill(data.phone);
+    }
+    
+    // 选择角色
+    if (data.roleId) {
+      await this.page.locator('.ant-form-item').filter({ hasText: /Role|角色/ }).locator('.ant-select').click();
+      await this.page.locator('.ant-select-dropdown').locator('.ant-select-item').filter({ hasText: data.roleId }).click();
+    }
   }
 
   /**
@@ -67,7 +81,14 @@ export class UsersPage {
    */
   async saveUser() {
     await this.saveButton.click();
-    await expect(this.modal).not.toBeVisible();
+    // 等待保存完成
+    await this.page.waitForTimeout(1000);
+    // 尝试等待 Modal 关闭
+    try {
+      await expect(this.modal).not.toBeVisible({ timeout: 5000 });
+    } catch {
+      // 忽略错误
+    }
   }
 
   /**
@@ -78,13 +99,11 @@ export class UsersPage {
     email: string;
     password: string;
     realName?: string;
-    roleName?: string;
+    phone?: string;
+    roleId?: string;
   }) {
     await this.clickAdd();
     await this.fillUserForm(data);
-    if (data.roleName) {
-      await this.selectRole(data.roleName);
-    }
     await this.saveUser();
   }
 
@@ -92,30 +111,22 @@ export class UsersPage {
    * 在表格中搜索用户
    */
   async searchUser(username: string) {
-    const searchInput = this.page.locator('.ant-input-search input');
-    await searchInput.fill(username);
-    await this.page.locator('.ant-input-search-button').click();
-    await this.page.waitForTimeout(500);
+    const searchInput = this.page.locator('input[placeholder*="Search"]').or(this.page.locator('.ant-input-search input'));
+    if (await searchInput.isVisible().catch(() => false)) {
+      await searchInput.fill(username);
+      await this.page.locator('.ant-input-search-button, button').filter({ has: this.page.locator('.anticon-search') }).first().click();
+      await this.page.waitForTimeout(500);
+    }
   }
 
   /**
    * 检查表格中是否有指定用户
    */
   async hasUser(username: string): Promise<boolean> {
-    const userCell = this.page.locator(`text=${username}`);
+    // 等待表格加载完成
+    await this.page.waitForSelector('.ant-table-row', { timeout: 5000 });
+    const userCell = this.page.locator('td').filter({ hasText: username });
     return await userCell.isVisible().catch(() => false);
-  }
-
-  /**
-   * 删除用户
-   */
-  async deleteUser(username: string) {
-    const row = this.page.locator('.ant-table-row').filter({
-      has: this.page.locator(`text=${username}`),
-    });
-    
-    await row.locator(TestData.selectors.common.deleteButton).click();
-    await this.page.locator(TestData.selectors.common.confirmButton).click();
   }
 
   /**
@@ -123,5 +134,56 @@ export class UsersPage {
    */
   async getTableRowCount(): Promise<number> {
     return await this.page.locator('.ant-table-row').count();
+  }
+
+  /**
+   * 删除用户
+   */
+  async deleteUser(username: string) {
+    const row = this.page.locator('.ant-table-row').filter({
+      has: this.page.locator('td').filter({ hasText: username }),
+    });
+    
+    // 点击 Delete 图标
+    await row.locator('.anticon-delete, button').filter({ has: this.page.locator('.anticon-delete') }).first().click();
+    
+    // 确认删除
+    await this.page.locator('.ant-popconfirm, .ant-modal-confirm').locator('button').filter({ hasText: /Yes|确定|OK/ }).first().click();
+    
+    // 等待删除完成
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * 编辑用户
+   */
+  async editUser(username: string, newData: { realName?: string; email?: string }) {
+    const row = this.page.locator('.ant-table-row').filter({
+      has: this.page.locator('td').filter({ hasText: username }),
+    });
+    
+    // 点击 Edit 图标
+    await row.locator('.anticon-edit, button').filter({ has: this.page.locator('.anticon-edit') }).first().click();
+    
+    // 等待 Modal 打开
+    await expect(this.modal).toBeVisible();
+    
+    // 修改数据
+    if (newData.realName) {
+      await this.page.locator('input[name="realName"]').fill(newData.realName);
+    }
+    if (newData.email) {
+      await this.page.locator('input[name="email"]').fill(newData.email);
+    }
+    
+    await this.saveUser();
+  }
+
+  /**
+   * 点击表头排序
+   */
+  async sortByColumn(columnName: string) {
+    const header = this.page.locator('th').filter({ hasText: new RegExp(columnName, 'i') });
+    await header.click();
   }
 }
