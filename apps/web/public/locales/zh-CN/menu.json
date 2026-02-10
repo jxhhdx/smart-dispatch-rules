@@ -1,5 +1,6 @@
 {
   "menu": {
+    "appName": "智能派单系统",
     "dashboard": "仪表盘",
     "rules": "规则管理",
     "rulesList": "规则列表",

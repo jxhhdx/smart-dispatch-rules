@@ -23,19 +23,20 @@ export default function Layout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
-  const { t } = useTranslation(['menu', 'auth'])
+  const { t, i18n } = useTranslation(['menu', 'auth'])
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken()
 
   // 使用 useMemo 确保语言切换时菜单重新渲染
+  // 依赖 i18n.language 确保语言变化时重新计算
   const menuItems = useMemo(() => [
     { key: '/', icon: <DashboardOutlined />, label: t('menu:dashboard') },
     { key: '/rules', icon: <FileTextOutlined />, label: t('menu:rules') },
     { key: '/users', icon: <UserOutlined />, label: t('menu:systemUsers') },
     { key: '/roles', icon: <TeamOutlined />, label: t('menu:systemRoles') },
     { key: '/logs', icon: <FileSearchOutlined />, label: t('menu:systemLogs') },
-  ], [t])
+  ], [t, i18n.language])
 
   const handleMenuClick = (key: string) => {
     navigate(key)

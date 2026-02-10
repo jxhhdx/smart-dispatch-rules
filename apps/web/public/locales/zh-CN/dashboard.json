@@ -1,0 +1,18 @@
+{
+  "dashboard": {
+    "title": "仪表盘",
+    "totalUsers": "总用户数",
+    "totalRules": "规则总数",
+    "roles": "角色数",
+    "publishedRules": "已发布规则",
+    "systemAnnouncement": "系统公告",
+    "welcomeMessage": "欢迎使用智能派单规则管理系统！",
+    "systemDescription": "本系统用于管理外卖派单策略规则。",
+    "techStack": "技术栈：React + NestJS + PostgreSQL",
+    "quickStart": "快速开始",
+    "quickStartRule": "在{{rules}}中创建和配置派单规则",
+    "quickStartUser": "在{{users}}中管理系统用户",
+    "quickStartRole": "在{{roles}}中配置权限角色",
+    "quickStartLog": "在{{logs}}中查看系统操作日志"
+  }
+}

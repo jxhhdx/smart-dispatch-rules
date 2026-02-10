@@ -10,27 +10,27 @@ import { useTranslation } from 'react-i18next'
 const { Title } = Typography
 
 export default function Dashboard() {
-  const { t } = useTranslation('menu')
+  const { t } = useTranslation(['dashboard', 'menu'])
   const { token } = theme.useToken()
 
   const stats = [
     {
-      title: 'Total Users',
+      title: t('dashboard:totalUsers'),
       value: 12,
       icon: <UserOutlined style={{ color: token.colorPrimary }} />,
     },
     {
-      title: 'Total Rules',
+      title: t('dashboard:totalRules'),
       value: 8,
       icon: <FileTextOutlined style={{ color: token.colorSuccess }} />,
     },
     {
-      title: 'Roles',
+      title: t('dashboard:roles'),
       value: 3,
       icon: <TeamOutlined style={{ color: token.colorWarning }} />,
     },
     {
-      title: 'Published Rules',
+      title: t('dashboard:publishedRules'),
       value: 5,
       icon: <CheckCircleOutlined style={{ color: token.colorInfo }} />,
     },
@@ -56,25 +56,25 @@ export default function Dashboard() {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={12}>
-          <Card title="System Announcement" hoverable>
+          <Card title={t('dashboard:systemAnnouncement')} hoverable>
             <Space direction="vertical">
-              <Typography.Text>Welcome to the Intelligent Dispatch Rule Management System!</Typography.Text>
+              <Typography.Text>{t('dashboard:welcomeMessage')}</Typography.Text>
               <Typography.Text type="secondary">
-                This system is used to manage dispatch strategy rules for food delivery scenarios.
+                {t('dashboard:systemDescription')}
               </Typography.Text>
               <Typography.Text type="secondary">
-                Tech Stack: React + NestJS + PostgreSQL
+                {t('dashboard:techStack')}
               </Typography.Text>
             </Space>
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="Quick Start" hoverable>
+          <Card title={t('dashboard:quickStart')} hoverable>
             <ul style={{ margin: 0, paddingLeft: 20 }}>
-              <li>Create and configure dispatch rules in {t('menu:rules')}</li>
-              <li>Manage system users in {t('menu:systemUsers')}</li>
-              <li>Configure permission roles in {t('menu:systemRoles')}</li>
-              <li>View system operation logs in {t('menu:systemLogs')}</li>
+              <li>{t('dashboard:quickStartRule', { rules: t('menu:rules') })}</li>
+              <li>{t('dashboard:quickStartUser', { users: t('menu:systemUsers') })}</li>
+              <li>{t('dashboard:quickStartRole', { roles: t('menu:systemRoles') })}</li>
+              <li>{t('dashboard:quickStartLog', { logs: t('menu:systemLogs') })}</li>
             </ul>
           </Card>
         </Col>

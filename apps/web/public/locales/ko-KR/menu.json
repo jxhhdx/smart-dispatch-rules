@@ -1,5 +1,6 @@
 {
   "menu": {
+    "appName": "스마트 배달",
     "dashboard": "대시보드",
     "rules": "규칙 관리",
     "rulesList": "규칙 목록",

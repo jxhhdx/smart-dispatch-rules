@@ -1,0 +1,18 @@
+{
+  "dashboard": {
+    "title": "대시보드",
+    "totalUsers": "총 사용자 수",
+    "totalRules": "총 규칙 수",
+    "roles": "역할 수",
+    "publishedRules": "게시된 규칙",
+    "systemAnnouncement": "시스템 공지",
+    "welcomeMessage": "스마트 배달 규칙 관리 시스템에 오신 것을 환영합니다!",
+    "systemDescription": "본 시스템은 배달 전략 규칙을 관리하는 데 사용됩니다.",
+    "techStack": "기술 스택：React + NestJS + PostgreSQL",
+    "quickStart": "빠른 시작",
+    "quickStartRule": "{{rules}}에서 배달 규칙을 생성 및 설정하세요",
+    "quickStartUser": "{{users}}에서 시스템 사용자를 관리하세요",
+    "quickStartRole": "{{roles}}에서 권한 역할을 설정하세요",
+    "quickStartLog": "{{logs}}에서 시스템 작업 로그를 확인하세요"
+  }
+}

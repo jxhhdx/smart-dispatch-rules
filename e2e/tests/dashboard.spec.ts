@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
+import { LanguagePage } from '../pages/LanguagePage';
 
 test.describe('Dashboard 页面测试', () => {
   let dashboardPage: DashboardPage;
@@ -40,19 +41,17 @@ test.describe('Dashboard 页面测试', () => {
     await expect(page.locator('text=Rules').first()).toBeVisible();
   });
 
-  test('🌐 语言切换功能', async ({ page }) => {
-    // 查找语言切换器
-    const langSwitcher = page.locator('.ant-select').filter({
-      hasText: /English|中文|日本語|한국어/,
-    });
+  test('🌐 语言切换功能', async () => {
+    const languagePage = new LanguagePage(dashboardPage.page);
     
-    if (await langSwitcher.isVisible().catch(() => false)) {
-      await langSwitcher.click();
-      await page.locator('text=中文').click();
-      
-      // 验证语言切换成功
-      await expect(page.locator('text=仪表盘')).toBeVisible();
-    }
+    // 切换到中文并验证
+    await languagePage.switchToChinese();
+    await languagePage.expectChineseMenu();
+    await expect(languagePage.page.locator('h4')).toContainText('仪表盘');
+    
+    // 切换回英文
+    await languagePage.switchToEnglish();
+    await languagePage.expectEnglishMenu();
   });
 
   test('📱 响应式布局 - 侧边栏折叠', async ({ page }) => {

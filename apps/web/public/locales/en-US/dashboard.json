@@ -1,0 +1,18 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "totalUsers": "Total Users",
+    "totalRules": "Total Rules",
+    "roles": "Roles",
+    "publishedRules": "Published Rules",
+    "systemAnnouncement": "System Announcement",
+    "welcomeMessage": "Welcome to the Intelligent Dispatch Rule Management System!",
+    "systemDescription": "This system is used to manage dispatch strategy rules for food delivery scenarios.",
+    "techStack": "Tech Stack: React + NestJS + PostgreSQL",
+    "quickStart": "Quick Start",
+    "quickStartRule": "Create and configure dispatch rules in {{rules}}",
+    "quickStartUser": "Manage system users in {{users}}",
+    "quickStartRole": "Configure permission roles in {{roles}}",
+    "quickStartLog": "View system operation logs in {{logs}}"
+  }
+}

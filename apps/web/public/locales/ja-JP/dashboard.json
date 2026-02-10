@@ -1,0 +1,18 @@
+{
+  "dashboard": {
+    "title": "ダッシュボード",
+    "totalUsers": "総ユーザー数",
+    "totalRules": "総ルール数",
+    "roles": "ロール数",
+    "publishedRules": "公開済みルール",
+    "systemAnnouncement": "システム公告",
+    "welcomeMessage": "スマート配達ルール管理システムへようこそ！",
+    "systemDescription": "本システムはフードデリバリーの配達戦略ルールを管理するためのものです。",
+    "techStack": "技術スタック：React + NestJS + PostgreSQL",
+    "quickStart": "クイックスタート",
+    "quickStartRule": "{{rules}}で配達ルールを作成・設定する",
+    "quickStartUser": "{{users}}でシステムユーザーを管理する",
+    "quickStartRole": "{{roles}}で権限ロールを設定する",
+    "quickStartLog": "{{logs}}でシステム操作ログを確認する"
+  }
+}

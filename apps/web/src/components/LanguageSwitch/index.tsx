@@ -13,10 +13,12 @@ const LanguageSwitch: React.FC<{ type?: 'dropdown' | 'button' }> = ({ type = 'dr
   };
   const currentLang = supportedLanguages.find(l => isActiveLanguage(l.key)) || supportedLanguages[0];
 
-  const handleChange = (key: string) => {
-    changeLanguage(key);
-    // 刷新页面以应用新的语言设置
-    window.location.reload();
+  const handleChange = async (key: string) => {
+    await changeLanguage(key);
+    // 短暂延迟确保语言设置已保存到 localStorage，然后刷新页面
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   const items = supportedLanguages.map(lang => ({

@@ -1,5 +1,6 @@
 {
   "menu": {
+    "appName": "Smart Dispatch",
     "dashboard": "Dashboard",
     "rules": "Rule Management",
     "rulesList": "Rule List",
