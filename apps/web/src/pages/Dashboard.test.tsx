@@ -27,7 +27,7 @@ vi.mock('@ant-design/icons', () => ({
 }))
 
 // 模拟 react-i18next
-const mockT = vi.fn((key: string, options?: any) => {
+const mockT = vi.fn((key: string, _options?: any) => {
   const translations: Record<string, string> = {
     'menu:dashboard': '仪表盘',
     'dashboard:totalUsers': '总用户数',

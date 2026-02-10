@@ -435,7 +435,7 @@ describe('Rules Detail View', () => {
   })
 
   it('should handle rule without description', () => {
-    const rule = { id: '1', name: '测试规则' }
+    const rule: { id: string; name: string; description?: string } = { id: '1', name: '测试规则' }
     const description = rule.description || '-'
     expect(description).toBe('-')
   })

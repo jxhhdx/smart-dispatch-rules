@@ -95,18 +95,19 @@ export class LanguagePage {
   async expectChineseMenu() {
     // 检查左侧菜单是否显示中文
     await expect(this.page.locator('.ant-menu')).toContainText('仪表盘');
-    await expect(this.page.locator('.ant-menu')).toContainText('派单规则');
-    await expect(this.page.locator('.ant-menu')).toContainText('系统用户');
+    await expect(this.page.locator('.ant-menu')).toContainText('规则管理');
+    await expect(this.page.locator('.ant-menu')).toContainText('用户管理');
+    await expect(this.page.locator('.ant-menu')).toContainText('角色管理');
   }
 
   /**
    * 验证菜单已切换为英文
    */
   async expectEnglishMenu() {
-    // 检查左侧菜单是否显示英文
+    // 检查左侧菜单是否显示英文（根据实际翻译值）
     await expect(this.page.locator('.ant-menu')).toContainText(/Dashboard/i);
-    await expect(this.page.locator('.ant-menu')).toContainText(/Rules/i);
-    await expect(this.page.locator('.ant-menu')).toContainText(/Users/i);
+    await expect(this.page.locator('.ant-menu')).toContainText(/Rule Management/i);
+    await expect(this.page.locator('.ant-menu')).toContainText(/User Management/i);
   }
 
   /**

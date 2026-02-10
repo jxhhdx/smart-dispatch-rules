@@ -4,7 +4,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 const localStorageMock: Record<string, string> = {}
 
 // 模拟 window.location
-const mockLocationHref = vi.fn()
 Object.defineProperty(window, 'location', {
   value: {
     href: '',
@@ -26,7 +25,6 @@ vi.mock('../services/api', () => ({
 }))
 
 // 模拟 zustand persist
-const mockPersist = vi.fn((config: any) => config)
 
 vi.mock('zustand/middleware', () => ({
   persist: (config: any) => (set: any, get: any, store: any) => {
@@ -133,8 +131,6 @@ describe('Auth Store', () => {
       isAuthenticated: true,
     })
     
-    // 模拟 window.location.href
-    const originalHref = window.location.href
     Object.defineProperty(window, 'location', {
       value: { href: '' },
       writable: true,

@@ -48,8 +48,8 @@ vi.mock('react-i18next', () => ({
 
 // 模拟 dayjs
 vi.mock('dayjs', () => {
-  const mockDayjs = (date: string) => ({
-    format: (format: string) => '2024-01-15 10:30:00',
+  const mockDayjs = (_date: string) => ({
+    format: (_format: string) => '2024-01-15 10:30:00',
   })
   mockDayjs.extend = vi.fn()
   return { default: mockDayjs, __esModule: true }
@@ -177,7 +177,7 @@ describe('Logs Component', () => {
       },
     })
     
-    const result = await mockGetSystemLogs(params)
+    await mockGetSystemLogs(params)
     
     expect(mockGetSystemLogs).toHaveBeenCalledWith(params)
   })
@@ -423,7 +423,7 @@ describe('Logs Table Columns', () => {
   })
 
   it('should format date correctly', () => {
-    const formatDate = (date: string) => '2024-01-15 10:30:00'
+    const formatDate = (_date: string) => '2024-01-15 10:30:00'
     
     expect(formatDate('2024-01-15T10:30:00Z')).toBe('2024-01-15 10:30:00')
   })

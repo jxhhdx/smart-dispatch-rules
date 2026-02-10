@@ -34,14 +34,22 @@
   - `apps/web/src/services/api.test.ts` - API 错误处理测试（401 场景覆盖）
   - `apps/web/src/pages/Login.test.tsx` - 登录页面错误处理测试
 
-### 2. 左侧的菜单不管语言怎么切换，都显示英文
-- **修复时间**: 2026-02-09
-- **问题根源**: 菜单项数组在组件渲染时只计算一次，没有随语言变化重新渲染
+### 2. 左侧的菜单不管语言怎么切换，都显示英文 / 国际化切换无效
+- **修复时间**: 2026-02-10
+- **问题根源**: 
+  1. **菜单项未重新渲染**: `useMemo` 依赖 `[t]`，但 `t` 函数引用在语言变化时不变
+  2. **翻译资源加载失败**: i18next 的 HTTP Backend 在 Playwright 测试中无法加载翻译文件
+  3. **资源结构错误**: 翻译文件导入时嵌套结构处理不正确（如 `menu.menu.dashboard` 而不是 `menu.dashboard`）
+  4. **语言切换异步问题**: `changeLanguage` 没有等待 i18next 完成就刷新页面
 - **修复内容**: 
-  - 在 `apps/web/src/components/Layout.tsx` 中使用 `useMemo` 包裹 `menuItems`
-  - 将 `t` 函数添加到依赖项数组，确保语言切换时重新计算菜单项
+  1. 在 `apps/web/src/components/Layout.tsx` 中使用 `useMemo` 依赖 `[t, i18n.language]`
+  2. 修改 `apps/web/src/i18n/index.ts`，预加载所有翻译资源到 `resources`，移除 HTTP Backend
+  3. 修正资源解构逻辑，正确提取嵌套的命名空间内容
+  4. 修改 `changeLanguage` 为 async 函数，等待语言切换完成后再刷新页面
 - **测试覆盖**: 
-  - `apps/web/src/components/Layout.test.tsx` - 菜单国际化测试
+  - `apps/web/src/components/Layout.test.tsx` - 菜单国际化单元测试
+  - `e2e/tests/i18n.spec.ts` - 国际化 E2E 测试（12个测试用例）
+  - `e2e/pages/LanguagePage.ts` - 语言切换页面对象
 
 ---
 
@@ -74,7 +82,7 @@
 | `e2e/tests/users.spec.ts` | 待添加 | 用户管理 |
 | `e2e/tests/i18n.spec.ts` | 12 个 | 国际化切换、多语言验证 |
 
-**E2E 总计**: ✅ 31+ 个测试通过
+**E2E 总计**: ✅ 37+ 个测试通过（7个 i18n 核心测试已稳定通过）
 
 ### 后端测试 (Jest)
 
