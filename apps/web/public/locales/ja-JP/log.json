@@ -1,0 +1,24 @@
+{
+  "systemOperationLogs": "システム操作ログ",
+  "loginLogs": "ログインログ",
+  "search": {
+    "module": "モジュールを検索",
+    "username": "ユーザー名を検索"
+  },
+  "column": {
+    "time": "時間",
+    "user": "ユーザー",
+    "username": "ユーザー名",
+    "module": "モジュール",
+    "action": "操作",
+    "description": "説明",
+    "ipAddress": "IPアドレス",
+    "loginType": "ログインタイプ",
+    "status": "ステータス",
+    "failReason": "失敗理由"
+  },
+  "status": {
+    "success": "成功",
+    "failed": "失敗"
+  }
+}

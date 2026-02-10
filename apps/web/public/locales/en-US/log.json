@@ -1,0 +1,24 @@
+{
+  "systemOperationLogs": "System Operation Logs",
+  "loginLogs": "Login Logs",
+  "search": {
+    "module": "Search Module",
+    "username": "Search Username"
+  },
+  "column": {
+    "time": "Time",
+    "user": "User",
+    "username": "Username",
+    "module": "Module",
+    "action": "Action",
+    "description": "Description",
+    "ipAddress": "IP Address",
+    "loginType": "Login Type",
+    "status": "Status",
+    "failReason": "Fail Reason"
+  },
+  "status": {
+    "success": "Success",
+    "failed": "Failed"
+  }
+}

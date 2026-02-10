@@ -1,0 +1,24 @@
+{
+  "systemOperationLogs": "系统操作日志",
+  "loginLogs": "登录日志",
+  "search": {
+    "module": "搜索模块",
+    "username": "搜索用户名"
+  },
+  "column": {
+    "time": "时间",
+    "user": "用户",
+    "username": "用户名",
+    "module": "模块",
+    "action": "操作",
+    "description": "描述",
+    "ipAddress": "IP地址",
+    "loginType": "登录类型",
+    "status": "状态",
+    "failReason": "失败原因"
+  },
+  "status": {
+    "success": "成功",
+    "failed": "失败"
+  }
+}

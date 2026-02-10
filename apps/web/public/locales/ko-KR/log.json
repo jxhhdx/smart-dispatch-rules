@@ -1,0 +1,24 @@
+{
+  "systemOperationLogs": "시스템 작업 로그",
+  "loginLogs": "로그인 로그",
+  "search": {
+    "module": "모듈 검색",
+    "username": "사용자명 검색"
+  },
+  "column": {
+    "time": "시간",
+    "user": "사용자",
+    "username": "사용자명",
+    "module": "모듈",
+    "action": "작업",
+    "description": "설명",
+    "ipAddress": "IP 주소",
+    "loginType": "로그인 유형",
+    "status": "상태",
+    "failReason": "실패 사유"
+  },
+  "status": {
+    "success": "성공",
+    "failed": "실패"
+  }
+}

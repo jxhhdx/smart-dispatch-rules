@@ -18,7 +18,7 @@ export default function Logs() {
     keyword: '',
     dateRange: null as any,
   })
-  const { t } = useTranslation(['menu', 'common'])
+  const { t } = useTranslation(['menu', 'common', 'log'])
 
   const fetchSystemLogs = async (page = 1, pageSize = 10) => {
     setLoading(true)
@@ -80,27 +80,27 @@ export default function Logs() {
   }
 
   const systemLogColumns = [
-    { title: 'Time', dataIndex: 'createdAt', width: 170, render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
-    { title: 'User', dataIndex: 'username', width: 120 },
-    { title: 'Module', dataIndex: 'module', width: 120 },
-    { title: 'Action', dataIndex: 'action', width: 120 },
-    { title: 'Description', dataIndex: 'description', ellipsis: true },
-    { title: 'IP Address', dataIndex: 'ipAddress', width: 140 },
+    { title: t('log:column.time'), dataIndex: 'createdAt', width: 170, render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
+    { title: t('log:column.user'), dataIndex: 'username', width: 120 },
+    { title: t('log:column.module'), dataIndex: 'module', width: 120 },
+    { title: t('log:column.action'), dataIndex: 'action', width: 120 },
+    { title: t('log:column.description'), dataIndex: 'description', ellipsis: true },
+    { title: t('log:column.ipAddress'), dataIndex: 'ipAddress', width: 140 },
   ]
 
   const loginLogColumns = [
-    { title: 'Time', dataIndex: 'createdAt', width: 170, render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
-    { title: 'Username', dataIndex: 'username', width: 120 },
-    { title: 'Login Type', dataIndex: 'loginType', width: 120 },
-    { title: 'Status', dataIndex: 'status', width: 100, render: (s: number) => s === 1 ? t('common:status.success') : t('common:status.error') },
-    { title: 'IP Address', dataIndex: 'ipAddress', width: 140 },
-    { title: 'Fail Reason', dataIndex: 'failReason', ellipsis: true },
+    { title: t('log:column.time'), dataIndex: 'createdAt', width: 170, render: (t: string) => dayjs(t).format('YYYY-MM-DD HH:mm:ss') },
+    { title: t('log:column.username'), dataIndex: 'username', width: 120 },
+    { title: t('log:column.loginType'), dataIndex: 'loginType', width: 120 },
+    { title: t('log:column.status'), dataIndex: 'status', width: 100, render: (s: number) => s === 1 ? t('log:status.success') : t('log:status.failed') },
+    { title: t('log:column.ipAddress'), dataIndex: 'ipAddress', width: 140 },
+    { title: t('log:column.failReason'), dataIndex: 'failReason', ellipsis: true },
   ]
 
   const tabItems = [
     {
       key: 'operation',
-      label: 'System Operation Logs',
+      label: t('log:systemOperationLogs'),
       children: (
         <Table
           columns={systemLogColumns}
@@ -119,7 +119,7 @@ export default function Logs() {
     },
     {
       key: 'login',
-      label: 'Login Logs',
+      label: t('log:loginLogs'),
       children: (
         <Table
           columns={loginLogColumns}
@@ -146,7 +146,7 @@ export default function Logs() {
         <Space direction="vertical" size={16} style={{ display: 'flex' }}>
           <Space wrap>
             <Input
-              placeholder={activeTab === 'operation' ? 'Search Module' : 'Search Username'}
+              placeholder={activeTab === 'operation' ? t('log:search.module') : t('log:search.username')}
               value={searchParams.keyword}
               onChange={(e) => setSearchParams({ ...searchParams, keyword: e.target.value })}
               style={{ width: 200 }}

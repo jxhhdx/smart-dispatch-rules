@@ -1,7 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import HttpBackend from 'i18next-http-backend';
 
 // 导入翻译文件（作为 fallback，确保至少有默认翻译）
 import zhCN_common from '../../public/locales/zh-CN/common.json';
@@ -11,6 +10,7 @@ import zhCN_dashboard from '../../public/locales/zh-CN/dashboard.json';
 import zhCN_user from '../../public/locales/zh-CN/user.json';
 import zhCN_role from '../../public/locales/zh-CN/role.json';
 import zhCN_rule from '../../public/locales/zh-CN/rule.json';
+import zhCN_log from '../../public/locales/zh-CN/log.json';
 
 import enUS_common from '../../public/locales/en-US/common.json';
 import enUS_auth from '../../public/locales/en-US/auth.json';
@@ -19,6 +19,7 @@ import enUS_dashboard from '../../public/locales/en-US/dashboard.json';
 import enUS_user from '../../public/locales/en-US/user.json';
 import enUS_role from '../../public/locales/en-US/role.json';
 import enUS_rule from '../../public/locales/en-US/rule.json';
+import enUS_log from '../../public/locales/en-US/log.json';
 
 import jaJP_common from '../../public/locales/ja-JP/common.json';
 import jaJP_auth from '../../public/locales/ja-JP/auth.json';
@@ -27,6 +28,7 @@ import jaJP_dashboard from '../../public/locales/ja-JP/dashboard.json';
 import jaJP_user from '../../public/locales/ja-JP/user.json';
 import jaJP_role from '../../public/locales/ja-JP/role.json';
 import jaJP_rule from '../../public/locales/ja-JP/rule.json';
+import jaJP_log from '../../public/locales/ja-JP/log.json';
 
 import koKR_common from '../../public/locales/ko-KR/common.json';
 import koKR_auth from '../../public/locales/ko-KR/auth.json';
@@ -35,6 +37,7 @@ import koKR_dashboard from '../../public/locales/ko-KR/dashboard.json';
 import koKR_user from '../../public/locales/ko-KR/user.json';
 import koKR_role from '../../public/locales/ko-KR/role.json';
 import koKR_rule from '../../public/locales/ko-KR/rule.json';
+import koKR_log from '../../public/locales/ko-KR/log.json';
 
 // 预加载的翻译资源（解构嵌套的命名空间，只有 menu 和 dashboard 有嵌套）
 const resources = {
@@ -46,6 +49,7 @@ const resources = {
     user: zhCN_user,
     role: zhCN_role,
     rule: zhCN_rule,
+    log: zhCN_log,
   },
   'en-US': {
     common: enUS_common,
@@ -55,6 +59,7 @@ const resources = {
     user: enUS_user,
     role: enUS_role,
     rule: enUS_rule,
+    log: enUS_log,
   },
   'ja-JP': {
     common: jaJP_common,
@@ -64,6 +69,7 @@ const resources = {
     user: jaJP_user,
     role: jaJP_role,
     rule: jaJP_rule,
+    log: jaJP_log,
   },
   'ko-KR': {
     common: koKR_common,
@@ -73,6 +79,7 @@ const resources = {
     user: koKR_user,
     role: koKR_role,
     rule: koKR_rule,
+    log: koKR_log,
   },
 };
 
@@ -94,7 +101,7 @@ i18n
     },
 
     defaultNS: 'common',
-    ns: ['common', 'auth', 'menu', 'user', 'role', 'rule', 'dashboard'],
+    ns: ['common', 'auth', 'menu', 'user', 'role', 'rule', 'dashboard', 'log'],
 
     interpolation: {
       escapeValue: false, // React 已经转义
