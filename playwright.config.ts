@@ -72,10 +72,10 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        // 如需指定本地 Chromium 路径，设置环境变量 PLAYWRIGHT_CHROMIUM_PATH
-        launchOptions: process.env.PLAYWRIGHT_CHROMIUM_PATH ? {
-          executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH,
-        } : {},
+        // 使用本地 Edge 浏览器（无需下载 Chromium）
+        launchOptions: {
+          executablePath: '/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge',
+        },
       },
     },
     {
