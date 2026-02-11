@@ -26,7 +26,7 @@ describe('RolesService', () => {
   });
 
   describe('findAll', () => {
-    it('should return all roles', async () => {
+    it('should return all roles with pagination', async () => {
       const mockRoles = [
         {
           id: '1',
@@ -45,11 +45,19 @@ describe('RolesService', () => {
       ];
 
       jest.spyOn(prisma.role, 'findMany').mockResolvedValue(mockRoles as any);
+      jest.spyOn(prisma.role, 'count').mockResolvedValue(2);
 
       const result = await service.findAll();
 
-      expect(result).toHaveLength(2);
-      expect(result[0].code).toBe('super_admin');
+      expect(result).toHaveProperty('list');
+      expect(result).toHaveProperty('pagination');
+      expect(result.list).toHaveLength(2);
+      expect(result.list[0].code).toBe('super_admin');
+      expect(result.pagination).toMatchObject({
+        page: 1,
+        pageSize: 10,
+        total: 2,
+      });
     });
   });
 

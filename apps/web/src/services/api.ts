@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { Modal } from 'antd'
+import { Modal, message } from 'antd'
 import { useAuthStore } from '../stores/auth'
 
 const api = axios.create({
@@ -68,12 +68,27 @@ api.interceptors.response.use(
     // 401 未授权处理
     if (status === 401) {
       if (isLoginRequest) {
-        // 登录接口的 401：密码错误，让调用方显示错误消息
-        // 不执行 logout，只是传递错误
+        // 登录接口的 401：密码错误，显示错误消息
+        message.error(standardizedError.message)
       } else {
         // 其他接口的 401：Token 过期，显示重新登录弹窗
         showReLoginModal()
       }
+    } else if (status === 403) {
+      // 403 禁止访问
+      message.error('没有权限执行此操作')
+    } else if (status === 404) {
+      // 404 资源不存在
+      message.error('请求的资源不存在')
+    } else if (status === 422) {
+      // 422 验证错误
+      message.error(standardizedError.message || '数据验证失败')
+    } else if (status >= 500) {
+      // 服务器错误
+      message.error('服务器错误，请稍后重试')
+    } else if (!isLoginRequest && status !== 401) {
+      // 其他错误（非登录接口）
+      message.error(standardizedError.message)
     }
 
     return Promise.reject(standardizedError)
@@ -129,6 +144,11 @@ export const ruleApi = {
 export const logApi = {
   getSystemLogs: (params?: any) => api.get('/logs/operation', { params }),
   getLoginLogs: (params?: any) => api.get('/logs/login', { params }),
+}
+
+// 仪表盘 API
+export const dashboardApi = {
+  getStats: () => api.get('/dashboard/stats'),
 }
 
 export default api

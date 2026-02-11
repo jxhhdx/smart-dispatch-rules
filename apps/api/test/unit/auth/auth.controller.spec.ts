@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../../../src/modules/auth/auth.controller';
 import { AuthService } from '../../../src/modules/auth/auth.service';
+import { LogsService } from '../../../src/modules/logs/logs.service';
 import { LoginDto } from '../../../src/modules/auth/dto/login.dto';
 
 describe('AuthController', () => {
@@ -13,6 +14,11 @@ describe('AuthController', () => {
     getProfile: jest.fn(),
   };
 
+  const mockLogsService = {
+    createLoginLog: jest.fn(),
+    createSystemLog: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -20,6 +26,10 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: mockAuthService,
+        },
+        {
+          provide: LogsService,
+          useValue: mockLogsService,
         },
       ],
     }).compile();
@@ -52,7 +62,12 @@ describe('AuthController', () => {
 
       mockAuthService.login.mockResolvedValue(mockLoginResult);
 
-      const mockReq = { user: mockUser };
+      const mockReq = { 
+        user: mockUser,
+        ip: '127.0.0.1',
+        socket: { remoteAddress: '127.0.0.1' },
+        headers: { 'user-agent': 'test-agent' },
+      };
       const result = await controller.login(mockReq as any, loginDto);
 
       expect(result).toEqual(mockLoginResult);
@@ -101,11 +116,16 @@ describe('AuthController', () => {
 
       mockAuthService.login.mockResolvedValue(mockResult);
 
-      const mockReq = { user: mockUser };
+      const mockReq = { 
+        user: { ...mockUser, userId: mockUser.id },
+        ip: '127.0.0.1',
+        socket: { remoteAddress: '127.0.0.1' },
+        headers: { 'user-agent': 'test-agent' },
+      };
       const result = await controller.refresh(mockReq as any);
 
       expect(result).toEqual(mockResult);
-      expect(mockAuthService.login).toHaveBeenCalledWith(mockUser);
+      expect(mockAuthService.login).toHaveBeenCalledWith(expect.objectContaining({ id: 'test-id' }));
     });
   });
 });

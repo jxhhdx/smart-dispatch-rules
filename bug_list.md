@@ -1,5 +1,56 @@
 # Bug 列表
 
+## 已修复 ✅
+
+### 1. 接口错误未正确提示，用户点击无反馈
+- **首次发现**: 2026-02-11
+- **修复时间**: 2026-02-11
+- **问题根源**:
+  - API 错误拦截器只返回了标准化的错误对象，但没有调用 `message.error()` 显示错误消息
+  - 前端页面虽然捕获了错误，但没有显示任何反馈给用户
+- **修复内容**:
+  1. 修改 `apps/web/src/services/api.ts` 响应拦截器，添加 `message.error()` 调用来显示错误消息
+  2. 添加对不同 HTTP 状态码的错误处理：401、403、404、422、500
+  3. 登录接口 401 错误显示具体错误消息，其他接口 401 显示重新登录弹窗
+- **测试覆盖**:
+  - `apps/web/src/services/api.test.ts` - 新增 5 个错误处理测试用例
+  - `e2e/tests/error-message.spec.ts` - E2E 测试覆盖登录失败、验证错误、操作成功等场景
+
+### 2. 仪表盘统计数据与实际不符
+- **首次发现**: 2026-02-11
+- **修复时间**: 2026-02-11
+- **问题根源**:
+  - `apps/web/src/pages/Dashboard.tsx` 中使用的是写死的静态数据（12, 8, 3, 5）
+  - 后端没有提供统计数据的 API
+- **修复内容**:
+  1. 创建 `apps/api/src/modules/dashboard/dashboard.controller.ts` - 新增仪表盘统计 API
+  2. 创建 `apps/api/src/modules/dashboard/dashboard.service.ts` - 实现真实统计数据查询
+  3. 创建 `apps/api/src/modules/dashboard/dashboard.module.ts` - 仪表盘模块
+  4. 在 `AppModule` 中注册 `DashboardModule`
+  5. 修改 `apps/web/src/services/api.ts` - 添加 `dashboardApi.getStats()`
+  6. 修改 `apps/web/src/pages/Dashboard.tsx` - 从 API 获取真实数据并显示
+- **测试覆盖**:
+  - `apps/web/src/pages/Dashboard.test.tsx` - 更新测试以覆盖 API 数据获取
+  - `e2e/tests/dashboard-stats.spec.ts` - E2E 测试验证统计数据从 API 动态获取
+
+### 3. 操作日志功能基本无效
+- **首次发现**: 2026-02-11
+- **修复时间**: 2026-02-11
+- **问题根源**:
+  - 后端 `LogsService` 中定义了 `createSystemLog` 和 `createLoginLog` 方法，但从未被调用
+  - 缺少日志记录拦截器来捕获用户操作
+  - 登录时没有记录登录日志
+- **修复内容**:
+  1. 创建 `apps/api/src/common/interceptors/logging.interceptor.ts` - 全局操作日志拦截器
+  2. 修改 `apps/api/src/modules/auth/auth.controller.ts` - 登录成功时记录登录日志
+  3. 修改 `apps/api/src/modules/auth/strategies/local.strategy.ts` - 登录失败时记录失败日志
+  4. 修改 `apps/api/src/app.module.ts` - 注册 `LoggingInterceptor` 为全局拦截器
+  5. 修改 `apps/api/src/modules/auth/auth.module.ts` - 添加 `LogsService` 依赖
+- **测试覆盖**:
+  - `e2e/tests/logs-functionality.spec.ts` - E2E 测试验证日志记录和显示功能
+
+---
+
 ## 待观察/追踪 🕵️
 
 ### 1. admin 用户数据丢失问题
@@ -59,17 +110,27 @@
 
 | 测试文件 | 测试数量 | 覆盖内容 |
 |---------|---------|---------|
-| `src/services/api.test.ts` | 5 个 | API 错误处理、响应拦截器 |
+| `src/services/api.test.ts` | 9 个 | API 错误处理、响应拦截器（新增403/404/422/500错误测试） |
 | `src/pages/Login.test.tsx` | 12 个 | 登录错误处理、表单验证、API 集成 |
 | `src/components/Layout.test.tsx` | 10 个 | 菜单国际化、语言切换 |
-| `src/pages/Dashboard.test.tsx` | 15 个 | 仪表盘统计、国际化 |
+| `src/pages/Dashboard.test.tsx` | 17 个 | 仪表盘统计、API数据获取（新增API集成测试） |
 | `src/pages/Users.test.tsx` | 21 个 | 用户管理 CRUD、表单验证 |
 | `src/pages/Roles.test.tsx` | 23 个 | 角色管理、权限选择 |
 | `src/pages/Rules.test.tsx` | 29 个 | 规则管理、状态标签 |
 | `src/pages/Logs.test.tsx` | 28 个 | 日志查询、Tabs 切换 |
 | `src/stores/auth.test.ts` | 23 个 | 登录状态、Token 管理 |
 
-**前端总计**: ✅ 166 个测试通过
+**前端总计**: ✅ 172 个测试通过
+
+### E2E 测试 (Playwright) - 新增
+
+| 测试文件 | 测试数量 | 覆盖内容 |
+|---------|---------|---------|
+| `e2e/tests/dashboard-stats.spec.ts` | 5 个 | 仪表盘统计数据从API获取、数值一致性 |
+| `e2e/tests/error-message.spec.ts` | 4 个 | 错误提示显示（登录失败、验证错误、操作成功） |
+| `e2e/tests/logs-functionality.spec.ts` | 6 个 | 日志记录功能、Tab切换、分页 |
+
+**新增 E2E 总计**: ✅ 15 个测试
 
 ### E2E 测试 (Playwright)
 
@@ -178,11 +239,29 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/smart_dispatch_test"
 
 ## 修改的文件
 
-### 前端
-1. `apps/web/src/services/api.ts` - 重构错误处理拦截器
-2. `apps/web/src/pages/Login.tsx` - 添加错误消息显示
-3. `apps/web/src/components/Layout.tsx` - 修复菜单国际化
-4. `apps/web/src/stores/auth.ts` - 确保错误传播
+### Bug 修复 - 前端
+1. `apps/web/src/services/api.ts` - 添加错误提示 message.error() 调用，新增 dashboardApi
+2. `apps/web/src/pages/Dashboard.tsx` - 从 API 获取真实统计数据
+
+### Bug 修复 - 后端
+1. `apps/api/src/modules/dashboard/dashboard.controller.ts` - 新增仪表盘统计控制器
+2. `apps/api/src/modules/dashboard/dashboard.service.ts` - 实现统计数据查询
+3. `apps/api/src/modules/dashboard/dashboard.module.ts` - 新增仪表盘模块
+4. `apps/api/src/common/interceptors/logging.interceptor.ts` - 新增操作日志拦截器
+5. `apps/api/src/modules/auth/auth.controller.ts` - 登录时记录登录日志
+6. `apps/api/src/modules/auth/strategies/local.strategy.ts` - 登录失败时记录失败日志
+7. `apps/api/src/modules/auth/auth.module.ts` - 添加 LogsService 依赖
+8. `apps/api/src/app.module.ts` - 注册 DashboardModule 和 LoggingInterceptor
+
+### 测试文件（新增/更新）
+1. `apps/web/src/services/api.test.ts` - 新增错误处理测试用例
+2. `apps/web/src/pages/Dashboard.test.tsx` - 更新为测试 API 数据获取
+3. `apps/api/test/unit/auth/auth.controller.spec.ts` - 修复测试以适配新依赖
+4. `apps/api/test/unit/roles/roles.service.spec.ts` - 修复测试以适配分页返回
+5. `apps/api/test/unit/controllers/roles.controller.spec.ts` - 修复测试以适配分页参数
+6. `e2e/tests/dashboard-stats.spec.ts` - 新增仪表盘统计 E2E 测试
+7. `e2e/tests/error-message.spec.ts` - 新增错误提示 E2E 测试
+8. `e2e/tests/logs-functionality.spec.ts` - 新增日志功能 E2E 测试
 
 ### 前端测试文件（新增）
 1. `apps/web/src/pages/Dashboard.test.tsx` - 仪表盘测试

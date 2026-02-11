@@ -1,4 +1,5 @@
-import { Row, Col, Card, Statistic, Typography, Space, theme } from 'antd'
+import { useState, useEffect } from 'react'
+import { Row, Col, Card, Statistic, Typography, Space, theme, message } from 'antd'
 import {
   UserOutlined,
   FileTextOutlined,
@@ -6,32 +7,58 @@ import {
   CheckCircleOutlined,
 } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
+import { dashboardApi } from '../services/api'
 
 const { Title } = Typography
+
+interface StatsData {
+  totalUsers: number
+  totalRules: number
+  totalRoles: number
+  publishedRules: number
+}
 
 export default function Dashboard() {
   const { t } = useTranslation(['dashboard', 'menu'])
   const { token } = theme.useToken()
+  const [stats, setStats] = useState<StatsData | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  const stats = [
+  const fetchStats = async () => {
+    setLoading(true)
+    try {
+      const res: any = await dashboardApi.getStats()
+      setStats(res.data)
+    } catch (error: any) {
+      message.error(t('dashboard:fetchStatsFailed') || '获取统计数据失败')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
+
+  const statItems = [
     {
       title: t('dashboard:totalUsers'),
-      value: 12,
+      value: stats?.totalUsers ?? 0,
       icon: <UserOutlined style={{ color: token.colorPrimary }} />,
     },
     {
       title: t('dashboard:totalRules'),
-      value: 8,
+      value: stats?.totalRules ?? 0,
       icon: <FileTextOutlined style={{ color: token.colorSuccess }} />,
     },
     {
       title: t('dashboard:roles'),
-      value: 3,
+      value: stats?.totalRoles ?? 0,
       icon: <TeamOutlined style={{ color: token.colorWarning }} />,
     },
     {
       title: t('dashboard:publishedRules'),
-      value: 5,
+      value: stats?.publishedRules ?? 0,
       icon: <CheckCircleOutlined style={{ color: token.colorInfo }} />,
     },
   ]
@@ -41,9 +68,9 @@ export default function Dashboard() {
       <Title level={4} style={{ margin: 0 }}>{t('menu:dashboard')}</Title>
       
       <Row gutter={[16, 16]}>
-        {stats.map((stat, index) => (
+        {statItems.map((stat, index) => (
           <Col xs={24} sm={12} lg={6} key={index}>
-            <Card hoverable>
+            <Card hoverable loading={loading}>
               <Statistic
                 title={stat.title}
                 value={stat.value}
