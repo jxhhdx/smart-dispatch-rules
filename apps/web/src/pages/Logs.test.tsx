@@ -35,6 +35,23 @@ const mockT = vi.fn((key: string) => {
     'common:table.items': '条',
     'common:status.success': '成功',
     'common:status.error': '失败',
+    // Log namespace translations
+    'log:systemOperationLogs': '系统操作日志',
+    'log:loginLogs': '登录日志',
+    'log:search.module': '搜索模块',
+    'log:search.username': '搜索用户名',
+    'log:column.time': '时间',
+    'log:column.user': '用户',
+    'log:column.username': '用户名',
+    'log:column.module': '模块',
+    'log:column.action': '操作',
+    'log:column.description': '描述',
+    'log:column.ipAddress': 'IP地址',
+    'log:column.loginType': '登录类型',
+    'log:column.status': '状态',
+    'log:column.failReason': '失败原因',
+    'log:status.success': '成功',
+    'log:status.failed': '失败',
   }
   return translations[key] || key
 })

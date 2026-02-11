@@ -96,3 +96,31 @@ export function generateRandomString(length: number = 8): string {
 export function generateRandomEmail(): string {
   return `test_${generateRandomString()}@example.com`;
 }
+
+/**
+ * 生成随机手机号
+ */
+export function generateRandomPhone(): string {
+  return `1${Math.floor(Math.random() * 9 + 1)}${Math.floor(Math.random() * 1000000000).toString().padStart(9, '0')}`;
+}
+
+/**
+ * 生成随机日期范围
+ */
+export function generateDateRange(days: number = 7): { start: string; end: string } {
+  const end = new Date();
+  const start = new Date();
+  start.setDate(end.getDate() - days);
+  
+  return {
+    start: start.toISOString().split('T')[0],
+    end: end.toISOString().split('T')[0],
+  };
+}
+
+/**
+ * 等待指定时间
+ */
+export async function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
