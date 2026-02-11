@@ -50,8 +50,8 @@ export default function Users() {
 
   const fetchRoles = async () => {
     try {
-      const res: any = await roleApi.getList()
-      setRoles(res.data)
+      const res: any = await roleApi.getList({ page: 1, pageSize: 100 })
+      setRoles(res.data.list)
     } catch (error) {
       console.error(error)
     }
@@ -66,11 +66,14 @@ export default function Users() {
     try {
       if (editingUser) {
         await userApi.update(editingUser.id, values)
+        setModalVisible(false)
+        fetchUsers(pagination.current, pagination.pageSize)
       } else {
         await userApi.create(values)
+        setModalVisible(false)
+        // 创建新用户后，刷新第一页以显示新用户
+        fetchUsers(1, pagination.pageSize)
       }
-      setModalVisible(false)
-      fetchUsers(pagination.current, pagination.pageSize)
     } catch (error: any) {
       // 错误已在 api 拦截器中处理
     }
@@ -129,7 +132,7 @@ export default function Users() {
   return (
     <Space direction="vertical" size={16} style={{ display: 'flex' }}>
       <Card 
-        bordered={false}
+        variant="borderless"
         title={<Title level={4} style={{ margin: 0 }}>{t('user:title')}</Title>}
         extra={
           <Button
@@ -154,7 +157,7 @@ export default function Users() {
             ...pagination,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total) => `${t('common:table.total')} ${total} ${t('common:table.items')}`,
+            showTotal: (total) => t('common:table.total', { count: total }),
           }}
           onChange={(p) => fetchUsers(p.current, p.pageSize)}
         />

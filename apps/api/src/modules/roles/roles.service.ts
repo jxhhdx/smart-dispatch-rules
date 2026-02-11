@@ -6,20 +6,38 @@ import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 export class RolesService {
   constructor(private prisma: PrismaClient) {}
 
-  async findAll() {
-    return this.prisma.role.findMany({
-      include: {
-        permissions: {
-          include: {
-            permission: true,
+  async findAll(params: { page?: number; pageSize?: number } = {}) {
+    const { page = 1, pageSize = 10 } = params;
+    const skip = (page - 1) * pageSize;
+
+    const [list, total] = await Promise.all([
+      this.prisma.role.findMany({
+        skip,
+        take: pageSize,
+        include: {
+          permissions: {
+            include: {
+              permission: true,
+            },
+          },
+          _count: {
+            select: { users: true },
           },
         },
-        _count: {
-          select: { users: true },
-        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.role.count(),
+    ]);
+
+    return {
+      list,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
       },
-      orderBy: { createdAt: 'desc' },
-    });
+    };
   }
 
   async findOne(id: string) {

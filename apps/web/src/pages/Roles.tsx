@@ -22,13 +22,23 @@ export default function Roles() {
   const [editingRole, setEditingRole] = useState<Role | null>(null)
   const [form] = Form.useForm()
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  })
   const { t } = useTranslation(['role', 'common'])
 
-  const fetchRoles = async () => {
+  const fetchRoles = async (page = 1, pageSize = 10) => {
     setLoading(true)
     try {
-      const res: any = await roleApi.getList()
-      setRoles(res.data)
+      const res: any = await roleApi.getList({ page, pageSize })
+      setRoles(res.data.list)
+      setPagination({
+        current: res.data.pagination.page,
+        pageSize: res.data.pagination.pageSize,
+        total: res.data.pagination.total,
+      })
     } finally {
       setLoading(false)
     }
@@ -44,7 +54,7 @@ export default function Roles() {
   }
 
   useEffect(() => {
-    fetchRoles()
+    fetchRoles(1, pagination.pageSize)
     fetchPermissions()
   }, [])
 
@@ -53,11 +63,14 @@ export default function Roles() {
       const data = { ...values, permissionIds: selectedPermissions }
       if (editingRole) {
         await roleApi.update(editingRole.id, data)
+        setModalVisible(false)
+        fetchRoles(pagination.current, pagination.pageSize)
       } else {
         await roleApi.create(data)
+        setModalVisible(false)
+        // 创建新角色后，刷新第一页以显示新角色
+        fetchRoles(1, pagination.pageSize)
       }
-      setModalVisible(false)
-      fetchRoles()
     } catch (error: any) {
       // 错误已在 api 拦截器中处理
     }
@@ -66,7 +79,7 @@ export default function Roles() {
   const handleDelete = async (id: string) => {
     try {
       await roleApi.delete(id)
-      fetchRoles()
+      fetchRoles(pagination.current, pagination.pageSize)
     } catch (error: any) {
       // 错误已在 api 拦截器中处理
     }
@@ -107,7 +120,7 @@ export default function Roles() {
   return (
     <Space direction="vertical" size={16} style={{ display: 'flex' }}>
       <Card 
-        bordered={false}
+        variant="borderless"
         title={<Title level={4} style={{ margin: 0 }}>{t('role:title')}</Title>}
         extra={
           <Button
@@ -129,7 +142,13 @@ export default function Roles() {
           dataSource={roles}
           rowKey="id"
           loading={loading}
-          pagination={false}
+          pagination={{
+            ...pagination,
+            showTotal: (total) => t('common:table.total', { count: total }),
+            showSizeChanger: true,
+            pageSizeOptions: ['10', '20', '50'],
+          }}
+          onChange={(p) => fetchRoles(p.current, p.pageSize)}
         />
       </Card>
 

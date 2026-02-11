@@ -4,13 +4,38 @@ import { DashboardPage } from '../pages/DashboardPage';
 import { UsersPage } from '../pages/UsersPage';
 import { generateRandomString, generateRandomEmail } from '../utils/test-data';
 
+// 通过 API 创建用户
+async function createUserViaAPI(page: any, token: string, data: any) {
+  const response = await page.request.post('/api/v1/users', {
+    headers: { 'Authorization': `Bearer ${token}` },
+    data: data
+  });
+  expect(response.status()).toBeGreaterThanOrEqual(200);
+  expect(response.status()).toBeLessThan(300);
+  const result = await response.json();
+  return result.data;
+}
+
+// 获取登录 token
+async function getAuthToken(page: any): Promise<string> {
+  const response = await page.request.post('/api/v1/auth/login', {
+    data: { username: 'admin', password: 'admin123' }
+  });
+  const result = await response.json();
+  return result.data.access_token;
+}
+
 test.describe('用户管理 - 完整测试', () => {
   let usersPage: UsersPage;
+  let authToken: string;
 
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
     await loginPage.loginAsAdmin();
+    
+    // 获取 API token
+    authToken = await getAuthToken(page);
     
     const dashboard = new DashboardPage(page);
     await dashboard.expectLoaded();
@@ -28,11 +53,12 @@ test.describe('用户管理 - 完整测试', () => {
     await expect(usersPage.addButton).toBeVisible();
   });
 
-  test('F-02: 创建新用户', async () => {
+  test('F-02: 创建新用户', async ({ page }) => {
     const username = `testuser_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
@@ -46,17 +72,21 @@ test.describe('用户管理 - 完整测试', () => {
     expect(exists).toBe(true);
   });
 
-  test('F-03: 创建用户并分配角色', async () => {
+  test('F-03: 创建用户并分配角色', async ({ page }) => {
     const username = `roletest_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
       realName: '角色测试用户',
-      roleId: 'Admin',
+      roleId: 1, // Admin role
     });
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
     
     const exists = await usersPage.hasUser(username);
     expect(exists).toBe(true);
@@ -79,16 +109,20 @@ test.describe('用户管理 - 完整测试', () => {
     await usersPage.page.locator('.ant-modal-close, .ant-drawer-close').or(usersPage.page.locator('button').filter({ hasText: /Close|关闭/ })).first().click();
   });
 
-  test('F-05: 编辑用户', async () => {
+  test('F-05: 编辑用户', async ({ page }) => {
     const username = `edituser_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
       realName: '编辑前',
     });
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
     
     await usersPage.editUser(username, { realName: '编辑后', email: generateRandomEmail() });
     
@@ -97,17 +131,20 @@ test.describe('用户管理 - 完整测试', () => {
     expect(exists).toBe(true);
   });
 
-  test('F-06: 删除用户', async () => {
+  test('F-06: 删除用户', async ({ page }) => {
     const username = `deleteuser_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
     
     await usersPage.page.reload();
+    await usersPage.expectLoaded();
+    
     let exists = await usersPage.hasUser(username);
     expect(exists).toBe(true);
     
@@ -125,15 +162,19 @@ test.describe('用户管理 - 完整测试', () => {
     expect(exists).toBe(true);
   });
 
-  test('F-08: 禁用用户', async () => {
+  test('F-08: 禁用用户', async ({ page }) => {
     const username = `disable_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
     
     // 找到用户行，点击禁用开关
     const row = usersPage.page.locator('.ant-table-row').filter({
@@ -150,15 +191,19 @@ test.describe('用户管理 - 完整测试', () => {
     }
   });
 
-  test('F-09: 启用用户', async () => {
+  test('F-09: 启用用户', async ({ page }) => {
     const username = `enable_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
     
     const row = usersPage.page.locator('.ant-table-row').filter({
       has: usersPage.page.locator('td').filter({ hasText: username }),
@@ -195,57 +240,73 @@ test.describe('用户管理 - 完整测试', () => {
 
   // ==================== B - 边界值测试 ====================
 
-  test('B-01: 创建最短用户名用户', async () => {
+  test('B-01: 创建最短用户名用户', async ({ page }) => {
     const username = `u${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
     
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
+    
     const exists = await usersPage.hasUser(username);
     expect(exists).toBe(true);
   });
 
-  test('B-02: 创建超长用户名用户', async () => {
+  test('B-02: 创建超长用户名用户', async ({ page }) => {
     const username = `longuser_${generateRandomString()}`.repeat(3);
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
     
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
+    
     const exists = await usersPage.hasUser(username);
     expect(exists).toBe(true);
   });
 
-  test('B-03: Unicode用户名', async () => {
+  test('B-03: Unicode用户名', async ({ page }) => {
     const username = `用户_${generateRandomString()}🎉`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
     
     const exists = await usersPage.hasUser(username);
     expect(exists).toBe(true);
   });
 
-  test('B-04: 特殊字符用户名', async () => {
+  test('B-04: 特殊字符用户名', async ({ page }) => {
     const username = `user_${generateRandomString()}-._`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
     
     const exists = await usersPage.hasUser(username);
     expect(exists).toBe(true);
@@ -263,18 +324,21 @@ test.describe('用户管理 - 完整测试', () => {
     await usersPage.page.locator('.ant-modal-close').or(usersPage.page.locator('button').filter({ hasText: /Cancel|取消/ })).first().click();
   });
 
-  test('E-02: 重复用户名创建失败', async () => {
+  test('E-02: 重复用户名创建失败', async ({ page }) => {
     const username = `duplicate_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    // 创建第一个
-    await usersPage.createUser({
+    // 通过 API 创建第一个
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
     
-    // 尝试创建第二个相同用户名
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
+    
+    // 尝试通过 UI 创建第二个相同用户名
     await usersPage.clickAdd();
     await usersPage.fillUserForm({
       username,
@@ -287,17 +351,20 @@ test.describe('用户管理 - 完整测试', () => {
     await expect(usersPage.page.locator('.ant-message-error')).toBeVisible().catch(() => {});
   });
 
-  test('E-03: 重复邮箱创建失败', async () => {
+  test('E-03: 重复邮箱创建失败', async ({ page }) => {
     const email = generateRandomEmail();
     
-    // 创建第一个
-    await usersPage.createUser({
+    // 通过 API 创建第一个
+    await createUserViaAPI(page, authToken, {
       username: `user1_${generateRandomString()}`,
       email,
       password: 'Test123!',
     });
     
-    // 尝试创建第二个相同邮箱
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
+    
+    // 尝试通过 UI 创建第二个相同邮箱
     await usersPage.clickAdd();
     await usersPage.fillUserForm({
       username: `user2_${generateRandomString()}`,
@@ -347,30 +414,38 @@ test.describe('用户管理 - 完整测试', () => {
     await usersPage.page.locator('.ant-modal-close').click();
   });
 
-  test('S-02: SQL注入防护', async () => {
+  test('S-02: SQL注入防护', async ({ page }) => {
     const username = `sqltest_'; DROP TABLE users; --_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
     });
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
     
     const exists = await usersPage.hasUser(username);
     expect(exists).toBe(true);
   });
 
-  test('S-03: XSS注入防护', async () => {
+  test('S-03: XSS注入防护', async ({ page }) => {
     const username = `xsstest_<script>alert(1)</script>_${generateRandomString()}`;
     const email = generateRandomEmail();
     
-    await usersPage.createUser({
+    // 通过 API 创建用户
+    await createUserViaAPI(page, authToken, {
       username,
       email,
       password: 'Test123!',
       realName: '<img src=x onerror=alert(1)>',
     });
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
     
     const exists = await usersPage.hasUser(username);
     expect(exists).toBe(true);
@@ -385,5 +460,38 @@ test.describe('用户管理 - 完整测试', () => {
     const loadTime = Date.now() - startTime;
     
     expect(loadTime).toBeLessThan(5000);
+  });
+
+  // ==================== P - 分页测试 ====================
+
+  test('P-02: 用户列表分页显示 - i18n 变量正确解析', async ({ page }) => {
+    // 创建多个用户
+    for (let i = 0; i < 3; i++) {
+      await createUserViaAPI(page, authToken, {
+        username: `pageuser_${i}_${generateRandomString()}`,
+        email: `page_${i}_${generateRandomEmail()}`,
+        password: 'Test123!',
+      });
+    }
+    
+    await usersPage.page.reload();
+    await usersPage.expectLoaded();
+    
+    // 验证分页组件存在
+    const pagination = page.locator('.ant-pagination');
+    await expect(pagination).toBeVisible();
+    
+    // 获取分页总数文本
+    const totalText = await usersPage.getPaginationTotal();
+    console.log('Users pagination total text:', totalText);
+    
+    // 验证 i18n 变量已正确解析
+    expect(totalText).toMatch(/(共 \d+ 条|Total \d+ items)/);
+    
+    // 验证没有显示未解析的模板字符串
+    expect(totalText).not.toContain('{{count}}');
+    expect(totalText).not.toContain('{{');
+    expect(totalText).not.toContain('}}');
+    expect(totalText).not.toContain('table.items');
   });
 });

@@ -20,10 +20,11 @@ export class RulesPage {
 
   /**
    * 验证页面加载
+   * 支持中英文: Rule Management / 规则管理
    */
   async expectLoaded() {
-    await expect(this.page).toHaveURL(/.*rules/);
-    await expect(this.page.locator('text=Rule Management').first()).toBeVisible();
+    await expect(this.page).toHaveURL(/.*rules/, { timeout: 10000 });
+    await expect(this.page.locator('text=/Rule Management|规则管理/i').first()).toBeVisible();
   }
 
   /**
@@ -43,17 +44,29 @@ export class RulesPage {
     priority: number;
     description?: string;
   }) {
-    await this.page.locator('input[placeholder*="rule name"]').fill(data.name);
+    // 等待弹窗动画完成
+    await this.page.waitForTimeout(500);
     
-    await this.page.locator('.ant-form-item').filter({ hasText: /Rule Type|类型/ }).locator('.ant-select').first().click();
-    await this.page.locator('.ant-select-dropdown').locator('.ant-select-item').filter({ hasText: new RegExp(data.ruleType, 'i') }).first().click();
+    // 填写规则名称 - 通过 label 找到对应的输入框
+    const nameInput = this.page.locator('.ant-form-item').filter({ hasText: /Rule Name|规则名称/i }).locator('input');
+    await nameInput.fill(data.name);
     
-    const priorityInput = this.page.locator('.ant-form-item').filter({ hasText: /Priority|优先级/ }).locator('input');
+    // 选择规则类型
+    await this.page.locator('.ant-form-item').filter({ hasText: /Rule Type|规则类型/i }).locator('.ant-select').first().click();
+    await this.page.waitForTimeout(300);
+    // 根据类型值选择（如 distance 匹配 Distance Rule）
+    const typeOption = this.page.locator('.ant-select-dropdown').locator('.ant-select-item').filter({ hasText: new RegExp(data.ruleType, 'i') });
+    await typeOption.first().click();
+    await this.page.waitForTimeout(300);
+    
+    // 填写优先级
+    const priorityInput = this.page.locator('.ant-form-item').filter({ hasText: /Priority|优先级/i }).locator('input');
     await priorityInput.clear();
     await priorityInput.fill(data.priority.toString());
     
+    // 填写描述（可选）
     if (data.description) {
-      await this.page.locator('textarea[placeholder*="description"]').fill(data.description);
+      await this.page.locator('.ant-form-item').filter({ hasText: /Description|描述/i }).locator('textarea').fill(data.description);
     }
   }
 
@@ -62,12 +75,18 @@ export class RulesPage {
    */
   async saveRule() {
     await this.saveButton.click();
-    await this.page.waitForTimeout(1000);
+    // 等待 API 调用和弹窗关闭
+    await this.page.waitForTimeout(3000);
+    
+    // 等待 Modal 关闭
     try {
-      await expect(this.modal).not.toBeVisible({ timeout: 5000 });
-    } catch {
-      // 忽略
+      await expect(this.modal).not.toBeVisible({ timeout: 10000 });
+    } catch (e) {
+      console.log('Modal may still be visible:', e);
     }
+    
+    // 额外等待表格刷新完成
+    await this.page.waitForTimeout(2000);
   }
 
   /**
@@ -83,9 +102,24 @@ export class RulesPage {
    * 检查表格中是否有指定规则
    */
   async hasRule(ruleName: string): Promise<boolean> {
-    await this.page.waitForSelector('.ant-table-row', { timeout: 5000 });
-    const ruleCell = this.page.locator('td').filter({ hasText: ruleName });
-    return await ruleCell.isVisible().catch(() => false);
+    // 等待表格加载
+    await this.page.waitForSelector('.ant-table-row, .ant-empty', { timeout: 5000 });
+    
+    // 先等待一下确保数据已加载
+    await this.page.waitForTimeout(500);
+    
+    // 检查是否有任何行
+    const rowCount = await this.page.locator('.ant-table-row').count();
+    if (rowCount === 0) {
+      return false;
+    }
+    
+    // 获取所有单元格的文本内容来查找规则
+    const cellTexts = await this.page.locator('.ant-table-cell').allTextContents();
+    console.log(`Looking for rule: ${ruleName}, Found cells: ${cellTexts.slice(0, 10).join(', ')}...`);
+    
+    // 检查是否有单元格包含规则名
+    return cellTexts.some(text => text.includes(ruleName));
   }
 
   /**
@@ -272,5 +306,42 @@ export class RulesPage {
     
     await this.page.locator('button').filter({ hasText: /Simulate|模拟/ }).click();
     await this.page.waitForTimeout(1000);
+  }
+
+  // ==================== 分页操作 ====================
+
+  /**
+   * 获取分页总数文本
+   */
+  async getPaginationTotal(): Promise<string> {
+    const pagination = this.page.locator('.ant-pagination-total-text');
+    if (await pagination.isVisible().catch(() => false)) {
+      return await pagination.textContent() || '';
+    }
+    return '';
+  }
+
+  /**
+   * 切换到指定页码
+   */
+  async changePage(pageNumber: number) {
+    const pageBtn = this.page.locator('.ant-pagination-item').filter({ hasText: pageNumber.toString() });
+    if (await pageBtn.isVisible().catch(() => false)) {
+      await pageBtn.click();
+      await this.page.waitForTimeout(500);
+    }
+  }
+
+  /**
+   * 切换每页条数
+   */
+  async changePageSize(size: number) {
+    const sizeSelector = this.page.locator('.ant-pagination-options-size-changer');
+    if (await sizeSelector.isVisible().catch(() => false)) {
+      await sizeSelector.click();
+      await this.page.waitForTimeout(300);
+      await this.page.locator('.ant-select-dropdown').locator('.ant-select-item').filter({ hasText: size.toString() }).click();
+      await this.page.waitForTimeout(500);
+    }
   }
 }

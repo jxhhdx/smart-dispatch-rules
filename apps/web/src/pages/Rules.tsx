@@ -67,11 +67,14 @@ export default function Rules() {
     try {
       if (editingRule) {
         await ruleApi.update(editingRule.id, values)
+        setModalVisible(false)
+        fetchRules(pagination.current, pagination.pageSize)
       } else {
         await ruleApi.create(values)
+        setModalVisible(false)
+        // 创建新规则后，刷新第一页以显示新规则
+        fetchRules(1, pagination.pageSize)
       }
-      setModalVisible(false)
-      fetchRules(pagination.current, pagination.pageSize)
     } catch (error: any) {
       // 错误已在 api 拦截器中处理
     }
@@ -154,7 +157,7 @@ export default function Rules() {
   return (
     <Space direction="vertical" size={16} style={{ display: 'flex' }}>
       <Card 
-        bordered={false}
+        variant="borderless"
         title={<Title level={4} style={{ margin: 0 }}>{t('rule:title')}</Title>}
         extra={
           <Button
@@ -179,7 +182,7 @@ export default function Rules() {
             ...pagination,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total) => `${t('common:table.total')} ${total} ${t('common:table.items')}`,
+            showTotal: (total) => t('common:table.total', { count: total }),
           }}
           onChange={(p) => fetchRules(p.current, p.pageSize)}
         />

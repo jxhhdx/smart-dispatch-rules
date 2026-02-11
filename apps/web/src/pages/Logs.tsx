@@ -111,7 +111,7 @@ export default function Logs() {
             ...pagination,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total) => `${t('common:table.total')} ${total} ${t('common:table.items')}`,
+            showTotal: (total) => t('common:table.total', { count: total }),
           }}
           onChange={(p) => fetchSystemLogs(p.current, p.pageSize)}
         />
@@ -130,7 +130,7 @@ export default function Logs() {
             ...pagination,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total) => `${t('common:table.total')} ${total} ${t('common:table.items')}`,
+            showTotal: (total) => t('common:table.total', { count: total }),
           }}
           onChange={(p) => fetchLoginLogs(p.current, p.pageSize)}
         />
@@ -142,7 +142,7 @@ export default function Logs() {
     <Space direction="vertical" size={16} style={{ display: 'flex' }}>
       <Title level={4} style={{ margin: 0 }}>{t('menu:systemLogs')}</Title>
       
-      <Card bordered={false}>
+      <Card variant="borderless">
         <Space direction="vertical" size={16} style={{ display: 'flex' }}>
           <Space wrap>
             <Input

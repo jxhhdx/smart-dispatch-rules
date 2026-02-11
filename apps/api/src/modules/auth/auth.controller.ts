@@ -29,6 +29,11 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('refresh')
   async refresh(@Request() req) {
-    return this.authService.login(req.user);
+    // JWT 策略返回 userId，login 方法期望 id
+    const user = {
+      ...req.user,
+      id: req.user.userId,
+    };
+    return this.authService.login(user);
   }
 }

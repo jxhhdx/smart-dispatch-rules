@@ -39,9 +39,21 @@ export class DashboardPage {
 
   /**
    * 点击左侧菜单
+   * 支持中英文匹配
    */
   async clickMenu(menuName: string) {
-    await this.page.locator(`text=${menuName}`).first().click();
+    // 菜单文本映射（支持中英文）
+    const menuTextMap: Record<string, RegExp> = {
+      'dashboard': /Dashboard|仪表盘/,
+      'rules': /Rule Management|规则管理/,
+      'systemUsers': /User Management|用户管理/,
+      'systemRoles': /Role Management|角色管理/,
+      'systemLogs': /Operation Logs|操作日志|System Logs|系统日志/,
+    };
+    
+    const menuPattern = menuTextMap[menuName] || new RegExp(menuName);
+    const menuItem = this.page.locator('.ant-menu-item, .ant-menu-submenu-title').filter({ hasText: menuPattern });
+    await menuItem.first().click();
   }
 
   /**
@@ -49,7 +61,7 @@ export class DashboardPage {
    */
   async navigateToUsers() {
     await this.clickMenu('systemUsers');
-    await expect(this.page).toHaveURL(/.*users/);
+    await expect(this.page).toHaveURL(/.*users/, { timeout: 10000 });
   }
 
   /**
@@ -57,7 +69,7 @@ export class DashboardPage {
    */
   async navigateToRules() {
     await this.clickMenu('rules');
-    await expect(this.page).toHaveURL(/.*rules/);
+    await expect(this.page).toHaveURL(/.*rules/, { timeout: 10000 });
   }
 
   /**
@@ -65,7 +77,7 @@ export class DashboardPage {
    */
   async navigateToRoles() {
     await this.clickMenu('systemRoles');
-    await expect(this.page).toHaveURL(/.*roles/);
+    await expect(this.page).toHaveURL(/.*roles/, { timeout: 10000 });
   }
 
   /**
@@ -73,7 +85,7 @@ export class DashboardPage {
    */
   async navigateToLogs() {
     await this.clickMenu('systemLogs');
-    await expect(this.page).toHaveURL(/.*logs/);
+    await expect(this.page).toHaveURL(/.*logs/, { timeout: 10000 });
   }
 
   /**
