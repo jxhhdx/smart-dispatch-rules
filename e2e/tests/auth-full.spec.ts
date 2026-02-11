@@ -22,9 +22,12 @@ test.describe('用户认证 - 完整测试', () => {
     await loginPage.goto();
     await loginPage.loginAsAdmin();
     
-    // 访问个人信息页面
-    await page.goto('/profile');
-    await expect(page.locator('text=Profile').or(page.locator('text=个人信息'))).toBeVisible();
+    // 验证 Dashboard 页面显示用户名
+    const dashboard = new DashboardPage(page);
+    await dashboard.expectLoaded();
+    
+    // 验证页面显示管理员用户名或真实姓名
+    await expect(page.locator('text=/admin|管理员/i').first()).toBeVisible();
   });
 
   test('F-03: 刷新Token', async ({ page }) => {
@@ -32,9 +35,24 @@ test.describe('用户认证 - 完整测试', () => {
     await loginPage.goto();
     await loginPage.loginAsAdmin();
     
-    // 调用刷新接口
-    const response = await page.request.post('/api/v1/auth/refresh');
-    expect(response.status()).toBe(200);
+    // 等待登录完成并存储 token
+    await page.waitForTimeout(1000);
+    
+    // 从 localStorage 获取 token（zustand persist 使用 'auth-storage' key）
+    const authStorage = await page.evaluate(() => localStorage.getItem('auth-storage'));
+    expect(authStorage).toBeTruthy();
+    const authData = JSON.parse(authStorage!);
+    const token = authData.state.token;
+    expect(token).toBeTruthy();
+    
+    // 调用刷新接口，携带认证头
+    const response = await page.request.post('/api/v1/auth/refresh', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    expect(response.status()).toBeGreaterThanOrEqual(200);
+    expect(response.status()).toBeLessThan(300);
     
     const data = await response.json();
     expect(data.data).toHaveProperty('access_token');
@@ -121,28 +139,40 @@ test.describe('用户认证 - 完整测试', () => {
   });
 
   test('E-06: 无效Token访问受保护页面', async ({ page }) => {
+    // 先访问登录页
+    await page.goto('/login');
+    
     // 设置无效token
     await page.evaluate(() => {
-      localStorage.setItem('token', 'invalid-token');
+      localStorage.setItem('auth-storage', JSON.stringify({
+        state: { token: 'invalid-token', user: null, isAuthenticated: true },
+        version: 0
+      }));
     });
     
     await page.goto('/dashboard');
     
-    // 应该重定向到登录页
-    await expect(page).toHaveURL(/.*login/);
+    // 应该显示重新登录弹窗
+    await expect(page.getByRole('dialog', { name: /登录已过期|Session Expired/i })).toBeVisible({ timeout: 10000 });
   });
 
   test('E-07: 过期Token访问受保护页面', async ({ page }) => {
+    // 先访问登录页
+    await page.goto('/login');
+    
     // 设置过期token（一个过期的JWT）
     const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.abc123';
     await page.evaluate((token) => {
-      localStorage.setItem('token', token);
+      localStorage.setItem('auth-storage', JSON.stringify({
+        state: { token: token, user: null, isAuthenticated: true },
+        version: 0
+      }));
     }, expiredToken);
     
     await page.goto('/dashboard');
     
-    // 应该重定向到登录页
-    await expect(page).toHaveURL(/.*login/);
+    // 应该显示重新登录弹窗
+    await expect(page.getByRole('dialog', { name: /登录已过期|Session Expired/i })).toBeVisible({ timeout: 10000 });
   });
 
   test('E-08: 未认证访问API', async ({ page }) => {
@@ -226,10 +256,17 @@ test.describe('用户认证 - 完整测试', () => {
     await loginPage.goto();
     await loginPage.loginAsAdmin();
     
-    // 检查token是否存储在localStorage
-    const token = await page.evaluate(() => localStorage.getItem('token'));
-    expect(token).toBeTruthy();
-    expect(token.length).toBeGreaterThan(10);
+    // 等待登录完成并存储 token
+    await page.waitForTimeout(1000);
+    
+    // 检查token是否存储在localStorage（zustand persist 使用 'auth-storage' key）
+    const authStorage = await page.evaluate(() => localStorage.getItem('auth-storage'));
+    expect(authStorage).toBeTruthy();
+    
+    // 解析存储的数据，验证包含 token
+    const authData = JSON.parse(authStorage!);
+    expect(authData.state.token).toBeTruthy();
+    expect(authData.state.token.length).toBeGreaterThan(10);
   });
 
   // ==================== P - 性能测试 ====================

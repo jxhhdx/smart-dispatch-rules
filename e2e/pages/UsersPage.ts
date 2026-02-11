@@ -22,10 +22,11 @@ export class UsersPage {
 
   /**
    * 验证页面加载
+   * 支持中英文: User Management / 用户管理
    */
   async expectLoaded() {
-    await expect(this.page).toHaveURL(/.*users/);
-    await expect(this.page.locator('text=User Management').first()).toBeVisible();
+    await expect(this.page).toHaveURL(/.*users/, { timeout: 10000 });
+    await expect(this.page.locator('text=/User Management|用户管理/i').first()).toBeVisible();
   }
 
   /**
@@ -37,7 +38,7 @@ export class UsersPage {
   }
 
   /**
-   * 填写用户表单 - 使用 Form name 属性
+   * 填写用户表单 - 使用 Form label 定位
    */
   async fillUserForm(data: {
     username: string;
@@ -47,13 +48,17 @@ export class UsersPage {
     phone?: string;
     roleId?: string;
   }) {
-    // 使用 placeholder 定位字段
-    await this.page.locator('input[placeholder*="username"]').fill(data.username);
-    await this.page.locator('input[placeholder*="email"]').fill(data.email);
+    // 等待弹窗动画完成
+    await this.page.waitForTimeout(500);
+    
+    // 使用 label 文本定位字段
+    await this.page.locator('.ant-form-item').filter({ hasText: /Username|用户名/i }).locator('input').fill(data.username);
+    await this.page.locator('.ant-form-item').filter({ hasText: /Email|邮箱/i }).locator('input').fill(data.email);
     
     // 填写密码（如果是新建用户）
     if (data.password) {
-      const passwordInput = this.page.locator('input[placeholder*="password"]');
+      const passwordItem = this.page.locator('.ant-form-item').filter({ hasText: /Password|密码/i });
+      const passwordInput = passwordItem.locator('input');
       if (await passwordInput.isVisible().catch(() => false)) {
         await passwordInput.fill(data.password);
       }
@@ -61,18 +66,20 @@ export class UsersPage {
     
     // 填写真实姓名
     if (data.realName) {
-      await this.page.locator('input[placeholder*="real name"]').fill(data.realName);
+      await this.page.locator('.ant-form-item').filter({ hasText: /Real Name|真实姓名/i }).locator('input').fill(data.realName);
     }
     
     // 填写电话
     if (data.phone) {
-      await this.page.locator('input[placeholder*="phone"]').fill(data.phone);
+      await this.page.locator('.ant-form-item').filter({ hasText: /Phone|电话/i }).locator('input').fill(data.phone);
     }
     
     // 选择角色
     if (data.roleId) {
-      await this.page.locator('.ant-form-item').filter({ hasText: /Role|角色/ }).locator('.ant-select').click();
+      await this.page.locator('.ant-form-item').filter({ hasText: /Role|角色/i }).locator('.ant-select').click();
+      await this.page.waitForTimeout(300);
       await this.page.locator('.ant-select-dropdown').locator('.ant-select-item').filter({ hasText: data.roleId }).click();
+      await this.page.waitForTimeout(300);
     }
   }
 
@@ -81,14 +88,16 @@ export class UsersPage {
    */
   async saveUser() {
     await this.saveButton.click();
-    // 等待保存完成
-    await this.page.waitForTimeout(1000);
+    // 等待保存完成和表格刷新
+    await this.page.waitForTimeout(2000);
     // 尝试等待 Modal 关闭
     try {
       await expect(this.modal).not.toBeVisible({ timeout: 5000 });
     } catch {
       // 忽略错误
     }
+    // 额外等待表格加载完成
+    await this.page.waitForTimeout(1000);
   }
 
   /**
@@ -186,4 +195,42 @@ export class UsersPage {
     const header = this.page.locator('th').filter({ hasText: new RegExp(columnName, 'i') });
     await header.click();
   }
+
+  // ==================== 分页操作 ====================
+
+  /**
+   * 获取分页总数文本
+   */
+  async getPaginationTotal(): Promise<string> {
+    const pagination = this.page.locator('.ant-pagination-total-text');
+    if (await pagination.isVisible().catch(() => false)) {
+      return await pagination.textContent() || '';
+    }
+    return '';
+  }
+
+  /**
+   * 切换到指定页码
+   */
+  async changePage(pageNumber: number) {
+    const pageBtn = this.page.locator('.ant-pagination-item').filter({ hasText: pageNumber.toString() });
+    if (await pageBtn.isVisible().catch(() => false)) {
+      await pageBtn.click();
+      await this.page.waitForTimeout(500);
+    }
+  }
+
+  /**
+   * 切换每页条数
+   */
+  async changePageSize(size: number) {
+    const sizeSelector = this.page.locator('.ant-pagination-options-size-changer');
+    if (await sizeSelector.isVisible().catch(() => false)) {
+      await sizeSelector.click();
+      await this.page.waitForTimeout(300);
+      await this.page.locator('.ant-select-dropdown').locator('.ant-select-item').filter({ hasText: size.toString() }).click();
+      await this.page.waitForTimeout(500);
+    }
+  }
+
 }

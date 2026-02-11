@@ -18,10 +18,11 @@ export class LogsPage {
 
   /**
    * 验证页面加载
+   * 支持中英文: Operation Logs / 操作日志 / System Logs / 系统日志
    */
   async expectLoaded() {
     await expect(this.page).toHaveURL(/.*logs/);
-    await expect(this.page.locator('text=System Logs').first()).toBeVisible();
+    await expect(this.page.locator('text=/Operation Logs|系统日志|System Logs|操作日志/i').first()).toBeVisible();
   }
 
   /**
@@ -39,6 +40,8 @@ export class LogsPage {
   async switchToLoginLogs() {
     if (await this.loginTab.isVisible().catch(() => false)) {
       await this.loginTab.click();
+      // 等待登录日志表格可见
+      await this.page.waitForTimeout(300);
     }
   }
 

@@ -102,7 +102,7 @@ export const userApi = {
 
 // 角色管理 API
 export const roleApi = {
-  getList: () => api.get('/roles'),
+  getList: (params?: any) => api.get('/roles', { params }),
   getDetail: (id: string) => api.get(`/roles/${id}`),
   create: (data: any) => api.post('/roles', data),
   update: (id: string, data: any) => api.put(`/roles/${id}`, data),

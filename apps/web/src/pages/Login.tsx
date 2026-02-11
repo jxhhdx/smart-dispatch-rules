@@ -46,7 +46,7 @@ export default function Login() {
           borderRadius: token.borderRadiusLG,
           boxShadow: token.boxShadow,
         }}
-        bordered={false}
+        variant="borderless"
       >
         <Space direction="vertical" align="center" style={{ width: '100%', marginBottom: 32 }}>
           <Title level={3} style={{ margin: 0, color: token.colorPrimary }}>

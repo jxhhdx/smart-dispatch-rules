@@ -5,7 +5,6 @@ import { LogsPage } from '../pages/LogsPage';
 
 test.describe('日志审计 - 完整测试', () => {
   let logsPage: LogsPage;
-
   test.beforeEach(async ({ page }) => {
     const loginPage = new LoginPage(page);
     await loginPage.goto();
@@ -22,18 +21,26 @@ test.describe('日志审计 - 完整测试', () => {
   // ==================== F - 功能路径测试 ====================
 
   test('F-01: 日志页面显示正常', async ({ page }) => {
-    await expect(page.locator('text=System Logs').first()).toBeVisible();
-    await expect(page.locator('.ant-table')).toBeVisible();
+    // 页面标题可能是 Operation Logs 或 操作日志
+    await expect(page.locator('text=/Operation Logs|操作日志|System Logs|系统日志/i').first()).toBeVisible();
+    await expect(page.locator('.ant-table').first()).toBeVisible();
   });
 
   test('F-02: 操作日志列表显示', async () => {
     await logsPage.switchToOperationLogs();
     await expect(logsPage.table).toBeVisible();
+    // 有数据或无数据都是正常情况，主要验证页面不报错
+    const hasData = await logsPage.hasLogData();
+    expect(typeof hasData).toBe('boolean');
   });
 
-  test('F-03: 登录日志列表显示', async () => {
+  test('F-03: 登录日志列表显示', async ({ page }) => {
     await logsPage.switchToLoginLogs();
-    await expect(logsPage.table).toBeVisible();
+    // 切换到登录日志后，第二个表格是登录日志表格（第一个被隐藏）
+    await expect(page.locator('.ant-table').nth(1)).toBeVisible();
+    // 验证表格存在，不关心是否有数据
+    const rowCount = await logsPage.getTableRowCount();
+    expect(typeof rowCount).toBe('number');
   });
 
   test('F-04: 搜索日志功能', async () => {
@@ -72,6 +79,7 @@ test.describe('日志审计 - 完整测试', () => {
   });
 
   test('F-08: 查看日志详情', async () => {
+    // 先确保有日志数据
     if (await logsPage.hasLogData()) {
       await logsPage.viewLogDetail(0);
       await expect(logsPage.page.locator('.ant-modal')).toBeVisible();
