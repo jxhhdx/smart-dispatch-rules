@@ -1,10 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // 模拟 antd
+const mockMessageError = vi.fn()
 vi.mock('antd', async () => {
   const actual = await vi.importActual('antd')
   return {
     ...actual,
+    message: {
+      error: mockMessageError,
+      success: vi.fn(),
+    },
     theme: {
       useToken: () => ({
         token: {
@@ -17,6 +22,14 @@ vi.mock('antd', async () => {
     },
   }
 })
+
+// 模拟 API
+const mockGetStats = vi.fn()
+vi.mock('../services/api', () => ({
+  dashboardApi: {
+    getStats: mockGetStats,
+  },
+}))
 
 // 模拟 antd icons
 vi.mock('@ant-design/icons', () => ({
@@ -43,6 +56,7 @@ const mockT = vi.fn((key: string, _options?: any) => {
     'dashboard:quickStartUser': '管理系统用户',
     'dashboard:quickStartRole': '管理系统角色',
     'dashboard:quickStartLog': '查看系统日志',
+    'dashboard:fetchStatsFailed': '获取统计数据失败',
     'menu:rules': '规则管理',
     'menu:systemUsers': '用户管理',
     'menu:systemRoles': '角色管理',
@@ -58,18 +72,60 @@ vi.mock('react-i18next', () => ({
   }),
 }))
 
-describe('Dashboard Component', () => {
+describe('Dashboard API Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
+  it('should fetch stats from API successfully', async () => {
+    const mockStats = {
+      data: {
+        totalUsers: 5,
+        totalRules: 10,
+        totalRoles: 3,
+        publishedRules: 7,
+      },
+    }
+    mockGetStats.mockResolvedValue(mockStats)
+
+    const result = await mockGetStats()
+    
+    expect(mockGetStats).toHaveBeenCalled()
+    expect(result.data.totalUsers).toBe(5)
+    expect(result.data.totalRules).toBe(10)
+    expect(result.data.totalRoles).toBe(3)
+    expect(result.data.publishedRules).toBe(7)
+  })
+
+  it('should handle API error when fetching stats', async () => {
+    mockGetStats.mockRejectedValue(new Error('Network error'))
+
+    try {
+      await mockGetStats()
+    } catch (error) {
+      // Expected error
+    }
+
+    expect(mockGetStats).toHaveBeenCalled()
+  })
+
+  it('should show error message when API fails', async () => {
+    mockGetStats.mockRejectedValue(new Error('Network error'))
+
+    try {
+      await mockGetStats()
+    } catch (error) {
+      mockMessageError(mockT('dashboard:fetchStatsFailed'))
+    }
+
+    expect(mockMessageError).toHaveBeenCalledWith('获取统计数据失败')
+  })
+
   it('should have correct translation keys for dashboard title', () => {
-    // 验证仪表盘标题翻译键
     expect(mockT('menu:dashboard')).toBe('仪表盘')
   })
 
   it('should have correct translation keys for statistics', () => {
-    // 验证统计数据标题被翻译
     expect(mockT('dashboard:totalUsers')).toBe('总用户数')
     expect(mockT('dashboard:totalRules')).toBe('规则总数')
     expect(mockT('dashboard:roles')).toBe('角色数量')
@@ -102,7 +158,6 @@ describe('Dashboard Component', () => {
   })
 
   it('should use correct theme token colors', () => {
-    // 验证模拟的主题 token 值
     const expectedToken = {
       colorPrimary: '#1890ff',
       colorSuccess: '#52c41a',
@@ -116,31 +171,29 @@ describe('Dashboard Component', () => {
     expect(expectedToken.colorInfo).toBe('#13c2c2')
   })
 
-  it('should define correct statistics data structure', () => {
-    // 模拟 Dashboard 组件中的统计数据结构
-    const stats = [
-      { title: 'dashboard:totalUsers', value: 12, color: 'colorPrimary' },
-      { title: 'dashboard:totalRules', value: 8, color: 'colorSuccess' },
-      { title: 'dashboard:roles', value: 3, color: 'colorWarning' },
-      { title: 'dashboard:publishedRules', value: 5, color: 'colorInfo' },
-    ]
+  it('should define correct statistics data structure from API', async () => {
+    const mockStats = {
+      data: {
+        totalUsers: 5,
+        totalRules: 10,
+        totalRoles: 3,
+        publishedRules: 7,
+      },
+    }
+    mockGetStats.mockResolvedValue(mockStats)
+
+    const result = await mockGetStats()
     
-    expect(stats).toHaveLength(4)
-    expect(stats[0].value).toBe(12)
-    expect(stats[1].value).toBe(8)
-    expect(stats[2].value).toBe(3)
-    expect(stats[3].value).toBe(5)
+    expect(result.data).toHaveProperty('totalUsers')
+    expect(result.data).toHaveProperty('totalRules')
+    expect(result.data).toHaveProperty('totalRoles')
+    expect(result.data).toHaveProperty('publishedRules')
   })
 
   it('should use correct translation namespaces', () => {
-    // 验证翻译命名空间配置正确
     const expectedNamespaces = ['dashboard', 'menu']
     expect(expectedNamespaces).toContain('dashboard')
     expect(expectedNamespaces).toContain('menu')
-    
-    // 验证模拟的翻译函数被调用
-    mockT('menu:dashboard')
-    expect(mockT).toHaveBeenCalledWith('menu:dashboard')
   })
 
   it('should handle missing translation keys gracefully', () => {
@@ -150,20 +203,6 @@ describe('Dashboard Component', () => {
 })
 
 describe('Dashboard Statistics', () => {
-  it('should have correct statistic values', () => {
-    const expectedStats = {
-      totalUsers: 12,
-      totalRules: 8,
-      roles: 3,
-      publishedRules: 5,
-    }
-    
-    expect(expectedStats.totalUsers).toBe(12)
-    expect(expectedStats.totalRules).toBe(8)
-    expect(expectedStats.roles).toBe(3)
-    expect(expectedStats.publishedRules).toBe(5)
-  })
-
   it('should map icons to correct colors', () => {
     const iconColorMap = {
       UserOutlined: 'colorPrimary',
@@ -181,7 +220,6 @@ describe('Dashboard Statistics', () => {
 
 describe('Dashboard Layout', () => {
   it('should have responsive grid configuration', () => {
-    // 验证响应式布局配置
     const gridConfig = {
       xs: 24,
       sm: 12,

@@ -7,10 +7,14 @@ import { UsersModule } from './modules/users/users.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { RulesModule } from './modules/rules/rules.module';
 import { LogsModule } from './modules/logs/logs.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { DatabaseModule } from './modules/common/database.module';
 import { I18nConfigModule } from './i18n/i18n.module';
 import { HttpExceptionFilter, AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { Reflector } from '@nestjs/core';
+import { LogsService } from './modules/logs/logs.service';
 
 @Module({
   imports: [
@@ -24,6 +28,7 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
     RolesModule,
     RulesModule,
     LogsModule,
+    DashboardModule,
   ],
   providers: [
     {
@@ -42,6 +47,12 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
       provide: APP_INTERCEPTOR,
       useClass: TransformInterceptor,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
+    },
+    Reflector,
+    LogsService,
   ],
 })
 export class AppModule {}

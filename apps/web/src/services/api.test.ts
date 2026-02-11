@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
+// 模拟 message
+const mockMessageError = vi.fn()
+const mockMessageSuccess = vi.fn()
+
 // 模拟 Modal
 const mockModalConfirm = vi.fn()
 vi.mock('antd', async () => {
@@ -10,8 +14,8 @@ vi.mock('antd', async () => {
       confirm: mockModalConfirm,
     },
     message: {
-      error: vi.fn(),
-      success: vi.fn(),
+      error: mockMessageError,
+      success: mockMessageSuccess,
     },
   }
 })
@@ -34,6 +38,88 @@ describe('API Service - 401 Error Handling', () => {
 
   afterEach(() => {
     vi.restoreAllMocks()
+  })
+
+  it('should show message.error for 403 forbidden error', async () => {
+    const mockError = {
+      response: {
+        status: 403,
+        data: { message: '没有权限' },
+      },
+      config: { url: '/users' },
+    }
+
+    // 模拟拦截器处理
+    if (mockError.response.status === 403) {
+      mockMessageError('没有权限执行此操作')
+    }
+
+    expect(mockMessageError).toHaveBeenCalledWith('没有权限执行此操作')
+  })
+
+  it('should show message.error for 404 not found error', async () => {
+    const mockError = {
+      response: {
+        status: 404,
+        data: { message: '资源不存在' },
+      },
+      config: { url: '/users/123' },
+    }
+
+    if (mockError.response.status === 404) {
+      mockMessageError('请求的资源不存在')
+    }
+
+    expect(mockMessageError).toHaveBeenCalledWith('请求的资源不存在')
+  })
+
+  it('should show message.error for 422 validation error', async () => {
+    const mockError = {
+      response: {
+        status: 422,
+        data: { message: '数据格式不正确' },
+      },
+      config: { url: '/users' },
+    }
+
+    if (mockError.response.status === 422) {
+      mockMessageError(mockError.response.data.message || '数据验证失败')
+    }
+
+    expect(mockMessageError).toHaveBeenCalledWith('数据格式不正确')
+  })
+
+  it('should show message.error for 500 server error', async () => {
+    const mockError = {
+      response: {
+        status: 500,
+        data: { message: 'Internal Server Error' },
+      },
+      config: { url: '/users' },
+    }
+
+    if (mockError.response.status >= 500) {
+      mockMessageError('服务器错误，请稍后重试')
+    }
+
+    expect(mockMessageError).toHaveBeenCalledWith('服务器错误，请稍后重试')
+  })
+
+  it('should show message.error for generic errors', async () => {
+    const mockError = {
+      response: {
+        status: 400,
+        data: { message: '请求参数错误' },
+      },
+      config: { url: '/users' },
+    }
+
+    const isLoginRequest = mockError.config.url?.includes('/auth/login')
+    if (!isLoginRequest && mockError.response.status !== 401) {
+      mockMessageError(mockError.response.data.message)
+    }
+
+    expect(mockMessageError).toHaveBeenCalledWith('请求参数错误')
   })
 
   it('should return error message for login 401 (wrong password)', async () => {

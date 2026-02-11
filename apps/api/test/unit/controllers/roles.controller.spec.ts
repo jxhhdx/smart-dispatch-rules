@@ -37,26 +37,63 @@ describe('RolesController', () => {
   });
 
   describe('GET /roles (findAll)', () => {
-    it('should return all roles', async () => {
-      const mockRoles = [
-        { id: '1', name: 'Admin', code: 'admin', permissions: [] },
-        { id: '2', name: 'User', code: 'user', permissions: [] },
-      ];
+    it('should return all roles with pagination', async () => {
+      const mockResult = {
+        list: [
+          { id: '1', name: 'Admin', code: 'admin', permissions: [] },
+          { id: '2', name: 'User', code: 'user', permissions: [] },
+        ],
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: 2,
+          totalPages: 1,
+        },
+      };
 
-      mockRolesService.findAll.mockResolvedValue(mockRoles);
+      mockRolesService.findAll.mockResolvedValue(mockResult);
 
-      const result = await controller.findAll();
+      const result = await controller.findAll('1', '10');
 
-      expect(result).toEqual(mockRoles);
-      expect(mockRolesService.findAll).toHaveBeenCalled();
+      expect(result).toEqual(mockResult);
+      expect(mockRolesService.findAll).toHaveBeenCalledWith({ page: 1, pageSize: 10 });
     });
 
-    it('should return empty array when no roles exist', async () => {
-      mockRolesService.findAll.mockResolvedValue([]);
+    it('should return empty list when no roles exist', async () => {
+      const mockResult = {
+        list: [],
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: 0,
+          totalPages: 0,
+        },
+      };
 
-      const result = await controller.findAll();
+      mockRolesService.findAll.mockResolvedValue(mockResult);
 
-      expect(result).toEqual([]);
+      const result = await controller.findAll('1', '10');
+
+      expect(result).toEqual(mockResult);
+    });
+
+    it('should use default pagination when no params provided', async () => {
+      const mockResult = {
+        list: [{ id: '1', name: 'Admin', code: 'admin', permissions: [] }],
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: 1,
+          totalPages: 1,
+        },
+      };
+
+      mockRolesService.findAll.mockResolvedValue(mockResult);
+
+      const result = await controller.findAll(undefined, undefined);
+
+      expect(result).toEqual(mockResult);
+      expect(mockRolesService.findAll).toHaveBeenCalledWith({ page: 1, pageSize: 10 });
     });
   });
 
