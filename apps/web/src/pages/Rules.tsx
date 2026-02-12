@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
-import { Table, Button, Space, Modal, Form, Input, Select, Tag, Card, Typography, Popconfirm, Switch, Tooltip, message, Dropdown, Tabs, Badge } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CopyOutlined, ExportOutlined, DownOutlined, CheckOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons'
+import { useState, useEffect, useRef } from 'react'
+import { Table, Button, Space, Modal, Form, Input, Select, Tag, Card, Typography, Popconfirm, Switch, Tooltip, message, Dropdown, Tabs, Badge, List, Radio } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CopyOutlined, ExportOutlined, DownOutlined, CheckOutlined, CloseOutlined, SettingOutlined, ImportOutlined, SaveOutlined, FolderOpenOutlined, DeleteFilled } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
-import { ruleApi } from '../services/api'
+import { ruleApi, templateApi } from '../services/api'
 import RuleConditionBuilder, { ConditionNode } from '../components/RuleConditionBuilder'
+import type { RadioChangeEvent } from 'antd';
 
 const { Title } = Typography
 
@@ -28,12 +29,27 @@ export default function Rules() {
   const [conditions, setConditions] = useState<ConditionNode[]>([])
   const [form] = Form.useForm()
   const [advancedForm] = Form.useForm()
+  const [templateForm] = Form.useForm()
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
     total: 0,
   })
   const { t } = useTranslation(['rule', 'common'])
+
+  // 模板管理状态
+  const [templateModalVisible, setTemplateModalVisible] = useState(false)
+  const [saveTemplateModalVisible, setSaveTemplateModalVisible] = useState(false)
+  const [templates, setTemplates] = useState<any[]>([])
+  const [templateLoading, setTemplateLoading] = useState(false)
+
+  // 导入状态
+  const [importModalVisible, setImportModalVisible] = useState(false)
+  const [importFile, setImportFile] = useState<File | null>(null)
+  const [importPreview, setImportPreview] = useState<any[]>([])
+  const [importConflictStrategy, setImportConflictStrategy] = useState('skip')
+  const [importLoading, setImportLoading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 规则类型选项
   const ruleTypeOptions = [
@@ -235,6 +251,141 @@ export default function Rules() {
     }
   }
 
+  // 获取模板列表
+  const fetchTemplates = async () => {
+    setTemplateLoading(true)
+    try {
+      const res: any = await templateApi.getList()
+      setTemplates(res.data || [])
+    } catch (error) {
+      // Error handled by API interceptor
+    } finally {
+      setTemplateLoading(false)
+    }
+  }
+
+  // 打开模板选择器
+  const handleOpenTemplateModal = () => {
+    fetchTemplates()
+    setTemplateModalVisible(true)
+  }
+
+  // 从模板加载条件
+  const handleLoadTemplate = (template: any) => {
+    if (template.conditions) {
+      const loadedConditions: ConditionNode[] = Array.isArray(template.conditions) 
+        ? template.conditions.map((c: any) => ({
+            id: Math.random().toString(36).substr(2, 9),
+            type: 'condition',
+            field: c.field,
+            operator: c.operator,
+            value: c.value,
+          }))
+        : [];
+      setConditions(loadedConditions)
+      message.success(`已加载模板: ${template.name}`)
+      setTemplateModalVisible(false)
+    }
+  }
+
+  // 保存当前条件为模板
+  const handleSaveTemplate = async (values: any) => {
+    try {
+      await templateApi.create({
+        name: values.name,
+        description: values.description,
+        category: 'custom',
+        conditions: conditions,
+      })
+      message.success('模板保存成功')
+      setSaveTemplateModalVisible(false)
+      templateForm.resetFields()
+    } catch (error) {
+      // Error handled by API interceptor
+    }
+  }
+
+  // 删除模板
+  const handleDeleteTemplate = async (id: string) => {
+    try {
+      await templateApi.delete(id)
+      message.success('模板删除成功')
+      fetchTemplates()
+    } catch (error) {
+      // Error handled by API interceptor
+    }
+  }
+
+  // 处理导入文件选择
+  const handleImportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setImportFile(file)
+    const reader = new FileReader()
+    
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string
+        if (file.name.endsWith('.json')) {
+          const data = JSON.parse(content)
+          if (data.rules && Array.isArray(data.rules)) {
+            setImportPreview(data.rules.slice(0, 5)) // 只预览前5条
+          } else {
+            message.error('无效的JSON格式：缺少rules数组')
+          }
+        } else {
+          message.error('请选择JSON格式的文件')
+        }
+      } catch (error) {
+        message.error('文件解析失败')
+      }
+    }
+    
+    reader.readAsText(file)
+  }
+
+  // 执行导入
+  const handleImport = async () => {
+    if (!importFile) {
+      message.error('请选择要导入的文件')
+      return
+    }
+
+    setImportLoading(true)
+    try {
+      const reader = new FileReader()
+      reader.onload = async (event) => {
+        try {
+          const content = event.target?.result as string
+          const data = JSON.parse(content)
+          
+          if (data.rules && Array.isArray(data.rules)) {
+            const result: any = await ruleApi.import(data.rules, importConflictStrategy)
+            message.success(`导入完成: 成功${result.success}条, 失败${result.failed}条`)
+            if (result.errors && result.errors.length > 0) {
+              console.log('导入错误:', result.errors)
+            }
+            setImportModalVisible(false)
+            setImportFile(null)
+            setImportPreview([])
+            fetchRules(1, pagination.pageSize)
+          } else {
+            message.error('无效的导入数据')
+          }
+        } catch (error: any) {
+          message.error(error.message || '导入失败')
+        } finally {
+          setImportLoading(false)
+        }
+      }
+      reader.readAsText(importFile)
+    } catch (error) {
+      setImportLoading(false)
+      message.error('导入失败')
+    }
+  }
+
   const columns = [
     { title: t('rule:field.name'), dataIndex: 'name', ellipsis: true },
     { title: t('rule:field.ruleType'), dataIndex: 'ruleType', render: (type: string) => getRuleTypeLabel(type) },
@@ -323,11 +474,18 @@ export default function Rules() {
         title={<Title level={4} style={{ margin: 0 }}>{t('rule:title')}</Title>}
         extra={
           <Space>
+            <Button
+              icon={<ImportOutlined />}
+              onClick={() => setImportModalVisible(true)}
+            >
+              导入
+            </Button>
             <Dropdown
               menu={{
                 items: [
-                  { key: 'json', label: t('rule:action.exportAllJson'), onClick: () => handleExport('json') },
-                  { key: 'csv', label: t('rule:action.exportAllCsv'), onClick: () => handleExport('csv') },
+                  { key: 'json', label: '导出为 JSON', onClick: () => handleExport('json') },
+                  { key: 'csv', label: '导出为 CSV', onClick: () => handleExport('csv') },
+                  { key: 'xlsx', label: '导出为 Excel', onClick: () => handleExport('xlsx') },
                 ],
               }}
             >
@@ -476,15 +634,131 @@ export default function Rules() {
                   </span>
                 ),
                 children: (
-                  <RuleConditionBuilder
-                    value={conditions}
-                    onChange={setConditions}
-                  />
+                  <>
+                    <Space style={{ marginBottom: 16 }}>
+                      <Button icon={<FolderOpenOutlined />} onClick={handleOpenTemplateModal}>
+                        从模板加载
+                      </Button>
+                      <Button icon={<SaveOutlined />} onClick={() => setSaveTemplateModalVisible(true)} disabled={conditions.length === 0}>
+                        保存为模板
+                      </Button>
+                    </Space>
+                    <RuleConditionBuilder
+                      value={conditions}
+                      onChange={setConditions}
+                    />
+                  </>
                 ),
               },
             ]}
           />
         </Form>
+      </Modal>
+
+      {/* Template Selector Modal */}
+      <Modal
+        title="选择条件模板"
+        open={templateModalVisible}
+        onCancel={() => setTemplateModalVisible(false)}
+        footer={null}
+        width={600}
+      >
+        <List
+          loading={templateLoading}
+          dataSource={templates}
+          renderItem={(item) => (
+            <List.Item
+              actions={[
+                <Button type="primary" size="small" onClick={() => handleLoadTemplate(item)}>
+                  加载
+                </Button>,
+                <Popconfirm title="确定删除此模板？" onConfirm={() => handleDeleteTemplate(item.id)}>
+                  <Button danger size="small" icon={<DeleteFilled />} />
+                </Popconfirm>,
+              ]}
+            >
+              <List.Item.Meta
+                title={item.name}
+                description={item.description || '无描述'}
+              />
+            </List.Item>
+          )}
+          locale={{ emptyText: '暂无模板' }}
+        />
+      </Modal>
+
+      {/* Save Template Modal */}
+      <Modal
+        title="保存条件模板"
+        open={saveTemplateModalVisible}
+        onOk={() => templateForm.submit()}
+        onCancel={() => setSaveTemplateModalVisible(false)}
+      >
+        <Form form={templateForm} onFinish={handleSaveTemplate} layout="vertical">
+          <Form.Item name="name" label="模板名称" rules={[{ required: true, message: '请输入模板名称' }]}>
+            <Input placeholder="例如：高优先级骑手筛选" />
+          </Form.Item>
+          <Form.Item name="description" label="模板描述">
+            <Input.TextArea rows={3} placeholder="描述此模板的用途..." />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      {/* Import Modal */}
+      <Modal
+        title="导入规则"
+        open={importModalVisible}
+        onOk={handleImport}
+        onCancel={() => {
+          setImportModalVisible(false)
+          setImportFile(null)
+          setImportPreview([])
+        }}
+        confirmLoading={importLoading}
+        width={600}
+      >
+        <Space direction="vertical" style={{ width: '100%' }} size="large">
+          <div>
+            <Typography.Text strong>选择文件：</Typography.Text>
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImportFileChange}
+              style={{ marginLeft: 8 }}
+              ref={fileInputRef}
+            />
+          </div>
+
+          <div>
+            <Typography.Text strong>冲突处理策略：</Typography.Text>
+            <Radio.Group 
+              value={importConflictStrategy} 
+              onChange={(e: RadioChangeEvent) => setImportConflictStrategy(e.target.value)}
+              style={{ marginLeft: 8 }}
+            >
+              <Radio value="skip">跳过</Radio>
+              <Radio value="overwrite">覆盖</Radio>
+              <Radio value="rename">重命名</Radio>
+            </Radio.Group>
+          </div>
+
+          {importPreview.length > 0 && (
+            <div>
+              <Typography.Text strong>预览（前5条）：</Typography.Text>
+              <List
+                size="small"
+                bordered
+                dataSource={importPreview}
+                renderItem={(item: any) => (
+                  <List.Item>
+                    <Typography.Text>{item.name}</Typography.Text>
+                    <Tag>{item.ruleType}</Tag>
+                  </List.Item>
+                )}
+              />
+            </div>
+          )}
+        </Space>
       </Modal>
     </Space>
   )
