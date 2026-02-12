@@ -134,6 +134,11 @@ export const ruleApi = {
   delete: (id: string) => api.delete(`/rules/${id}`),
   updateStatus: (id: string, status: number) =>
     api.put(`/rules/${id}/status`, { status }),
+  clone: (id: string) => api.post(`/rules/${id}/clone`),
+  export: (ids?: string[], format: string = 'json') =>
+    api.get('/rules/export', { params: { ids: ids?.join(','), format } }),
+  exportSingle: (id: string, format: string = 'json') =>
+    api.get(`/rules/${id}/export`, { params: { format } }),
   getVersions: (id: string) => api.get(`/rules/${id}/versions`),
   createVersion: (id: string, data: any) => api.post(`/rules/${id}/versions`, data),
   publishVersion: (ruleId: string, versionId: string) =>
