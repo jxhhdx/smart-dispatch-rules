@@ -403,40 +403,7 @@ export class RulesPage {
     await this.page.waitForTimeout(500);
   }
 
-  // ==================== 导入/导出 ====================
-
-  /**
-   * 打开导入对话框
-   */
-  async openImportDialog() {
-    const importBtn = this.page.locator('button').filter({ hasText: /导入|Import/ });
-    await importBtn.click();
-    await this.page.waitForTimeout(500);
-  }
-
-  /**
-   * 导入规则文件
-   */
-  async importRules(filePath: string, conflictStrategy: 'skip' | 'overwrite' | 'rename' = 'skip') {
-    await this.openImportDialog();
-
-    // 选择冲突处理策略
-    const strategyRadio = this.page.locator('.ant-radio-wrapper').filter({ hasText: 
-      conflictStrategy === 'skip' ? /跳过|Skip/ : 
-      conflictStrategy === 'overwrite' ? /覆盖|Overwrite/ : 
-      /重命名|Rename/ 
-    });
-    await strategyRadio.click();
-
-    // 上传文件
-    const fileInput = this.page.locator('input[type="file"]');
-    await fileInput.setInputFiles(filePath);
-    await this.page.waitForTimeout(1000);
-
-    // 点击导入
-    await this.page.locator('.ant-modal').locator('button').filter({ hasText: /OK|确定|导入/ }).first().click();
-    await this.page.waitForTimeout(2000);
-  }
+  // ==================== 导出 ====================
 
   /**
    * 导出规则

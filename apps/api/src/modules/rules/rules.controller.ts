@@ -14,7 +14,6 @@ import {
 import { RulesService } from './rules.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateRuleDto, UpdateRuleDto, CreateRuleVersionDto } from './dto/rule.dto';
-import { ImportRulesDto } from './dto/template.dto';
 
 @Controller('rules')
 @UseGuards(JwtAuthGuard)
@@ -45,19 +44,6 @@ export class RulesController {
       throw new BadRequestException('不支持的导出格式，支持: json, csv, xlsx');
     }
     return this.rulesService.exportRules(ruleIds, format);
-  }
-
-  // 导入规则 - 必须在 :id 路由之前定义
-  @Post('import')
-  async importRules(
-    @Body() importDto: ImportRulesDto,
-    @Request() req,
-  ) {
-    return this.rulesService.importRules(
-      { rules: importDto.rules },
-      req.user.userId,
-      importDto.conflictStrategy || 'skip',
-    );
   }
 
   // 模拟执行 - 必须在 :id 路由之前定义

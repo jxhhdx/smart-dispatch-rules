@@ -3,8 +3,6 @@ import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { RulesPage } from '../pages/RulesPage';
 import { generateRandomString } from '../utils/test-data';
-import * as fs from 'fs';
-import * as path from 'path';
 
 // 获取登录 token
 async function getAuthToken(page: any): Promise<string> {
@@ -25,17 +23,6 @@ async function createRuleViaAPI(page: any, token: string, data: any) {
   expect(response.status()).toBeLessThan(300);
   const result = await response.json();
   return result.data;
-}
-
-// 创建测试用的导入文件
-function createImportFile(rules: any[]): string {
-  const tempDir = path.join(process.cwd(), 'test-results');
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir, { recursive: true });
-  }
-  const filePath = path.join(tempDir, `import-test-${Date.now()}.json`);
-  fs.writeFileSync(filePath, JSON.stringify({ rules }, null, 2));
-  return filePath;
 }
 
 test.describe('规则增强功能测试', () => {
@@ -266,147 +253,6 @@ test.describe('规则增强功能测试', () => {
     });
   });
 
-  // ==================== IMP - 规则导入测试 ====================
-
-  test.describe('规则导入功能', () => {
-    test('IMP-F-01: 导入JSON文件', async ({ page }) => {
-      // 创建导入文件
-      const importFile = createImportFile([
-        {
-          name: `导入测试规则_${generateRandomString()}`,
-          ruleType: 'distance',
-          priority: 80,
-          description: '通过导入创建',
-        },
-      ]);
-
-      // 执行导入
-      await rulesPage.importRules(importFile, 'skip');
-
-      // 验证导入成功
-      await expect(page.locator('.ant-message').locator('text=/成功|导入完成/i').first()).toBeVisible({ timeout: 5000 });
-
-      // 清理临时文件
-      fs.unlinkSync(importFile);
-    });
-
-    test('IMP-F-02: 导入数据验证', async ({ page }) => {
-      // 创建包含无效数据的导入文件
-      const importFile = createImportFile([
-        {
-          name: '', // 无效：空名称
-          ruleType: 'invalid_type', // 无效类型
-          priority: -1,
-        },
-      ]);
-
-      // 执行导入
-      await rulesPage.importRules(importFile, 'skip');
-
-      // 验证显示错误
-      await expect(page.locator('.ant-message').locator('text=/失败|错误/i').first()).toBeVisible({ timeout: 5000 });
-
-      // 清理
-      fs.unlinkSync(importFile);
-    });
-
-    test('IMP-F-05: 导入数据预览', async ({ page }) => {
-      // 创建导入文件
-      const ruleName = `预览测试_${generateRandomString()}`;
-      const importFile = createImportFile([
-        { name: ruleName, ruleType: 'distance', priority: 50 },
-        { name: `${ruleName}_2`, ruleType: 'rating', priority: 60 },
-      ]);
-
-      // 打开导入对话框
-      await rulesPage.openImportDialog();
-
-      // 上传文件
-      const fileInput = page.locator('input[type="file"]');
-      await fileInput.setInputFiles(importFile);
-      await page.waitForTimeout(1000);
-
-      // 验证预览显示
-      await expect(page.locator('.ant-list-item').filter({ hasText: ruleName })).toBeVisible();
-
-      // 取消导入
-      await page.locator('.ant-modal').locator('button').filter({ hasText: /Cancel|取消/ }).first().click();
-
-      // 清理
-      fs.unlinkSync(importFile);
-    });
-
-    test('IMP-F-06: 批量导入处理', async ({ page }) => {
-      // 创建包含多条规则的导入文件
-      const rules = Array.from({ length: 5 }, (_, i) => ({
-        name: `批量导入_${i}_${generateRandomString()}`,
-        ruleType: 'distance',
-        priority: 50 + i,
-      }));
-      const importFile = createImportFile(rules);
-
-      // 执行导入
-      await rulesPage.importRules(importFile, 'skip');
-
-      // 验证导入成功
-      await expect(page.locator('.ant-message').locator('text=/成功.*5|导入完成/i').first()).toBeVisible({ timeout: 5000 });
-
-      // 清理
-      fs.unlinkSync(importFile);
-    });
-
-    test('IMP-F-07: 导入冲突处理 - 跳过', async ({ page }) => {
-      const ruleName = `冲突测试_${generateRandomString()}`;
-      
-      // 先创建规则
-      await createRuleViaAPI(page, authToken, {
-        name: ruleName,
-        ruleType: 'distance',
-        priority: 50,
-      });
-
-      // 尝试导入同名规则（skip 策略）
-      const importFile = createImportFile([{
-        name: ruleName,
-        ruleType: 'rating',
-        priority: 100,
-      }]);
-
-      await rulesPage.importRules(importFile, 'skip');
-
-      // 验证显示跳过消息
-      await expect(page.locator('.ant-message').locator('text=/跳过|skip/i').first()).toBeVisible({ timeout: 5000 });
-
-      // 清理
-      fs.unlinkSync(importFile);
-    });
-
-    test('IMP-F-07: 导入冲突处理 - 重命名', async ({ page }) => {
-      const ruleName = `重命名测试_${generateRandomString()}`;
-      
-      // 先创建规则
-      await createRuleViaAPI(page, authToken, {
-        name: ruleName,
-        ruleType: 'distance',
-        priority: 50,
-      });
-
-      // 导入同名规则（rename 策略）
-      const importFile = createImportFile([{
-        name: ruleName,
-        ruleType: 'rating',
-        priority: 100,
-      }]);
-
-      await rulesPage.importRules(importFile, 'rename');
-
-      // 验证导入成功（重命名后）
-      await expect(page.locator('.ant-message').locator('text=/成功|导入完成/i').first()).toBeVisible({ timeout: 5000 });
-
-      // 清理
-      fs.unlinkSync(importFile);
-    });
-  });
 
   // ==================== 导出格式测试 ====================
 
