@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Modal, message } from 'antd'
+import i18n from '../i18n'
 import { useAuthStore } from '../stores/auth'
 
 const api = axios.create({
@@ -34,10 +35,10 @@ const showReLoginModal = () => {
   isShowingReLoginModal = true
   
   Modal.confirm({
-    title: '登录已过期',
-    content: '您的登录状态已过期，请重新登录',
-    okText: '去登录',
-    cancelText: '取消',
+    title: i18n.t('auth:modal.sessionExpired.title'),
+    content: i18n.t('auth:modal.sessionExpired.content'),
+    okText: i18n.t('auth:modal.sessionExpired.okText'),
+    cancelText: i18n.t('auth:modal.sessionExpired.cancelText'),
     onOk: () => {
       isShowingReLoginModal = false
       useAuthStore.getState().logout()
@@ -60,7 +61,7 @@ api.interceptors.response.use(
     // 返回标准化错误对象，包含后端返回的错误信息
     const standardizedError = {
       ...error,
-      message: error.response?.data?.message || error.message || '请求失败，请稍后重试',
+      message: error.response?.data?.message || error.message || i18n.t('common:message.requestFailed'),
       code: error.response?.data?.code || status || 500,
       data: error.response?.data,
     }
@@ -76,16 +77,16 @@ api.interceptors.response.use(
       }
     } else if (status === 403) {
       // 403 禁止访问
-      message.error('没有权限执行此操作')
+      message.error(i18n.t('common:message.noPermission'))
     } else if (status === 404) {
       // 404 资源不存在
-      message.error('请求的资源不存在')
+      message.error(i18n.t('common:message.resourceNotFound'))
     } else if (status === 422) {
       // 422 验证错误
-      message.error(standardizedError.message || '数据验证失败')
+      message.error(standardizedError.message || i18n.t('common:message.validationFailed'))
     } else if (status >= 500) {
       // 服务器错误
-      message.error('服务器错误，请稍后重试')
+      message.error(i18n.t('common:message.serverError'))
     } else if (!isLoginRequest && status !== 401) {
       // 其他错误（非登录接口）
       message.error(standardizedError.message)
@@ -135,8 +136,8 @@ export const ruleApi = {
   updateStatus: (id: string, status: number) =>
     api.put(`/rules/${id}/status`, { status }),
   clone: (id: string) => api.post(`/rules/${id}/clone`),
-  export: (ids?: string[], format: string = 'json') =>
-    api.get('/rules/export', { params: { ids: ids?.join(','), format } }),
+  export: (ids?: string[], format: string = 'json', keyword?: string) =>
+    api.get('/rules/export', { params: { ids: ids?.join(','), format, keyword } }),
   exportSingle: (id: string, format: string = 'json') =>
     api.get(`/rules/${id}/export`, { params: { format } }),
   getVersions: (id: string) => api.get(`/rules/${id}/versions`),

@@ -37,13 +37,17 @@ export class RulesController {
 
   // 导出规则 - 必须在 :id 路由之前定义
   @Get('export')
-  async exportRules(@Query('ids') ids: string, @Query('format') format: string = 'json') {
+  async exportRules(
+    @Query('ids') ids: string, 
+    @Query('format') format: string = 'json',
+    @Query('keyword') keyword?: string,
+  ) {
     const ruleIds = ids ? ids.split(',') : [];
     const validFormats = ['json', 'csv', 'xlsx'];
     if (!validFormats.includes(format)) {
       throw new BadRequestException('不支持的导出格式，支持: json, csv, xlsx');
     }
-    return this.rulesService.exportRules(ruleIds, format);
+    return this.rulesService.exportRules(ruleIds, format, keyword);
   }
 
   // 模拟执行 - 必须在 :id 路由之前定义

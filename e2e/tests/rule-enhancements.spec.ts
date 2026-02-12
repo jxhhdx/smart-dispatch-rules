@@ -45,6 +45,57 @@ test.describe('规则增强功能测试', () => {
     await rulesPage.expectLoaded();
   });
 
+  // ==================== CLONE - 规则复制测试 ====================
+
+  test.describe('规则复制功能', () => {
+    test('CLONE-F-01: 复制规则静默创建', async ({ page }) => {
+      // 创建测试规则
+      const ruleName = `复制测试规则_${generateRandomString()}`;
+      await createRuleViaAPI(page, authToken, {
+        name: ruleName,
+        ruleType: 'distance',
+        priority: 50,
+        description: '用于测试复制功能',
+      });
+
+      await rulesPage.page.reload();
+      await rulesPage.expectLoaded();
+
+      // 复制规则
+      await rulesPage.cloneRule(ruleName);
+
+      // 验证复制成功提示（静默复制，不打开弹窗）
+      await expect(page.locator('.ant-message').locator('text=/复制成功|copied|success/i').first()).toBeVisible({ timeout: 5000 });
+
+      // 验证列表中出现复制的规则
+      await expect(page.locator('.ant-table-row').filter({ hasText: `${ruleName} - Copy` })).toBeVisible({ timeout: 5000 });
+    });
+
+    test('CLONE-F-02: 复制规则继承原规则配置', async ({ page }) => {
+      const ruleName = `复制配置测试_${generateRandomString()}`;
+      const rule = await createRuleViaAPI(page, authToken, {
+        name: ruleName,
+        ruleType: 'rating',
+        priority: 75,
+        description: '测试配置继承',
+      });
+
+      await rulesPage.page.reload();
+      await rulesPage.expectLoaded();
+
+      // 复制规则
+      await rulesPage.cloneRule(ruleName);
+      await page.waitForTimeout(1000);
+
+      // 验证复制的规则配置正确
+      const copiedRow = page.locator('.ant-table-row').filter({ hasText: `${ruleName} - Copy` });
+      await expect(copiedRow).toBeVisible();
+
+      // 验证优先级相同
+      await expect(copiedRow.locator('td').nth(3)).toHaveText('75');
+    });
+  });
+
   // ==================== TEMP - 条件模板测试 ====================
 
   test.describe('条件模板功能', () => {
@@ -253,6 +304,66 @@ test.describe('规则增强功能测试', () => {
     });
   });
 
+
+  // ==================== 搜索导出测试 ====================
+
+  test.describe('搜索导出功能', () => {
+    test('EXP-F-04: 搜索后只导出符合条件的规则', async ({ page }) => {
+      // 创建多个测试规则
+      const targetKeyword = `搜索导出_${generateRandomString()}`;
+      const matchingRule1 = `${targetKeyword}_规则1`;
+      const matchingRule2 = `${targetKeyword}_规则2`;
+      const nonMatchingRule = `其他_${generateRandomString()}`;
+
+      await createRuleViaAPI(page, authToken, {
+        name: matchingRule1,
+        ruleType: 'distance',
+        priority: 50,
+        description: '应该被导出',
+      });
+      await createRuleViaAPI(page, authToken, {
+        name: matchingRule2,
+        ruleType: 'workload',
+        priority: 60,
+        description: '应该被导出',
+      });
+      await createRuleViaAPI(page, authToken, {
+        name: nonMatchingRule,
+        ruleType: 'rating',
+        priority: 70,
+        description: '不应该被导出',
+      });
+
+      await rulesPage.page.reload();
+      await rulesPage.expectLoaded();
+
+      // 搜索并导出
+      const download = await rulesPage.searchAndExport(targetKeyword, 'json');
+      expect(download).toBeTruthy();
+
+      // 验证导出成功提示
+      await expect(page.locator('.ant-message').locator('text=/导出成功|export|success/i').first()).toBeVisible({ timeout: 5000 });
+    });
+
+    test('EXP-F-05: 搜索后导出Excel', async ({ page }) => {
+      const targetKeyword = `Excel搜索_${generateRandomString()}`;
+      const matchingRule = `${targetKeyword}_Excel规则`;
+
+      await createRuleViaAPI(page, authToken, {
+        name: matchingRule,
+        ruleType: 'distance',
+        priority: 80,
+        description: 'Excel导出测试',
+      });
+
+      await rulesPage.page.reload();
+      await rulesPage.expectLoaded();
+
+      // 搜索并导出Excel
+      const download = await rulesPage.searchAndExport(targetKeyword, 'xlsx');
+      expect(download).toBeTruthy();
+    });
+  });
 
   // ==================== 导出格式测试 ====================
 

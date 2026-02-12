@@ -77,6 +77,9 @@
     "description": "请输入规则描述",
     "search": "搜索规则名称"
   },
+  "search": {
+    "placeholder": "搜索规则名称或描述"
+  },
   "validation": {
     "nameRequired": "规则名称不能为空",
     "typeRequired": "请选择规则类型",
@@ -109,8 +112,26 @@
     "export": "导出",
     "exportJson": "导出为 JSON",
     "exportCsv": "导出为 CSV",
+    "exportXlsx": "导出为 Excel",
     "exportAllJson": "导出全部为 JSON",
     "exportAllCsv": "导出全部为 CSV"
+  },
+  "template": {
+    "title": "选择条件模板",
+    "saveTitle": "保存条件模板",
+    "name": "模板名称",
+    "description": "模板描述",
+    "namePlaceholder": "例如：高优先级骑手筛选",
+    "descriptionPlaceholder": "描述此模板的用途...",
+    "nameRequired": "请输入模板名称",
+    "loadFromTemplate": "从模板加载",
+    "saveAsTemplate": "保存为模板",
+    "load": "加载",
+    "deleteConfirm": "确定删除此模板？",
+    "noDescription": "无描述",
+    "empty": "暂无模板",
+    "saveSuccess": "模板保存成功",
+    "deleteSuccess": "模板删除成功"
   },
   "advancedEdit": {
     "title": "高级编辑: {{name}}",
@@ -154,5 +175,107 @@
     "false": "为假",
     "before": "在之前",
     "after": "在之后"
+  },
+  "filterField": {
+    "rider": {
+      "id": "骑手ID",
+      "level": "骑手等级",
+      "rating": "骑手评分",
+      "activeOrders": "当前订单数",
+      "completionRate": "完成率",
+      "workHours": "今日工作时长"
+    },
+    "merchant": {
+      "id": "商家ID",
+      "type": "商家类型",
+      "rating": "商家评分",
+      "deliveryRange": "配送范围",
+      "isVip": "VIP商家"
+    },
+    "order": {
+      "id": "订单ID",
+      "amount": "订单金额",
+      "distance": "配送距离",
+      "weight": "订单重量",
+      "itemCount": "商品数量",
+      "productType": "商品类型",
+      "isUrgent": "加急订单",
+      "timeWindow": "时间窗口",
+      "customerLevel": "客户等级"
+    },
+    "time": {
+      "hourOfDay": "小时",
+      "dayOfWeek": "星期",
+      "isHoliday": "是否节假日",
+      "isPeakHour": "是否高峰时段",
+      "timeRange": "时间范围"
+    },
+    "geo": {
+      "district": "行政区",
+      "businessZone": "商圈",
+      "specialLocation": "特殊位置",
+      "weather": "天气状况"
+    }
+  },
+  "level": {
+    "bronze": "青铜",
+    "silver": "白银",
+    "gold": "黄金",
+    "platinum": "铂金"
+  },
+  "merchantType": {
+    "restaurant": "餐厅",
+    "grocery": "生鲜",
+    "pharmacy": "药店",
+    "retail": "零售"
+  },
+  "productType": {
+    "food": "食品",
+    "grocery": "生鲜",
+    "medicine": "药品",
+    "fresh": "生鲜果蔬",
+    "other": "其他"
+  },
+  "customerLevel": {
+    "normal": "普通",
+    "silver": "白银",
+    "gold": "黄金",
+    "platinum": "铂金",
+    "diamond": "钻石"
+  },
+  "weekday": {
+    "monday": "周一",
+    "tuesday": "周二",
+    "wednesday": "周三",
+    "thursday": "周四",
+    "friday": "周五",
+    "saturday": "周六",
+    "sunday": "周日"
+  },
+  "locationType": {
+    "hospital": "医院",
+    "school": "学校",
+    "office": "写字楼",
+    "residential": "住宅区",
+    "mall": "商场"
+  },
+  "weather": {
+    "sunny": "晴天",
+    "cloudy": "多云",
+    "rainy": "雨天",
+    "snowy": "雪天",
+    "stormy": "暴风雨"
+  },
+  "boolean": {
+    "true": "是",
+    "false": "否"
+  },
+  "unit": {
+    "orders": "单",
+    "hours": "小时",
+    "km": "公里",
+    "kg": "公斤",
+    "items": "件",
+    "min": "分钟"
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Table, Button, Space, Modal, Form, Input, Select, Tag, Card, Typography, Popconfirm, Switch, Tooltip, message, Dropdown, Tabs, Badge, List } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CopyOutlined, ExportOutlined, DownOutlined, CheckOutlined, CloseOutlined, SettingOutlined, SaveOutlined, FolderOpenOutlined, DeleteFilled } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CopyOutlined, ExportOutlined, DownOutlined, CheckOutlined, CloseOutlined, SettingOutlined, SaveOutlined, FolderOpenOutlined, DeleteFilled, SearchOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { ruleApi, templateApi } from '../services/api'
 import RuleConditionBuilder, { ConditionNode } from '../components/RuleConditionBuilder'
@@ -35,6 +35,7 @@ export default function Rules() {
     pageSize: 10,
     total: 0,
   })
+  const [searchKeyword, setSearchKeyword] = useState('')
   const { t } = useTranslation(['rule', 'common'])
 
   // 模板管理状态
@@ -56,10 +57,14 @@ export default function Rules() {
     { value: 'composite', label: t('rule:type.composite') },
   ]
 
-  const fetchRules = async (page = 1, pageSize = 10) => {
+  const fetchRules = async (page = 1, pageSize = 10, keyword = searchKeyword) => {
     setLoading(true)
     try {
-      const res: any = await ruleApi.getList({ page, pageSize })
+      const params: any = { page, pageSize }
+      if (keyword.trim()) {
+        params.keyword = keyword.trim()
+      }
+      const res: any = await ruleApi.getList(params)
       setRules(res.data.list)
       setPagination({
         current: res.data.pagination.page,
@@ -69,6 +74,15 @@ export default function Rules() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleSearch = () => {
+    fetchRules(1, pagination.pageSize, searchKeyword)
+  }
+
+  const handleReset = () => {
+    setSearchKeyword('')
+    fetchRules(1, pagination.pageSize, '')
   }
 
   useEffect(() => {
@@ -140,13 +154,9 @@ export default function Rules() {
   // 复制规则
   const handleCloneRule = async (record: Rule) => {
     try {
-      const res: any = await ruleApi.clone(record.id)
+      await ruleApi.clone(record.id)
       message.success(t('rule:message.copySuccess'))
       fetchRules(pagination.current, pagination.pageSize)
-      // 打开编辑弹窗
-      setEditingRule(res.data)
-      form.setFieldsValue(res.data)
-      setModalVisible(true)
     } catch (error) {
       // Error handled by API interceptor
     }
@@ -157,11 +167,26 @@ export default function Rules() {
     try {
       const res: any = ruleId 
         ? await ruleApi.exportSingle(ruleId, format)
-        : await ruleApi.export([], format)
+        : await ruleApi.export([], format, searchKeyword)
       
       if (format === 'csv') {
         // 下载 CSV 文件
         const blob = new Blob([res.data.content], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = res.data.filename
+        link.click()
+        window.URL.revokeObjectURL(url)
+      } else if (format === 'xlsx') {
+        // 下载 Excel 文件 (base64 转 blob)
+        const byteCharacters = atob(res.data.content)
+        const byteNumbers = new Array(byteCharacters.length)
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i)
+        }
+        const byteArray = new Uint8Array(byteNumbers)
+        const blob = new Blob([byteArray], { type: res.data.contentType })
         const url = window.URL.createObjectURL(blob)
         const link = document.createElement('a')
         link.href = url
@@ -289,7 +314,7 @@ export default function Rules() {
         category: 'custom',
         conditions: conditions,
       })
-      message.success('模板保存成功')
+      message.success(t('rule:template.saveSuccess'))
       setSaveTemplateModalVisible(false)
       templateForm.resetFields()
     } catch (error) {
@@ -301,7 +326,7 @@ export default function Rules() {
   const handleDeleteTemplate = async (id: string) => {
     try {
       await templateApi.delete(id)
-      message.success('模板删除成功')
+      message.success(t('rule:template.deleteSuccess'))
       fetchTemplates()
     } catch (error) {
       // Error handled by API interceptor
@@ -366,18 +391,7 @@ export default function Rules() {
               onClick={() => handleCloneRule(record)}
             />
           </Tooltip>
-          <Tooltip title={t('rule:action.export')}>
-            <Dropdown
-              menu={{
-                items: [
-                  { key: 'json', label: 'Export as JSON', onClick: () => handleExport('json', record.id) },
-                  { key: 'csv', label: 'Export as CSV', onClick: () => handleExport('csv', record.id) },
-                ],
-              }}
-            >
-              <Button type="text" icon={<ExportOutlined />} />
-            </Dropdown>
-          </Tooltip>
+
           <Popconfirm
             title={t('common:message.confirmDelete')}
             onConfirm={() => handleDelete(record.id)}
@@ -396,12 +410,23 @@ export default function Rules() {
         title={<Title level={4} style={{ margin: 0 }}>{t('rule:title')}</Title>}
         extra={
           <Space>
+            <Input
+              placeholder={t('rule:search.placeholder')}
+              value={searchKeyword}
+              onChange={(e) => setSearchKeyword(e.target.value)}
+              onPressEnter={handleSearch}
+              prefix={<SearchOutlined />}
+              style={{ width: 200 }}
+              allowClear
+            />
+            <Button onClick={handleSearch}>{t('common:button.search')}</Button>
+            <Button onClick={handleReset}>{t('common:button.reset')}</Button>
             <Dropdown
               menu={{
                 items: [
-                  { key: 'json', label: '导出为 JSON', onClick: () => handleExport('json') },
-                  { key: 'csv', label: '导出为 CSV', onClick: () => handleExport('csv') },
-                  { key: 'xlsx', label: '导出为 Excel', onClick: () => handleExport('xlsx') },
+                  { key: 'json', label: t('rule:action.exportJson'), onClick: () => handleExport('json') },
+                  { key: 'csv', label: t('rule:action.exportCsv'), onClick: () => handleExport('csv') },
+                  { key: 'xlsx', label: t('rule:action.exportXlsx'), onClick: () => handleExport('xlsx') },
                 ],
               }}
             >
@@ -553,10 +578,10 @@ export default function Rules() {
                   <>
                     <Space style={{ marginBottom: 16 }}>
                       <Button icon={<FolderOpenOutlined />} onClick={handleOpenTemplateModal}>
-                        从模板加载
+                        {t('rule:template.loadFromTemplate')}
                       </Button>
                       <Button icon={<SaveOutlined />} onClick={() => setSaveTemplateModalVisible(true)} disabled={conditions.length === 0}>
-                        保存为模板
+                        {t('rule:template.saveAsTemplate')}
                       </Button>
                     </Space>
                     <RuleConditionBuilder
@@ -573,7 +598,7 @@ export default function Rules() {
 
       {/* Template Selector Modal */}
       <Modal
-        title="选择条件模板"
+        title={t('rule:template.title')}
         open={templateModalVisible}
         onCancel={() => setTemplateModalVisible(false)}
         footer={null}
@@ -586,36 +611,36 @@ export default function Rules() {
             <List.Item
               actions={[
                 <Button type="primary" size="small" onClick={() => handleLoadTemplate(item)}>
-                  加载
+                  {t('rule:template.load')}
                 </Button>,
-                <Popconfirm title="确定删除此模板？" onConfirm={() => handleDeleteTemplate(item.id)}>
+                <Popconfirm title={t('rule:template.deleteConfirm')} onConfirm={() => handleDeleteTemplate(item.id)}>
                   <Button danger size="small" icon={<DeleteFilled />} />
                 </Popconfirm>,
               ]}
             >
               <List.Item.Meta
                 title={item.name}
-                description={item.description || '无描述'}
+                description={item.description || t('rule:template.noDescription')}
               />
             </List.Item>
           )}
-          locale={{ emptyText: '暂无模板' }}
+          locale={{ emptyText: t('rule:template.empty') }}
         />
       </Modal>
 
       {/* Save Template Modal */}
       <Modal
-        title="保存条件模板"
+        title={t('rule:template.saveTitle')}
         open={saveTemplateModalVisible}
         onOk={() => templateForm.submit()}
         onCancel={() => setSaveTemplateModalVisible(false)}
       >
         <Form form={templateForm} onFinish={handleSaveTemplate} layout="vertical">
-          <Form.Item name="name" label="模板名称" rules={[{ required: true, message: '请输入模板名称' }]}>
-            <Input placeholder="例如：高优先级骑手筛选" />
+          <Form.Item name="name" label={t('rule:template.name')} rules={[{ required: true, message: t('rule:template.nameRequired') }]}>
+            <Input placeholder={t('rule:template.namePlaceholder')} />
           </Form.Item>
-          <Form.Item name="description" label="模板描述">
-            <Input.TextArea rows={3} placeholder="描述此模板的用途..." />
+          <Form.Item name="description" label={t('rule:template.description')}>
+            <Input.TextArea rows={3} placeholder={t('rule:template.descriptionPlaceholder')} />
           </Form.Item>
         </Form>
       </Modal>
