@@ -46,7 +46,10 @@
     "or": "OR",
     "delete": "Delete Condition",
     "group": "Condition Group",
-    "emptyTip": "Click \"Add Condition\" or \"Add Group\" to build your rule"
+    "emptyTip": "Click \"Add Condition\" or \"Add Group\" to build your rule",
+    "select": "Select",
+    "min": "Min",
+    "max": "Max"
   },
   "action": {
     "title": "Action Configuration",

@@ -304,10 +304,10 @@ export default function RuleConditionBuilder({
           value={node.value}
           onChange={(value) => updateNode(node.id, { value })}
           style={{ width: 150 }}
-          placeholder="Select"
+          placeholder={t('condition.select')}
         >
-          <Select.Option value={true}>True</Select.Option>
-          <Select.Option value={false}>False</Select.Option>
+          <Select.Option value={true}>{t('condition.true')}</Select.Option>
+          <Select.Option value={false}>{t('condition.false')}</Select.Option>
         </Select>
       )
     }
@@ -319,7 +319,7 @@ export default function RuleConditionBuilder({
           value={node.value}
           onChange={(value) => updateNode(node.id, { value })}
           style={{ width: 150 }}
-          placeholder="Select"
+          placeholder={t('condition.select')}
           options={fieldConfig.options}
         />
       )
@@ -337,7 +337,7 @@ export default function RuleConditionBuilder({
                 const current = Array.isArray(node.value) ? node.value : [undefined, undefined]
                 updateNode(node.id, { value: [v, current[1]] })
               }}
-              placeholder="Min"
+              placeholder={t('condition.min')}
               style={{ width: 100 }}
             />
             <span>-</span>
@@ -347,7 +347,7 @@ export default function RuleConditionBuilder({
                 const current = Array.isArray(node.value) ? node.value : [undefined, undefined]
                 updateNode(node.id, { value: [current[0], v] })
               }}
-              placeholder="Max"
+              placeholder={t('condition.max')}
               style={{ width: 100 }}
             />
             {fieldConfig.unit && <span>{fieldConfig.unit}</span>}
@@ -362,7 +362,7 @@ export default function RuleConditionBuilder({
             value={node.value}
             onChange={(e) => updateNode(node.id, { value: Number(e.target.value) })}
             style={{ width: 120 }}
-            placeholder="Value"
+            placeholder={t('condition.value')}
           />
           {fieldConfig.unit && <span>{fieldConfig.unit}</span>}
         </Space>
