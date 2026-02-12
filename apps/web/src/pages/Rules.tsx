@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Table, Button, Space, Modal, Form, Input, Select, Tag, Card, Typography, Popconfirm } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons'
+import { Table, Button, Space, Modal, Form, Input, Select, Tag, Card, Typography, Popconfirm, Switch, Tooltip, message, Dropdown, Tabs, Badge } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CopyOutlined, ExportOutlined, DownOutlined, CheckOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { ruleApi } from '../services/api'
+import RuleConditionBuilder, { ConditionNode } from '../components/RuleConditionBuilder'
 
 const { Title } = Typography
 
@@ -20,10 +21,13 @@ export default function Rules() {
   const [rules, setRules] = useState<Rule[]>([])
   const [loading, setLoading] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
+  const [advancedModalVisible, setAdvancedModalVisible] = useState(false)
   const [editingRule, setEditingRule] = useState<Rule | null>(null)
   const [detailVisible, setDetailVisible] = useState(false)
   const [detailRule, setDetailRule] = useState<any>(null)
+  const [conditions, setConditions] = useState<ConditionNode[]>([])
   const [form] = Form.useForm()
+  const [advancedForm] = Form.useForm()
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
@@ -113,6 +117,124 @@ export default function Rules() {
     return ruleTypeOptions.find(opt => opt.value === type)?.label || type
   }
 
+    // 切换规则状态
+  const handleToggleStatus = async (record: Rule, checked: boolean) => {
+    try {
+      const newStatus = checked ? 1 : 0
+      await ruleApi.updateStatus(record.id, newStatus)
+      message.success(checked ? 'Rule enabled' : 'Rule disabled')
+      fetchRules(pagination.current, pagination.pageSize)
+    } catch (error) {
+      // Error handled by API interceptor
+    }
+  }
+
+  // 复制规则
+  const handleCloneRule = async (record: Rule) => {
+    try {
+      const res: any = await ruleApi.clone(record.id)
+      message.success('Rule copied successfully')
+      fetchRules(pagination.current, pagination.pageSize)
+      // 打开编辑弹窗
+      setEditingRule(res.data)
+      form.setFieldsValue(res.data)
+      setModalVisible(true)
+    } catch (error) {
+      // Error handled by API interceptor
+    }
+  }
+
+  // 导出规则
+  const handleExport = async (format: string, ruleId?: string) => {
+    try {
+      const res: any = ruleId 
+        ? await ruleApi.exportSingle(ruleId, format)
+        : await ruleApi.export([], format)
+      
+      if (format === 'csv') {
+        // 下载 CSV 文件
+        const blob = new Blob([res.data.content], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = res.data.filename
+        link.click()
+        window.URL.revokeObjectURL(url)
+      } else {
+        // 下载 JSON 文件
+        const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `rules_export_${new Date().toISOString().slice(0, 10)}.json`
+        link.click()
+        window.URL.revokeObjectURL(url)
+      }
+      message.success('Export successful')
+    } catch (error) {
+      // Error handled by API interceptor
+    }
+  }
+
+  // 打开高级编辑
+  const handleOpenAdvancedEdit = async (record: Rule) => {
+    setEditingRule(record)
+    advancedForm.setFieldsValue(record)
+    
+    // 加载规则详情获取条件
+    try {
+      const res: any = await ruleApi.getDetail(record.id)
+      const latestVersion = res.data.versions?.[0]
+      if (latestVersion?.conditions) {
+        // 转换后端条件格式为组件格式
+        const convertedConditions: ConditionNode[] = latestVersion.conditions.map((c: any) => ({
+          id: c.id || Math.random().toString(36).substr(2, 9),
+          type: 'condition',
+          field: c.field,
+          operator: c.operator,
+          value: c.value,
+        }))
+        setConditions(convertedConditions)
+      } else {
+        setConditions([])
+      }
+    } catch (error) {
+      setConditions([])
+    }
+    
+    setAdvancedModalVisible(true)
+  }
+
+  // 保存高级编辑
+  const handleSaveAdvanced = async () => {
+    try {
+      const values = await advancedForm.validateFields()
+      if (editingRule) {
+        await ruleApi.update(editingRule.id, values)
+        // 如果有条件，创建新版本
+        if (conditions.length > 0) {
+          await ruleApi.createVersion(editingRule.id, {
+            configJson: { conditions },
+            description: 'Updated via advanced editor',
+            conditions: conditions.map(c => ({
+              conditionType: 'simple',
+              field: c.field,
+              operator: c.operator,
+              value: String(c.value),
+              valueType: typeof c.value === 'number' ? 'number' : 'string',
+              logicType: 'AND',
+            })),
+          })
+        }
+        message.success('Rule updated successfully')
+        setAdvancedModalVisible(false)
+        fetchRules(pagination.current, pagination.pageSize)
+      }
+    } catch (error) {
+      // Error handled by API interceptor
+    }
+  }
+
   const columns = [
     { title: t('rule:field.name'), dataIndex: 'name', ellipsis: true },
     { title: t('rule:field.ruleType'), dataIndex: 'ruleType', render: (type: string) => getRuleTypeLabel(type) },
@@ -121,28 +243,68 @@ export default function Rules() {
       title: t('rule:field.status'),
       dataIndex: 'status',
       width: 120,
-      render: (status: number) => getStatusTag(status),
+      render: (status: number, record: Rule) => (
+        <Space>
+          {getStatusTag(status)}
+          <Switch
+            checked={status === 1}
+            onChange={(checked) => handleToggleStatus(record, checked)}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+          />
+        </Space>
+      ),
     },
     {
       title: t('common:table.action'),
-      width: 150,
+      width: 200,
       fixed: 'right' as const,
       render: (_: any, record: Rule) => (
         <Space size={0}>
-          <Button
-            type="text"
-            icon={<EyeOutlined />}
-            onClick={() => handleViewDetail(record.id)}
-          />
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setEditingRule(record)
-              form.setFieldsValue(record)
-              setModalVisible(true)
-            }}
-          />
+          <Tooltip title="View">
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => handleViewDetail(record.id)}
+            />
+          </Tooltip>
+          <Tooltip title="Quick Edit">
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setEditingRule(record)
+                form.setFieldsValue(record)
+                setModalVisible(true)
+              }}
+            />
+          </Tooltip>
+          <Tooltip title="Advanced Edit">
+            <Button
+              type="text"
+              icon={<SettingOutlined />}
+              onClick={() => handleOpenAdvancedEdit(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Copy">
+            <Button
+              type="text"
+              icon={<CopyOutlined />}
+              onClick={() => handleCloneRule(record)}
+            />
+          </Tooltip>
+          <Tooltip title="Export">
+            <Dropdown
+              menu={{
+                items: [
+                  { key: 'json', label: 'Export as JSON', onClick: () => handleExport('json', record.id) },
+                  { key: 'csv', label: 'Export as CSV', onClick: () => handleExport('csv', record.id) },
+                ],
+              }}
+            >
+              <Button type="text" icon={<ExportOutlined />} />
+            </Dropdown>
+          </Tooltip>
           <Popconfirm
             title={t('common:message.confirmDelete')}
             onConfirm={() => handleDelete(record.id)}
@@ -160,17 +322,31 @@ export default function Rules() {
         variant="borderless"
         title={<Title level={4} style={{ margin: 0 }}>{t('rule:title')}</Title>}
         extra={
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => {
-              setEditingRule(null)
-              form.resetFields()
-              setModalVisible(true)
-            }}
-          >
-            {t('rule:create')}
-          </Button>
+          <Space>
+            <Dropdown
+              menu={{
+                items: [
+                  { key: 'json', label: 'Export All as JSON', onClick: () => handleExport('json') },
+                  { key: 'csv', label: 'Export All as CSV', onClick: () => handleExport('csv') },
+                ],
+              }}
+            >
+              <Button icon={<ExportOutlined />}>
+                Export <DownOutlined />
+              </Button>
+            </Dropdown>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => {
+                setEditingRule(null)
+                form.resetFields()
+                setModalVisible(true)
+              }}
+            >
+              {t('rule:create')}
+            </Button>
+          </Space>
         }
       >
         <Table
@@ -259,6 +435,56 @@ export default function Rules() {
             ))}
           </Space>
         )}
+      </Modal>
+
+      {/* Advanced Edit Modal */}
+      <Modal
+        title={`Advanced Edit: ${editingRule?.name}`}
+        open={advancedModalVisible}
+        onOk={handleSaveAdvanced}
+        onCancel={() => setAdvancedModalVisible(false)}
+        width={1000}
+        okText="Save"
+        cancelText="Cancel"
+      >
+        <Form form={advancedForm} layout="vertical">
+          <Tabs
+            items={[
+              {
+                key: 'basic',
+                label: 'Basic Info',
+                children: (
+                  <>
+                    <Form.Item name="name" label="Rule Name" rules={[{ required: true }]}>
+                      <Input placeholder="Enter rule name" />
+                    </Form.Item>
+                    <Form.Item name="description" label="Description">
+                      <Input.TextArea rows={3} placeholder="Enter description" />
+                    </Form.Item>
+                    <Form.Item name="priority" label="Priority" initialValue={0}>
+                      <Input type="number" />
+                    </Form.Item>
+                  </>
+                ),
+              },
+              {
+                key: 'conditions',
+                label: (
+                  <span>
+                    Conditions
+                    <Badge count={conditions.length} style={{ marginLeft: 8 }} />
+                  </span>
+                ),
+                children: (
+                  <RuleConditionBuilder
+                    value={conditions}
+                    onChange={setConditions}
+                  />
+                ),
+              },
+            ]}
+          />
+        </Form>
       </Modal>
     </Space>
   )
