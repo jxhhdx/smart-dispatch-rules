@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from 'react'
-import { Table, Button, Space, Modal, Form, Input, Select, Tag, Card, Typography, Popconfirm, Switch, Tooltip, message, Dropdown, Tabs, Badge, List, Radio } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CopyOutlined, ExportOutlined, DownOutlined, CheckOutlined, CloseOutlined, SettingOutlined, ImportOutlined, SaveOutlined, FolderOpenOutlined, DeleteFilled } from '@ant-design/icons'
+import { useState, useEffect } from 'react'
+import { Table, Button, Space, Modal, Form, Input, Select, Tag, Card, Typography, Popconfirm, Switch, Tooltip, message, Dropdown, Tabs, Badge, List } from 'antd'
+import { PlusOutlined, EditOutlined, DeleteOutlined, EyeOutlined, CopyOutlined, ExportOutlined, DownOutlined, CheckOutlined, CloseOutlined, SettingOutlined, SaveOutlined, FolderOpenOutlined, DeleteFilled } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { ruleApi, templateApi } from '../services/api'
 import RuleConditionBuilder, { ConditionNode } from '../components/RuleConditionBuilder'
-import type { RadioChangeEvent } from 'antd';
+
 
 const { Title } = Typography
 
@@ -42,14 +42,6 @@ export default function Rules() {
   const [saveTemplateModalVisible, setSaveTemplateModalVisible] = useState(false)
   const [templates, setTemplates] = useState<any[]>([])
   const [templateLoading, setTemplateLoading] = useState(false)
-
-  // 导入状态
-  const [importModalVisible, setImportModalVisible] = useState(false)
-  const [importFile, setImportFile] = useState<File | null>(null)
-  const [importPreview, setImportPreview] = useState<any[]>([])
-  const [importConflictStrategy, setImportConflictStrategy] = useState('skip')
-  const [importLoading, setImportLoading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 规则类型选项
   const ruleTypeOptions = [
@@ -316,80 +308,10 @@ export default function Rules() {
     }
   }
 
-  // 处理导入文件选择
-  const handleImportFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setImportFile(file)
-    const reader = new FileReader()
-    
-    reader.onload = (event) => {
-      try {
-        const content = event.target?.result as string
-        if (file.name.endsWith('.json')) {
-          const data = JSON.parse(content)
-          if (data.rules && Array.isArray(data.rules)) {
-            setImportPreview(data.rules.slice(0, 5)) // 只预览前5条
-          } else {
-            message.error('无效的JSON格式：缺少rules数组')
-          }
-        } else {
-          message.error('请选择JSON格式的文件')
-        }
-      } catch (error) {
-        message.error('文件解析失败')
-      }
-    }
-    
-    reader.readAsText(file)
-  }
-
-  // 执行导入
-  const handleImport = async () => {
-    if (!importFile) {
-      message.error('请选择要导入的文件')
-      return
-    }
-
-    setImportLoading(true)
-    try {
-      const reader = new FileReader()
-      reader.onload = async (event) => {
-        try {
-          const content = event.target?.result as string
-          const data = JSON.parse(content)
-          
-          if (data.rules && Array.isArray(data.rules)) {
-            const result: any = await ruleApi.import(data.rules, importConflictStrategy)
-            message.success(`导入完成: 成功${result.success}条, 失败${result.failed}条`)
-            if (result.errors && result.errors.length > 0) {
-              console.log('导入错误:', result.errors)
-            }
-            setImportModalVisible(false)
-            setImportFile(null)
-            setImportPreview([])
-            fetchRules(1, pagination.pageSize)
-          } else {
-            message.error('无效的导入数据')
-          }
-        } catch (error: any) {
-          message.error(error.message || '导入失败')
-        } finally {
-          setImportLoading(false)
-        }
-      }
-      reader.readAsText(importFile)
-    } catch (error) {
-      setImportLoading(false)
-      message.error('导入失败')
-    }
-  }
-
   const columns = [
-    { title: t('rule:field.name'), dataIndex: 'name', ellipsis: true },
-    { title: t('rule:field.ruleType'), dataIndex: 'ruleType', render: (type: string) => getRuleTypeLabel(type) },
-    { title: t('rule:field.priority'), dataIndex: 'priority', width: 100 },
+    { title: t('rule:field.name'), dataIndex: 'name', width: 280, ellipsis: true },
+    { title: t('rule:field.ruleType'), dataIndex: 'ruleType', width: 140, render: (type: string) => getRuleTypeLabel(type) },
+    { title: t('rule:field.priority'), dataIndex: 'priority', width: 90 },
     {
       title: t('rule:field.status'),
       dataIndex: 'status',
@@ -474,12 +396,6 @@ export default function Rules() {
         title={<Title level={4} style={{ margin: 0 }}>{t('rule:title')}</Title>}
         extra={
           <Space>
-            <Button
-              icon={<ImportOutlined />}
-              onClick={() => setImportModalVisible(true)}
-            >
-              导入
-            </Button>
             <Dropdown
               menu={{
                 items: [
@@ -702,63 +618,6 @@ export default function Rules() {
             <Input.TextArea rows={3} placeholder="描述此模板的用途..." />
           </Form.Item>
         </Form>
-      </Modal>
-
-      {/* Import Modal */}
-      <Modal
-        title="导入规则"
-        open={importModalVisible}
-        onOk={handleImport}
-        onCancel={() => {
-          setImportModalVisible(false)
-          setImportFile(null)
-          setImportPreview([])
-        }}
-        confirmLoading={importLoading}
-        width={600}
-      >
-        <Space direction="vertical" style={{ width: '100%' }} size="large">
-          <div>
-            <Typography.Text strong>选择文件：</Typography.Text>
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportFileChange}
-              style={{ marginLeft: 8 }}
-              ref={fileInputRef}
-            />
-          </div>
-
-          <div>
-            <Typography.Text strong>冲突处理策略：</Typography.Text>
-            <Radio.Group 
-              value={importConflictStrategy} 
-              onChange={(e: RadioChangeEvent) => setImportConflictStrategy(e.target.value)}
-              style={{ marginLeft: 8 }}
-            >
-              <Radio value="skip">跳过</Radio>
-              <Radio value="overwrite">覆盖</Radio>
-              <Radio value="rename">重命名</Radio>
-            </Radio.Group>
-          </div>
-
-          {importPreview.length > 0 && (
-            <div>
-              <Typography.Text strong>预览（前5条）：</Typography.Text>
-              <List
-                size="small"
-                bordered
-                dataSource={importPreview}
-                renderItem={(item: any) => (
-                  <List.Item>
-                    <Typography.Text>{item.name}</Typography.Text>
-                    <Tag>{item.ruleType}</Tag>
-                  </List.Item>
-                )}
-              />
-            </div>
-          )}
-        </Space>
       </Modal>
     </Space>
   )

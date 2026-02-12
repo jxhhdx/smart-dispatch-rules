@@ -30,11 +30,4 @@ export class UpdateTemplateDto {
   conditions?: any;
 }
 
-export class ImportRulesDto {
-  @IsNotEmpty()
-  rules: any[];
 
-  @IsString()
-  @IsOptional()
-  conflictStrategy?: 'skip' | 'overwrite' | 'rename';
-}

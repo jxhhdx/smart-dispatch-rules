@@ -139,8 +139,6 @@ export const ruleApi = {
     api.get('/rules/export', { params: { ids: ids?.join(','), format } }),
   exportSingle: (id: string, format: string = 'json') =>
     api.get(`/rules/${id}/export`, { params: { format } }),
-  import: (rules: any[], conflictStrategy: string = 'skip') =>
-    api.post('/rules/import', { rules, conflictStrategy }),
   getVersions: (id: string) => api.get(`/rules/${id}/versions`),
   createVersion: (id: string, data: any) => api.post(`/rules/${id}/versions`, data),
   publishVersion: (ruleId: string, versionId: string) =>
