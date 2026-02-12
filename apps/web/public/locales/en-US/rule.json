@@ -45,7 +45,8 @@
     "and": "AND",
     "or": "OR",
     "delete": "Delete Condition",
-    "group": "Condition Group"
+    "group": "Condition Group",
+    "emptyTip": "Click \"Add Condition\" or \"Add Group\" to build your rule"
   },
   "action": {
     "title": "Action Configuration",
@@ -90,6 +91,65 @@
     "publishConfirm": "Are you sure to publish this rule? It will take effect immediately",
     "offlineConfirm": "Are you sure to offline this rule?",
     "simulateSuccess": "Simulation completed successfully",
-    "cannotEditPublished": "Published rules cannot be edited directly, please create a new version"
+    "cannotEditPublished": "Published rules cannot be edited directly, please create a new version",
+    "enableSuccess": "Rule enabled",
+    "disableSuccess": "Rule disabled",
+    "copySuccess": "Rule copied successfully",
+    "exportSuccess": "Export successful",
+    "versionDescription": "Updated via advanced editor"
+  },
+  "action": {
+    "view": "View",
+    "quickEdit": "Quick Edit",
+    "advancedEdit": "Advanced Edit",
+    "copy": "Copy",
+    "export": "Export",
+    "exportJson": "Export as JSON",
+    "exportCsv": "Export as CSV",
+    "exportAllJson": "Export All as JSON",
+    "exportAllCsv": "Export All as CSV"
+  },
+  "advancedEdit": {
+    "title": "Advanced Edit: {{name}}",
+    "basicInfo": "Basic Info",
+    "conditions": "Conditions",
+    "save": "Save",
+    "cancel": "Cancel",
+    "ruleName": "Rule Name",
+    "description": "Description",
+    "priority": "Priority",
+    "enterName": "Enter rule name",
+    "enterDescription": "Enter description"
+  },
+  "businessType": {
+    "food_delivery": "Food Delivery",
+    "grocery_delivery": "Grocery Delivery",
+    "medicine_delivery": "Medicine Delivery"
+  },
+  "filterCategory": {
+    "rider": "Rider",
+    "merchant": "Merchant",
+    "order": "Order",
+    "time": "Time",
+    "geo": "Geo"
+  },
+  "operator": {
+    "eq": "Equals",
+    "ne": "Not Equals",
+    "contains": "Contains",
+    "not_contains": "Not Contains",
+    "starts_with": "Starts With",
+    "ends_with": "Ends With",
+    "in": "In List",
+    "not_in": "Not In List",
+    "gt": "Greater Than",
+    "gte": "Greater or Equal",
+    "lt": "Less Than",
+    "lte": "Less or Equal",
+    "between": "Between",
+    "true": "Is True",
+    "false": "Is False",
+    "before": "Before",
+    "after": "After"
   }
 }

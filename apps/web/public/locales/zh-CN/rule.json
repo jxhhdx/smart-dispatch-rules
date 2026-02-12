@@ -45,7 +45,8 @@
     "and": "且",
     "or": "或",
     "delete": "删除条件",
-    "group": "条件组"
+    "group": "条件组",
+    "emptyTip": "点击「添加条件」或「添加条件组」开始构建规则"
   },
   "action": {
     "title": "动作配置",
@@ -90,6 +91,65 @@
     "publishConfirm": "确定要发布此规则吗？发布后规则将立即生效",
     "offlineConfirm": "确定要下线此规则吗？",
     "simulateSuccess": "模拟执行成功",
-    "cannotEditPublished": "已发布规则不能直接编辑，请创建新版本"
+    "cannotEditPublished": "已发布规则不能直接编辑，请创建新版本",
+    "enableSuccess": "规则已启用",
+    "disableSuccess": "规则已禁用",
+    "copySuccess": "规则复制成功",
+    "exportSuccess": "导出成功",
+    "versionDescription": "通过高级编辑器更新"
+  },
+  "action": {
+    "view": "查看",
+    "quickEdit": "快速编辑",
+    "advancedEdit": "高级编辑",
+    "copy": "复制",
+    "export": "导出",
+    "exportJson": "导出为 JSON",
+    "exportCsv": "导出为 CSV",
+    "exportAllJson": "导出全部为 JSON",
+    "exportAllCsv": "导出全部为 CSV"
+  },
+  "advancedEdit": {
+    "title": "高级编辑: {{name}}",
+    "basicInfo": "基本信息",
+    "conditions": "条件配置",
+    "save": "保存",
+    "cancel": "取消",
+    "ruleName": "规则名称",
+    "description": "规则描述",
+    "priority": "优先级",
+    "enterName": "请输入规则名称",
+    "enterDescription": "请输入规则描述"
+  },
+  "businessType": {
+    "food_delivery": "外卖配送",
+    "grocery_delivery": "生鲜配送",
+    "medicine_delivery": "药品配送"
+  },
+  "filterCategory": {
+    "rider": "骑手",
+    "merchant": "商家",
+    "order": "订单",
+    "time": "时间",
+    "geo": "地理"
+  },
+  "operator": {
+    "eq": "等于",
+    "ne": "不等于",
+    "contains": "包含",
+    "not_contains": "不包含",
+    "starts_with": "开头是",
+    "ends_with": "结尾是",
+    "in": "在列表中",
+    "not_in": "不在列表中",
+    "gt": "大于",
+    "gte": "大于等于",
+    "lt": "小于",
+    "lte": "小于等于",
+    "between": "在范围内",
+    "true": "为真",
+    "false": "为假",
+    "before": "在之前",
+    "after": "在之后"
   }
 }
