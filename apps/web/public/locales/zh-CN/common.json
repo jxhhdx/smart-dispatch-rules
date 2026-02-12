@@ -51,7 +51,12 @@
     "loading": "加载中...",
     "welcome": "欢迎回来",
     "goodbye": "再见",
-    "sessionExpired": "登录已过期，请重新登录"
+    "sessionExpired": "登录已过期，请重新登录",
+    "requestFailed": "请求失败，请稍后重试",
+    "noPermission": "没有权限执行此操作",
+    "resourceNotFound": "请求的资源不存在",
+    "validationFailed": "数据验证失败",
+    "serverError": "服务器错误，请稍后重试"
   },
   "time": {
     "today": "今天",

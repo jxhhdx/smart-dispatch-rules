@@ -8,10 +8,12 @@ import type { ReactNode } from 'react'
 export interface FilterField {
   key: string
   label: string
+  labelKey: string  // 用于国际化的键
   category: 'rider' | 'merchant' | 'order' | 'time' | 'geo' | string
   type: 'string' | 'number' | 'boolean' | 'date' | 'datetime' | 'select' | 'list'
-  options?: { label: string; value: any }[]
+  options?: { label: string; labelKey: string; value: any }[]
   unit?: string
+  unitKey?: string  // 单位的国际化键
 }
 
 // 条件节点
@@ -62,84 +64,84 @@ const OPERATORS: Record<string, { label: string; value: string; types: string[] 
 // 默认筛选字段
 const DEFAULT_FILTER_FIELDS: FilterField[] = [
   // 骑手相关
-  { key: 'rider.id', label: 'Rider ID', category: 'rider', type: 'string' },
-  { key: 'rider.level', label: 'Rider Level', category: 'rider', type: 'select', options: [
-    { label: 'Bronze', value: 'bronze' },
-    { label: 'Silver', value: 'silver' },
-    { label: 'Gold', value: 'gold' },
-    { label: 'Platinum', value: 'platinum' },
+  { key: 'rider.id', label: 'Rider ID', labelKey: 'filterField.rider.id', category: 'rider', type: 'string' },
+  { key: 'rider.level', label: 'Rider Level', labelKey: 'filterField.rider.level', category: 'rider', type: 'select', options: [
+    { label: 'Bronze', labelKey: 'level.bronze', value: 'bronze' },
+    { label: 'Silver', labelKey: 'level.silver', value: 'silver' },
+    { label: 'Gold', labelKey: 'level.gold', value: 'gold' },
+    { label: 'Platinum', labelKey: 'level.platinum', value: 'platinum' },
   ]},
-  { key: 'rider.rating', label: 'Rider Rating', category: 'rider', type: 'number', unit: '★' },
-  { key: 'rider.activeOrders', label: 'Active Orders', category: 'rider', type: 'number', unit: 'orders' },
-  { key: 'rider.completionRate', label: 'Completion Rate', category: 'rider', type: 'number', unit: '%' },
-  { key: 'rider.workHours', label: 'Work Hours Today', category: 'rider', type: 'number', unit: 'h' },
+  { key: 'rider.rating', label: 'Rider Rating', labelKey: 'filterField.rider.rating', category: 'rider', type: 'number', unit: '★' },
+  { key: 'rider.activeOrders', label: 'Active Orders', labelKey: 'filterField.rider.activeOrders', category: 'rider', type: 'number', unit: 'orders', unitKey: 'unit.orders' },
+  { key: 'rider.completionRate', label: 'Completion Rate', labelKey: 'filterField.rider.completionRate', category: 'rider', type: 'number', unit: '%' },
+  { key: 'rider.workHours', label: 'Work Hours Today', labelKey: 'filterField.rider.workHours', category: 'rider', type: 'number', unit: 'h', unitKey: 'unit.hours' },
   
   // 商家相关
-  { key: 'merchant.id', label: 'Merchant ID', category: 'merchant', type: 'string' },
-  { key: 'merchant.type', label: 'Merchant Type', category: 'merchant', type: 'select', options: [
-    { label: 'Restaurant', value: 'restaurant' },
-    { label: 'Grocery', value: 'grocery' },
-    { label: 'Pharmacy', value: 'pharmacy' },
-    { label: 'Retail', value: 'retail' },
+  { key: 'merchant.id', label: 'Merchant ID', labelKey: 'filterField.merchant.id', category: 'merchant', type: 'string' },
+  { key: 'merchant.type', label: 'Merchant Type', labelKey: 'filterField.merchant.type', category: 'merchant', type: 'select', options: [
+    { label: 'Restaurant', labelKey: 'merchantType.restaurant', value: 'restaurant' },
+    { label: 'Grocery', labelKey: 'merchantType.grocery', value: 'grocery' },
+    { label: 'Pharmacy', labelKey: 'merchantType.pharmacy', value: 'pharmacy' },
+    { label: 'Retail', labelKey: 'merchantType.retail', value: 'retail' },
   ]},
-  { key: 'merchant.rating', label: 'Merchant Rating', category: 'merchant', type: 'number', unit: '★' },
-  { key: 'merchant.deliveryRange', label: 'Delivery Range', category: 'merchant', type: 'number', unit: 'km' },
-  { key: 'merchant.isVip', label: 'VIP Merchant', category: 'merchant', type: 'boolean' },
+  { key: 'merchant.rating', label: 'Merchant Rating', labelKey: 'filterField.merchant.rating', category: 'merchant', type: 'number', unit: '★' },
+  { key: 'merchant.deliveryRange', label: 'Delivery Range', labelKey: 'filterField.merchant.deliveryRange', category: 'merchant', type: 'number', unit: 'km', unitKey: 'unit.km' },
+  { key: 'merchant.isVip', label: 'VIP Merchant', labelKey: 'filterField.merchant.isVip', category: 'merchant', type: 'boolean' },
   
   // 订单相关
-  { key: 'order.id', label: 'Order ID', category: 'order', type: 'string' },
-  { key: 'order.amount', label: 'Order Amount', category: 'order', type: 'number', unit: '¥' },
-  { key: 'order.distance', label: 'Delivery Distance', category: 'order', type: 'number', unit: 'km' },
-  { key: 'order.weight', label: 'Order Weight', category: 'order', type: 'number', unit: 'kg' },
-  { key: 'order.itemCount', label: 'Item Count', category: 'order', type: 'number', unit: 'items' },
-  { key: 'order.productType', label: 'Product Type', category: 'order', type: 'select', options: [
-    { label: 'Food', value: 'food' },
-    { label: 'Grocery', value: 'grocery' },
-    { label: 'Medicine', value: 'medicine' },
-    { label: 'Fresh', value: 'fresh' },
-    { label: 'Other', value: 'other' },
+  { key: 'order.id', label: 'Order ID', labelKey: 'filterField.order.id', category: 'order', type: 'string' },
+  { key: 'order.amount', label: 'Order Amount', labelKey: 'filterField.order.amount', category: 'order', type: 'number', unit: '¥' },
+  { key: 'order.distance', label: 'Delivery Distance', labelKey: 'filterField.order.distance', category: 'order', type: 'number', unit: 'km', unitKey: 'unit.km' },
+  { key: 'order.weight', label: 'Order Weight', labelKey: 'filterField.order.weight', category: 'order', type: 'number', unit: 'kg', unitKey: 'unit.kg' },
+  { key: 'order.itemCount', label: 'Item Count', labelKey: 'filterField.order.itemCount', category: 'order', type: 'number', unit: 'items', unitKey: 'unit.items' },
+  { key: 'order.productType', label: 'Product Type', labelKey: 'filterField.order.productType', category: 'order', type: 'select', options: [
+    { label: 'Food', labelKey: 'productType.food', value: 'food' },
+    { label: 'Grocery', labelKey: 'productType.grocery', value: 'grocery' },
+    { label: 'Medicine', labelKey: 'productType.medicine', value: 'medicine' },
+    { label: 'Fresh', labelKey: 'productType.fresh', value: 'fresh' },
+    { label: 'Other', labelKey: 'productType.other', value: 'other' },
   ]},
-  { key: 'order.isUrgent', label: 'Urgent Order', category: 'order', type: 'boolean' },
-  { key: 'order.timeWindow', label: 'Time Window (min)', category: 'order', type: 'number', unit: 'min' },
-  { key: 'order.customerLevel', label: 'Customer Level', category: 'order', type: 'select', options: [
-    { label: 'Normal', value: 'normal' },
-    { label: 'Silver', value: 'silver' },
-    { label: 'Gold', value: 'gold' },
-    { label: 'Platinum', value: 'platinum' },
-    { label: 'Diamond', value: 'diamond' },
+  { key: 'order.isUrgent', label: 'Urgent Order', labelKey: 'filterField.order.isUrgent', category: 'order', type: 'boolean' },
+  { key: 'order.timeWindow', label: 'Time Window (min)', labelKey: 'filterField.order.timeWindow', category: 'order', type: 'number', unit: 'min', unitKey: 'unit.min' },
+  { key: 'order.customerLevel', label: 'Customer Level', labelKey: 'filterField.order.customerLevel', category: 'order', type: 'select', options: [
+    { label: 'Normal', labelKey: 'customerLevel.normal', value: 'normal' },
+    { label: 'Silver', labelKey: 'customerLevel.silver', value: 'silver' },
+    { label: 'Gold', labelKey: 'customerLevel.gold', value: 'gold' },
+    { label: 'Platinum', labelKey: 'customerLevel.platinum', value: 'platinum' },
+    { label: 'Diamond', labelKey: 'customerLevel.diamond', value: 'diamond' },
   ]},
   
   // 时间相关
-  { key: 'time.hourOfDay', label: 'Hour of Day', category: 'time', type: 'number', unit: 'h' },
-  { key: 'time.dayOfWeek', label: 'Day of Week', category: 'time', type: 'select', options: [
-    { label: 'Monday', value: 1 },
-    { label: 'Tuesday', value: 2 },
-    { label: 'Wednesday', value: 3 },
-    { label: 'Thursday', value: 4 },
-    { label: 'Friday', value: 5 },
-    { label: 'Saturday', value: 6 },
-    { label: 'Sunday', value: 7 },
+  { key: 'time.hourOfDay', label: 'Hour of Day', labelKey: 'filterField.time.hourOfDay', category: 'time', type: 'number', unit: 'h', unitKey: 'unit.hours' },
+  { key: 'time.dayOfWeek', label: 'Day of Week', labelKey: 'filterField.time.dayOfWeek', category: 'time', type: 'select', options: [
+    { label: 'Monday', labelKey: 'weekday.monday', value: 1 },
+    { label: 'Tuesday', labelKey: 'weekday.tuesday', value: 2 },
+    { label: 'Wednesday', labelKey: 'weekday.wednesday', value: 3 },
+    { label: 'Thursday', labelKey: 'weekday.thursday', value: 4 },
+    { label: 'Friday', labelKey: 'weekday.friday', value: 5 },
+    { label: 'Saturday', labelKey: 'weekday.saturday', value: 6 },
+    { label: 'Sunday', labelKey: 'weekday.sunday', value: 7 },
   ]},
-  { key: 'time.isHoliday', label: 'Is Holiday', category: 'time', type: 'boolean' },
-  { key: 'time.isPeakHour', label: 'Is Peak Hour', category: 'time', type: 'boolean' },
-  { key: 'time.timeRange', label: 'Time Range', category: 'time', type: 'string' },
+  { key: 'time.isHoliday', label: 'Is Holiday', labelKey: 'filterField.time.isHoliday', category: 'time', type: 'boolean' },
+  { key: 'time.isPeakHour', label: 'Is Peak Hour', labelKey: 'filterField.time.isPeakHour', category: 'time', type: 'boolean' },
+  { key: 'time.timeRange', label: 'Time Range', labelKey: 'filterField.time.timeRange', category: 'time', type: 'string' },
   
   // 地理相关
-  { key: 'geo.district', label: 'District', category: 'geo', type: 'string' },
-  { key: 'geo.businessZone', label: 'Business Zone', category: 'geo', type: 'string' },
-  { key: 'geo.specialLocation', label: 'Special Location', category: 'geo', type: 'select', options: [
-    { label: 'Hospital', value: 'hospital' },
-    { label: 'School', value: 'school' },
-    { label: 'Office Building', value: 'office' },
-    { label: 'Residential', value: 'residential' },
-    { label: 'Shopping Mall', value: 'mall' },
+  { key: 'geo.district', label: 'District', labelKey: 'filterField.geo.district', category: 'geo', type: 'string' },
+  { key: 'geo.businessZone', label: 'Business Zone', labelKey: 'filterField.geo.businessZone', category: 'geo', type: 'string' },
+  { key: 'geo.specialLocation', label: 'Special Location', labelKey: 'filterField.geo.specialLocation', category: 'geo', type: 'select', options: [
+    { label: 'Hospital', labelKey: 'locationType.hospital', value: 'hospital' },
+    { label: 'School', labelKey: 'locationType.school', value: 'school' },
+    { label: 'Office Building', labelKey: 'locationType.office', value: 'office' },
+    { label: 'Residential', labelKey: 'locationType.residential', value: 'residential' },
+    { label: 'Shopping Mall', labelKey: 'locationType.mall', value: 'mall' },
   ]},
-  { key: 'geo.weather', label: 'Weather Condition', category: 'geo', type: 'select', options: [
-    { label: 'Sunny', value: 'sunny' },
-    { label: 'Cloudy', value: 'cloudy' },
-    { label: 'Rainy', value: 'rainy' },
-    { label: 'Snowy', value: 'snowy' },
-    { label: 'Stormy', value: 'stormy' },
+  { key: 'geo.weather', label: 'Weather Condition', labelKey: 'filterField.geo.weather', category: 'geo', type: 'select', options: [
+    { label: 'Sunny', labelKey: 'weather.sunny', value: 'sunny' },
+    { label: 'Cloudy', labelKey: 'weather.cloudy', value: 'cloudy' },
+    { label: 'Rainy', labelKey: 'weather.rainy', value: 'rainy' },
+    { label: 'Snowy', labelKey: 'weather.snowy', value: 'snowy' },
+    { label: 'Stormy', labelKey: 'weather.stormy', value: 'stormy' },
   ]},
 ]
 
@@ -306,8 +308,8 @@ export default function RuleConditionBuilder({
           style={{ width: 150 }}
           placeholder={t('condition.select')}
         >
-          <Select.Option value={true}>{t('condition.true')}</Select.Option>
-          <Select.Option value={false}>{t('condition.false')}</Select.Option>
+          <Select.Option value={true}>{t('boolean.true')}</Select.Option>
+          <Select.Option value={false}>{t('boolean.false')}</Select.Option>
         </Select>
       )
     }
@@ -320,7 +322,10 @@ export default function RuleConditionBuilder({
           onChange={(value) => updateNode(node.id, { value })}
           style={{ width: 150 }}
           placeholder={t('condition.select')}
-          options={fieldConfig.options}
+          options={fieldConfig.options?.map(opt => ({
+            label: t(opt.labelKey, { defaultValue: opt.label }),
+            value: opt.value,
+          }))}
         />
       )
     }
@@ -350,7 +355,7 @@ export default function RuleConditionBuilder({
               placeholder={t('condition.max')}
               style={{ width: 100 }}
             />
-            {fieldConfig.unit && <span>{fieldConfig.unit}</span>}
+            {fieldConfig.unit && <span>{fieldConfig.unitKey ? t(fieldConfig.unitKey, { defaultValue: fieldConfig.unit }) : fieldConfig.unit}</span>}
           </Space>
         )
       }
@@ -364,7 +369,7 @@ export default function RuleConditionBuilder({
             style={{ width: 120 }}
             placeholder={t('condition.value')}
           />
-          {fieldConfig.unit && <span>{fieldConfig.unit}</span>}
+          {fieldConfig.unit && <span>{fieldConfig.unitKey ? t(fieldConfig.unitKey, { defaultValue: fieldConfig.unit }) : fieldConfig.unit}</span>}
         </Space>
       )
     }
@@ -506,7 +511,7 @@ export default function RuleConditionBuilder({
                 >
                   {fields.map(field => (
                     <Select.Option key={field.key} value={field.key}>
-                      {field.label}
+                      {t(field.labelKey, { defaultValue: field.label })}
                     </Select.Option>
                   ))}
                 </Select.OptGroup>
@@ -522,7 +527,7 @@ export default function RuleConditionBuilder({
             >
               {availableOperators.map(op => (
                 <Select.Option key={op.value} value={op.value}>
-                  {op.label}
+                  {t(`operator.${op.value}`, { defaultValue: op.label })}
                 </Select.Option>
               ))}
             </Select>

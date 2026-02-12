@@ -403,6 +403,19 @@ export class RulesPage {
     await this.page.waitForTimeout(500);
   }
 
+  /**
+   * 复制规则
+   */
+  async cloneRule(ruleName: string) {
+    const row = this.page.locator('.ant-table-row').filter({
+      has: this.page.locator('td').filter({ hasText: ruleName }),
+    });
+
+    // 点击复制按钮
+    await row.locator('button').filter({ has: this.page.locator('.anticon-copy') }).first().click();
+    await this.page.waitForTimeout(1000);
+  }
+
   // ==================== 导出 ====================
 
   /**
@@ -422,6 +435,18 @@ export class RulesPage {
     // 等待下载完成
     const downloadPath = await this.page.waitForEvent('download');
     return downloadPath;
+  }
+
+  /**
+   * 搜索并导出符合条件的规则
+   */
+  async searchAndExport(keyword: string, format: 'json' | 'csv' | 'xlsx' = 'json') {
+    // 先搜索
+    await this.searchRule(keyword);
+    await this.page.waitForTimeout(500);
+    
+    // 然后导出
+    return await this.exportRules(format);
   }
 
   /**

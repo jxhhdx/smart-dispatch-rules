@@ -77,6 +77,9 @@
     "description": "Please enter description",
     "search": "Search by rule name"
   },
+  "search": {
+    "placeholder": "Search by rule name or description"
+  },
   "validation": {
     "nameRequired": "Rule name is required",
     "typeRequired": "Please select rule type",
@@ -109,8 +112,26 @@
     "export": "Export",
     "exportJson": "Export as JSON",
     "exportCsv": "Export as CSV",
+    "exportXlsx": "Export as Excel",
     "exportAllJson": "Export All as JSON",
     "exportAllCsv": "Export All as CSV"
+  },
+  "template": {
+    "title": "Select Condition Template",
+    "saveTitle": "Save Condition Template",
+    "name": "Template Name",
+    "description": "Template Description",
+    "namePlaceholder": "e.g. High Priority Rider Filter",
+    "descriptionPlaceholder": "Describe the purpose of this template...",
+    "nameRequired": "Please enter template name",
+    "loadFromTemplate": "Load from Template",
+    "saveAsTemplate": "Save as Template",
+    "load": "Load",
+    "deleteConfirm": "Are you sure to delete this template?",
+    "noDescription": "No description",
+    "empty": "No templates",
+    "saveSuccess": "Template saved successfully",
+    "deleteSuccess": "Template deleted successfully"
   },
   "advancedEdit": {
     "title": "Advanced Edit: {{name}}",
@@ -154,5 +175,107 @@
     "false": "Is False",
     "before": "Before",
     "after": "After"
+  },
+  "filterField": {
+    "rider": {
+      "id": "Rider ID",
+      "level": "Rider Level",
+      "rating": "Rider Rating",
+      "activeOrders": "Active Orders",
+      "completionRate": "Completion Rate",
+      "workHours": "Work Hours Today"
+    },
+    "merchant": {
+      "id": "Merchant ID",
+      "type": "Merchant Type",
+      "rating": "Merchant Rating",
+      "deliveryRange": "Delivery Range",
+      "isVip": "VIP Merchant"
+    },
+    "order": {
+      "id": "Order ID",
+      "amount": "Order Amount",
+      "distance": "Delivery Distance",
+      "weight": "Order Weight",
+      "itemCount": "Item Count",
+      "productType": "Product Type",
+      "isUrgent": "Urgent Order",
+      "timeWindow": "Time Window",
+      "customerLevel": "Customer Level"
+    },
+    "time": {
+      "hourOfDay": "Hour of Day",
+      "dayOfWeek": "Day of Week",
+      "isHoliday": "Is Holiday",
+      "isPeakHour": "Is Peak Hour",
+      "timeRange": "Time Range"
+    },
+    "geo": {
+      "district": "District",
+      "businessZone": "Business Zone",
+      "specialLocation": "Special Location",
+      "weather": "Weather Condition"
+    }
+  },
+  "level": {
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "platinum": "Platinum"
+  },
+  "merchantType": {
+    "restaurant": "Restaurant",
+    "grocery": "Grocery",
+    "pharmacy": "Pharmacy",
+    "retail": "Retail"
+  },
+  "productType": {
+    "food": "Food",
+    "grocery": "Grocery",
+    "medicine": "Medicine",
+    "fresh": "Fresh",
+    "other": "Other"
+  },
+  "customerLevel": {
+    "normal": "Normal",
+    "silver": "Silver",
+    "gold": "Gold",
+    "platinum": "Platinum",
+    "diamond": "Diamond"
+  },
+  "weekday": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
+  },
+  "locationType": {
+    "hospital": "Hospital",
+    "school": "School",
+    "office": "Office Building",
+    "residential": "Residential",
+    "mall": "Shopping Mall"
+  },
+  "weather": {
+    "sunny": "Sunny",
+    "cloudy": "Cloudy",
+    "rainy": "Rainy",
+    "snowy": "Snowy",
+    "stormy": "Stormy"
+  },
+  "boolean": {
+    "true": "Yes",
+    "false": "No"
+  },
+  "unit": {
+    "orders": "orders",
+    "hours": "h",
+    "km": "km",
+    "kg": "kg",
+    "items": "items",
+    "min": "min"
   }
 }

@@ -77,6 +77,9 @@
     "description": "説明を入力してください",
     "search": "ルール名で検索"
   },
+  "search": {
+    "placeholder": "ルール名または説明で検索"
+  },
   "validation": {
     "nameRequired": "ルール名は必須です",
     "typeRequired": "ルールタイプを選択してください",
@@ -109,8 +112,26 @@
     "export": "エクスポート",
     "exportJson": "JSONとしてエクスポート",
     "exportCsv": "CSVとしてエクスポート",
+    "exportXlsx": "Excelとしてエクスポート",
     "exportAllJson": "すべてをJSONとしてエクスポート",
     "exportAllCsv": "すべてをCSVとしてエクスポート"
+  },
+  "template": {
+    "title": "条件テンプレートを選択",
+    "saveTitle": "条件テンプレートを保存",
+    "name": "テンプレート名",
+    "description": "テンプレート説明",
+    "namePlaceholder": "例：高優先度ライダーフィルタ",
+    "descriptionPlaceholder": "このテンプレートの用途を説明...",
+    "nameRequired": "テンプレート名を入力してください",
+    "loadFromTemplate": "テンプレートから読み込み",
+    "saveAsTemplate": "テンプレートとして保存",
+    "load": "読み込み",
+    "deleteConfirm": "このテンプレートを削除してもよろしいですか？",
+    "noDescription": "説明なし",
+    "empty": "テンプレートがありません",
+    "saveSuccess": "テンプレートを保存しました",
+    "deleteSuccess": "テンプレートを削除しました"
   },
   "advancedEdit": {
     "title": "高度な編集: {{name}}",
@@ -154,5 +175,107 @@
     "false": "偽",
     "before": "より前",
     "after": "より後"
+  },
+  "filterField": {
+    "rider": {
+      "id": "ライダーID",
+      "level": "ライダーレベル",
+      "rating": "ライダー評価",
+      "activeOrders": "進行中の注文数",
+      "completionRate": "完了率",
+      "workHours": "本日の勤務時間"
+    },
+    "merchant": {
+      "id": "店舗ID",
+      "type": "店舗タイプ",
+      "rating": "店舗評価",
+      "deliveryRange": "配送範囲",
+      "isVip": "VIP店舗"
+    },
+    "order": {
+      "id": "注文ID",
+      "amount": "注文金額",
+      "distance": "配送距離",
+      "weight": "注文重量",
+      "itemCount": "商品数",
+      "productType": "商品タイプ",
+      "isUrgent": "緊急注文",
+      "timeWindow": "時間枠",
+      "customerLevel": "顧客レベル"
+    },
+    "time": {
+      "hourOfDay": "時刻",
+      "dayOfWeek": "曜日",
+      "isHoliday": "祝日",
+      "isPeakHour": "ピーク時間帯",
+      "timeRange": "時間範囲"
+    },
+    "geo": {
+      "district": "行政区",
+      "businessZone": "商業地区",
+      "specialLocation": "特殊な場所",
+      "weather": "天気状況"
+    }
+  },
+  "level": {
+    "bronze": "ブロンズ",
+    "silver": "シルバー",
+    "gold": "ゴールド",
+    "platinum": "プラチナ"
+  },
+  "merchantType": {
+    "restaurant": "レストラン",
+    "grocery": "生鮮",
+    "pharmacy": "薬局",
+    "retail": "小売"
+  },
+  "productType": {
+    "food": "食品",
+    "grocery": "生鮮",
+    "medicine": "医薬品",
+    "fresh": "生鮮食品",
+    "other": "その他"
+  },
+  "customerLevel": {
+    "normal": "通常",
+    "silver": "シルバー",
+    "gold": "ゴールド",
+    "platinum": "プラチナ",
+    "diamond": "ダイヤモンド"
+  },
+  "weekday": {
+    "monday": "月曜日",
+    "tuesday": "火曜日",
+    "wednesday": "水曜日",
+    "thursday": "木曜日",
+    "friday": "金曜日",
+    "saturday": "土曜日",
+    "sunday": "日曜日"
+  },
+  "locationType": {
+    "hospital": "病院",
+    "school": "学校",
+    "office": "オフィスビル",
+    "residential": "住宅地",
+    "mall": "ショッピングモール"
+  },
+  "weather": {
+    "sunny": "晴れ",
+    "cloudy": "曇り",
+    "rainy": "雨",
+    "snowy": "雪",
+    "stormy": "嵐"
+  },
+  "boolean": {
+    "true": "はい",
+    "false": "いいえ"
+  },
+  "unit": {
+    "orders": "件",
+    "hours": "時間",
+    "km": "km",
+    "kg": "kg",
+    "items": "個",
+    "min": "分"
   }
 }

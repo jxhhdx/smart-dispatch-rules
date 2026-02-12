@@ -279,12 +279,20 @@ export class RulesService {
   }
 
   // 导出规则
-  async exportRules(ruleIds: string[], format: string = 'json') {
+  async exportRules(ruleIds: string[], format: string = 'json', keyword?: string) {
     let rules: any[];
 
     if (ruleIds.length === 0) {
-      // 导出所有规则
+      // 导出所有规则或根据关键字搜索
+      const where: any = {};
+      if (keyword?.trim()) {
+        where.OR = [
+          { name: { contains: keyword.trim(), mode: 'insensitive' } },
+          { description: { contains: keyword.trim(), mode: 'insensitive' } },
+        ];
+      }
       rules = await this.prisma.rule.findMany({
+        where,
         include: {
           versions: {
             include: {

@@ -51,7 +51,12 @@
     "loading": "Loading...",
     "welcome": "Welcome back",
     "goodbye": "Goodbye",
-    "sessionExpired": "Session expired, please login again"
+    "sessionExpired": "Session expired, please login again",
+    "requestFailed": "Request failed, please try again later",
+    "noPermission": "No permission to perform this operation",
+    "resourceNotFound": "Requested resource not found",
+    "validationFailed": "Data validation failed",
+    "serverError": "Server error, please try again later"
   },
   "time": {
     "today": "Today",
