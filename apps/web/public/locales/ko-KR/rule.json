@@ -45,7 +45,8 @@
     "and": "AND",
     "or": "OR",
     "delete": "조건 삭제",
-    "group": "조건 그룹"
+    "group": "조건 그룹",
+    "emptyTip": "\"조건 추가\" 또는 \"조건 그룹 추가\"를 클릭하여 규칙을 구성하세요"
   },
   "action": {
     "title": "작업 설정",
@@ -90,6 +91,65 @@
     "publishConfirm": "이 규칙을 게시하시겠습니까? 게시 후 즉시 적용됩니다",
     "offlineConfirm": "이 규칙을 오프라인으로 전환하시겠습니까?",
     "simulateSuccess": "시뮬레이션이 성공했습니다",
-    "cannotEditPublished": "게시된 규칙은 직접 편집할 수 없습니다. 새 버전을 생성하세요"
+    "cannotEditPublished": "게시된 규칙은 직접 편집할 수 없습니다. 새 버전을 생성하세요",
+    "enableSuccess": "규칙이 활성화되었습니다",
+    "disableSuccess": "규칙이 비활성화되었습니다",
+    "copySuccess": "규칙이 복사되었습니다",
+    "exportSuccess": "남수출 성공",
+    "versionDescription": "고급 편집기에서 업데이트"
+  },
+  "action": {
+    "view": "보기",
+    "quickEdit": "빠른 편집",
+    "advancedEdit": "고급 편집",
+    "copy": "복사",
+    "export": "남수출",
+    "exportJson": "JSON으로 남수출",
+    "exportCsv": "CSV로 남수출",
+    "exportAllJson": "모두 JSON으로 남수출",
+    "exportAllCsv": "모두 CSV로 남수출"
+  },
+  "advancedEdit": {
+    "title": "고급 편집: {{name}}",
+    "basicInfo": "기본 정보",
+    "conditions": "조건 설정",
+    "save": "저장",
+    "cancel": "취소",
+    "ruleName": "규칙명",
+    "description": "설명",
+    "priority": "우선순위",
+    "enterName": "규칙명 입력",
+    "enterDescription": "설명 입력"
+  },
+  "businessType": {
+    "food_delivery": "음식 배달",
+    "grocery_delivery": "신선식품 배달",
+    "medicine_delivery": "의약품 배달"
+  },
+  "filterCategory": {
+    "rider": "라이더",
+    "merchant": "가게",
+    "order": "주문",
+    "time": "시간",
+    "geo": "지리"
+  },
+  "operator": {
+    "eq": "같음",
+    "ne": "같지 않음",
+    "contains": "포함",
+    "not_contains": "포함하지 않음",
+    "starts_with": "로 시작",
+    "ends_with": "로 끝",
+    "in": "목록에 포함",
+    "not_in": "목록에 포함하지 않음",
+    "gt": "보다 큼",
+    "gte": "크거나 같음",
+    "lt": "보다 작음",
+    "lte": "작거나 같음",
+    "between": "범위 내",
+    "true": "참",
+    "false": "거짓",
+    "before": "이전",
+    "after": "이후"
   }
 }

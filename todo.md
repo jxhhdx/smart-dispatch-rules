@@ -1,46 +1,46 @@
-# TODO
+# 待办事项
 
-## Feature Development
+## 功能开发
 
-### 1. Rule Status Management ✅
-- [x] Enable/disable rule toggle
-- [x] Status change action buttons
-- [x] Status change with Switch component
-- [x] Auto-refresh after status change
+### 1. 规则状态管理 ✅
+- [x] 启用/禁用规则切换
+- [x] 状态变更操作按钮
+- [x] 使用 Switch 组件进行状态变更
+- [x] 状态变更后自动刷新
 
-### 2. Enhanced Rule Editing ✅
-- [x] Support complex rule condition configuration
-  - [x] **Filter Categories** (extensible architecture)
-    - [x] Rider: rider ID, level, rating, active orders, completion rate, work hours
-    - [x] Merchant: merchant ID, type, rating, delivery range, VIP status
-    - [x] Order: order ID, amount, distance, weight, item count, product type, urgency, time window, customer level
-    - [x] Time: hour of day, day of week, holiday, peak hour, time range
-    - [x] Geo: district, business zone, special location, weather
-  - [x] **Extensible Design**: Dynamic filter field registration system
-  - [x] Condition operators: eq, ne, gt, gte, lt, lte, between, in, contains, etc.
-- [x] Nested condition groups (AND/OR)
-- [x] Visual condition builder with grouping
-- [x] Quick edit and advanced edit modes
+### 2. 增强规则编辑 ✅
+- [x] 支持复杂规则条件配置
+  - [x] **筛选类别**（可扩展架构）
+    - [x] 骑手：骑手ID、等级、评分、活跃订单数、完成率、工作时长
+    - [x] 商家：商家ID、类型、评分、配送范围、VIP状态
+    - [x] 订单：订单ID、金额、距离、重量、商品数量、商品类型、紧急程度、时间窗口、客户等级
+    - [x] 时间：小时、星期、节假日、高峰时段、时间范围
+    - [x] 地理：区域、商圈、特殊地点、天气
+  - [x] **可扩展设计**：动态筛选字段注册系统
+  - [x] 条件运算符：等于、不等于、大于、大于等于、小于、小于等于、介于、包含、包含文本等
+- [x] 嵌套条件组（AND/OR）
+- [x] 支持分组的可视化条件构建器
+- [x] 快速编辑和高级编辑模式
 
-### 3. Rule Copy Function ✅
-- [x] Rule copy button
-- [x] Auto-append "Copy" suffix when duplicating
-- [x] Clone all versions and conditions
-- [x] Auto-redirect to edit page after copy
+### 3. 规则复制功能 ✅
+- [x] 规则复制按钮
+- [x] 复制时自动添加"副本"后缀
+- [x] 克隆所有版本和条件
+- [x] 复制后自动跳转到编辑页面
 
-### 4. Rule Export Function ✅
-- [x] Single rule export JSON
-- [x] Batch rule export
-- [x] Export to CSV format
-- [x] File download with timestamp
+### 4. 规则导出功能 ✅
+- [x] 单条规则导出为 JSON
+- [x] 批量规则导出
+- [x] 导出为 CSV 格式
+- [x] 带时间戳的文件下载
 
-## Future Enhancements
+## 未来增强
 
-### Potential Improvements
-- [ ] Drag-and-drop to reorder conditions
-- [ ] Real-time rule effect preview
-- [ ] Condition templates save/load
-- [ ] Export to Excel format
-- [ ] Import rules from file
-- [ ] Rule version comparison
-- [ ] Visual rule flow diagram
+### 潜在改进
+- [ ] 拖拽重新排序条件
+- [ ] 实时规则效果预览
+- [ ] 条件模板保存/加载
+- [ ] 导出为 Excel 格式
+- [ ] 从文件导入规则
+- [ ] 规则版本对比
+- [ ] 可视化规则流程图

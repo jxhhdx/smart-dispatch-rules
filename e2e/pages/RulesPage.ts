@@ -75,18 +75,20 @@ export class RulesPage {
    */
   async saveRule() {
     await this.saveButton.click();
-    // 等待 API 调用和弹窗关闭
-    await this.page.waitForTimeout(3000);
     
-    // 等待 Modal 关闭
-    try {
-      await expect(this.modal).not.toBeVisible({ timeout: 10000 });
-    } catch (e) {
-      console.log('Modal may still be visible:', e);
+    // 等待 API 调用完成（通过等待 loading 消失或 Modal 关闭）
+    await this.page.waitForTimeout(2000);
+    
+    // 等待 Modal 关闭（更宽容的方式）
+    const maxAttempts = 10;
+    for (let i = 0; i < maxAttempts; i++) {
+      const isVisible = await this.modal.isVisible().catch(() => false);
+      if (!isVisible) break;
+      await this.page.waitForTimeout(500);
     }
     
     // 额外等待表格刷新完成
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(1000);
   }
 
   /**

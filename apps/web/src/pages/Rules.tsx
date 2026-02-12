@@ -122,7 +122,7 @@ export default function Rules() {
     try {
       const newStatus = checked ? 1 : 0
       await ruleApi.updateStatus(record.id, newStatus)
-      message.success(checked ? 'Rule enabled' : 'Rule disabled')
+      message.success(checked ? t('rule:message.enableSuccess') : t('rule:message.disableSuccess'))
       fetchRules(pagination.current, pagination.pageSize)
     } catch (error) {
       // Error handled by API interceptor
@@ -133,7 +133,7 @@ export default function Rules() {
   const handleCloneRule = async (record: Rule) => {
     try {
       const res: any = await ruleApi.clone(record.id)
-      message.success('Rule copied successfully')
+      message.success(t('rule:message.copySuccess'))
       fetchRules(pagination.current, pagination.pageSize)
       // 打开编辑弹窗
       setEditingRule(res.data)
@@ -170,7 +170,7 @@ export default function Rules() {
         link.click()
         window.URL.revokeObjectURL(url)
       }
-      message.success('Export successful')
+      message.success(t('rule:message.exportSuccess'))
     } catch (error) {
       // Error handled by API interceptor
     }
@@ -215,7 +215,7 @@ export default function Rules() {
         if (conditions.length > 0) {
           await ruleApi.createVersion(editingRule.id, {
             configJson: { conditions },
-            description: 'Updated via advanced editor',
+            description: t('rule:message.versionDescription'),
             conditions: conditions.map(c => ({
               conditionType: 'simple',
               field: c.field,
@@ -261,14 +261,14 @@ export default function Rules() {
       fixed: 'right' as const,
       render: (_: any, record: Rule) => (
         <Space size={0}>
-          <Tooltip title="View">
+          <Tooltip title={t('rule:action.view')}>
             <Button
               type="text"
               icon={<EyeOutlined />}
               onClick={() => handleViewDetail(record.id)}
             />
           </Tooltip>
-          <Tooltip title="Quick Edit">
+          <Tooltip title={t('rule:action.quickEdit')}>
             <Button
               type="text"
               icon={<EditOutlined />}
@@ -279,21 +279,21 @@ export default function Rules() {
               }}
             />
           </Tooltip>
-          <Tooltip title="Advanced Edit">
+          <Tooltip title={t('rule:action.advancedEdit')}>
             <Button
               type="text"
               icon={<SettingOutlined />}
               onClick={() => handleOpenAdvancedEdit(record)}
             />
           </Tooltip>
-          <Tooltip title="Copy">
+          <Tooltip title={t('rule:action.copy')}>
             <Button
               type="text"
               icon={<CopyOutlined />}
               onClick={() => handleCloneRule(record)}
             />
           </Tooltip>
-          <Tooltip title="Export">
+          <Tooltip title={t('rule:action.export')}>
             <Dropdown
               menu={{
                 items: [
@@ -326,13 +326,13 @@ export default function Rules() {
             <Dropdown
               menu={{
                 items: [
-                  { key: 'json', label: 'Export All as JSON', onClick: () => handleExport('json') },
-                  { key: 'csv', label: 'Export All as CSV', onClick: () => handleExport('csv') },
+                  { key: 'json', label: t('rule:action.exportAllJson'), onClick: () => handleExport('json') },
+                  { key: 'csv', label: t('rule:action.exportAllCsv'), onClick: () => handleExport('csv') },
                 ],
               }}
             >
               <Button icon={<ExportOutlined />}>
-                Export <DownOutlined />
+                {t('rule:action.export')} <DownOutlined />
               </Button>
             </Dropdown>
             <Button
@@ -393,9 +393,9 @@ export default function Rules() {
               allowClear
               placeholder={t('common:form.select')}
               options={[
-                { value: 'food_delivery', label: 'Food Delivery' },
-                { value: 'grocery_delivery', label: 'Grocery Delivery' },
-                { value: 'medicine_delivery', label: 'Medicine Delivery' },
+                { value: 'food_delivery', label: t('rule:businessType.food_delivery') },
+                { value: 'grocery_delivery', label: t('rule:businessType.grocery_delivery') },
+                { value: 'medicine_delivery', label: t('rule:businessType.medicine_delivery') },
               ]}
             />
           </Form.Item>
@@ -439,29 +439,29 @@ export default function Rules() {
 
       {/* Advanced Edit Modal */}
       <Modal
-        title={`Advanced Edit: ${editingRule?.name}`}
+        title={t('rule:advancedEdit.title', { name: editingRule?.name })}
         open={advancedModalVisible}
         onOk={handleSaveAdvanced}
         onCancel={() => setAdvancedModalVisible(false)}
         width={1000}
-        okText="Save"
-        cancelText="Cancel"
+        okText={t('rule:advancedEdit.save')}
+        cancelText={t('rule:advancedEdit.cancel')}
       >
         <Form form={advancedForm} layout="vertical">
           <Tabs
             items={[
               {
                 key: 'basic',
-                label: 'Basic Info',
+                label: t('rule:advancedEdit.basicInfo'),
                 children: (
                   <>
-                    <Form.Item name="name" label="Rule Name" rules={[{ required: true }]}>
-                      <Input placeholder="Enter rule name" />
+                    <Form.Item name="name" label={t('rule:advancedEdit.ruleName')} rules={[{ required: true }]}>
+                      <Input placeholder={t('rule:advancedEdit.enterName')} />
                     </Form.Item>
-                    <Form.Item name="description" label="Description">
-                      <Input.TextArea rows={3} placeholder="Enter description" />
+                    <Form.Item name="description" label={t('rule:advancedEdit.description')}>
+                      <Input.TextArea rows={3} placeholder={t('rule:advancedEdit.enterDescription')} />
                     </Form.Item>
-                    <Form.Item name="priority" label="Priority" initialValue={0}>
+                    <Form.Item name="priority" label={t('rule:advancedEdit.priority')} initialValue={0}>
                       <Input type="number" />
                     </Form.Item>
                   </>
@@ -471,7 +471,7 @@ export default function Rules() {
                 key: 'conditions',
                 label: (
                   <span>
-                    Conditions
+                    {t('rule:advancedEdit.conditions')}
                     <Badge count={conditions.length} style={{ marginLeft: 8 }} />
                   </span>
                 ),

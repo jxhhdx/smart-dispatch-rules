@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Card, Select, Input, InputNumber, Button, Space, Row, Col, Tooltip, Tag } from 'antd'
 import { PlusOutlined, DeleteOutlined, CopyOutlined, HolderOutlined } from '@ant-design/icons'
 import type { ReactNode } from 'react'
@@ -155,12 +156,13 @@ const groupFieldsByCategory = (fields: FilterField[]) => {
 }
 
 // 分类标签
-const CATEGORY_LABELS: Record<string, { label: string; color: string }> = {
-  rider: { label: 'Rider', color: 'blue' },
-  merchant: { label: 'Merchant', color: 'green' },
-  order: { label: 'Order', color: 'orange' },
-  time: { label: 'Time', color: 'purple' },
-  geo: { label: 'Geo', color: 'cyan' },
+// 分类标签颜色
+const CATEGORY_COLORS: Record<string, string> = {
+  rider: 'blue',
+  merchant: 'green',
+  order: 'orange',
+  time: 'purple',
+  geo: 'cyan',
 }
 
 interface RuleConditionBuilderProps {
@@ -176,6 +178,7 @@ export default function RuleConditionBuilder({
   filterFields = DEFAULT_FILTER_FIELDS,
   maxDepth = 3,
 }: RuleConditionBuilderProps) {
+  const { t } = useTranslation('rule')
   const [conditions, setConditions] = useState<ConditionNode[]>(value)
   const groupedFields = groupFieldsByCategory(filterFields)
 
@@ -374,7 +377,7 @@ export default function RuleConditionBuilder({
           value={Array.isArray(node.value) ? node.value : node.value ? [node.value] : []}
           onChange={(value) => updateNode(node.id, { value })}
           style={{ width: 200 }}
-          placeholder="Enter values"
+          placeholder={t('condition.value')}
           tokenSeparators={[',']}
         />
       )
@@ -385,7 +388,7 @@ export default function RuleConditionBuilder({
         value={node.value}
         onChange={(e) => updateNode(node.id, { value: e.target.value })}
         style={{ width: 200 }}
-        placeholder="Enter value"
+        placeholder={t('condition.value')}
       />
     )
   }
@@ -415,7 +418,7 @@ export default function RuleConditionBuilder({
                   <Select.Option value="OR">OR</Select.Option>
                 </Select>
                 <Tag color={node.logicType === 'AND' ? 'blue' : 'orange'}>
-                  {node.children?.length || 0} conditions
+                  {node.children?.length || 0} {t('condition.title')}
                 </Tag>
               </Space>
             }
@@ -429,7 +432,7 @@ export default function RuleConditionBuilder({
                       icon={<PlusOutlined />}
                       onClick={() => addCondition(node.id)}
                     >
-                      Add Condition
+                      {t('condition.addCondition')}
                     </Button>
                     <Button
                       type="text"
@@ -437,7 +440,7 @@ export default function RuleConditionBuilder({
                       icon={<CopyOutlined />}
                       onClick={() => addGroup(node.id)}
                     >
-                      Add Group
+                      {t('condition.addGroup')}
                     </Button>
                   </>
                 )}
@@ -455,7 +458,7 @@ export default function RuleConditionBuilder({
               renderConditionTree(node.children, depth + 1)
             ) : (
               <div style={{ color: '#999', textAlign: 'center', padding: '20px 0' }}>
-                Click "Add Condition" or "Add Group" to build your rule
+                {t('condition.emptyTip')}
               </div>
             )}
           </Card>
@@ -490,14 +493,14 @@ export default function RuleConditionBuilder({
               value={node.field}
               onChange={(value) => updateNode(node.id, { field: value })}
               style={{ width: '100%' }}
-              placeholder="Select field"
+              placeholder={t('condition.field')}
             >
               {Object.entries(groupedFields).map(([category, fields]) => (
                 <Select.OptGroup 
                   key={category} 
                   label={
-                    <Tag color={CATEGORY_LABELS[category]?.color || 'default'}>
-                      {CATEGORY_LABELS[category]?.label || category}
+                    <Tag color={CATEGORY_COLORS[category] || 'default'}>
+                      {t(`filterCategory.${category}`, { defaultValue: category })}
                     </Tag>
                   }
                 >
@@ -515,7 +518,7 @@ export default function RuleConditionBuilder({
               value={node.operator}
               onChange={(value) => updateNode(node.id, { operator: value })}
               style={{ width: '100%' }}
-              placeholder="Operator"
+              placeholder={t('condition.operator')}
             >
               {availableOperators.map(op => (
                 <Select.Option key={op.value} value={op.value}>
@@ -528,7 +531,7 @@ export default function RuleConditionBuilder({
             {renderValueInput(node)}
           </Col>
           <Col flex="40px">
-            <Tooltip title="Delete">
+            <Tooltip title={t('condition.delete')}>
               <Button
                 type="text"
                 danger
@@ -546,10 +549,10 @@ export default function RuleConditionBuilder({
     <div>
       <Space style={{ marginBottom: 16 }}>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => addCondition()}>
-          Add Condition
+          {t('condition.addCondition')}
         </Button>
         <Button icon={<CopyOutlined />} onClick={() => addGroup()}>
-          Add Condition Group
+          {t('condition.addGroup')}
         </Button>
       </Space>
       
@@ -560,14 +563,14 @@ export default function RuleConditionBuilder({
           style={{ textAlign: 'center', padding: '40px 0', backgroundColor: '#fafafa' }}
         >
           <p style={{ color: '#999', marginBottom: 16 }}>
-            No conditions defined yet. Start building your rule by adding conditions.
+            {t('condition.emptyTip')}
           </p>
           <Space>
             <Button type="primary" icon={<PlusOutlined />} onClick={() => addCondition()}>
-              Add Condition
+              {t('condition.addCondition')}
             </Button>
             <Button icon={<CopyOutlined />} onClick={() => addGroup()}>
-              Add Group
+              {t('condition.addGroup')}
             </Button>
           </Space>
         </Card>
@@ -577,4 +580,4 @@ export default function RuleConditionBuilder({
 }
 
 // 导出辅助函数
-export { groupFieldsByCategory, CATEGORY_LABELS, OPERATORS, DEFAULT_FILTER_FIELDS }
+export { groupFieldsByCategory, CATEGORY_COLORS, OPERATORS, DEFAULT_FILTER_FIELDS }

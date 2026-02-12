@@ -20,7 +20,7 @@ export default function Login() {
     try {
       await login(values.username, values.password)
       message.success(t('auth:login.success') || '登录成功')
-      navigate('/')
+      navigate('/dashboard')
     } catch (error: any) {
       // 显示错误消息 - 优先使用后端返回的错误消息
       const errorMessage = error.message || error.response?.data?.message || t('auth:login.error') || '登录失败，请检查用户名和密码'

@@ -22,7 +22,8 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={isAuthenticated ? <Layout /> : <Navigate to="/login" />}>
-          <Route index element={<Dashboard />} />
+          <Route index element={<Navigate to="/dashboard" />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="rules" element={<Rules />} />
           <Route path="users" element={<Users />} />
           <Route path="roles" element={<Roles />} />

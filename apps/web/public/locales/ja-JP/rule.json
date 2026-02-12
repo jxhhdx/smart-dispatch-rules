@@ -45,7 +45,8 @@
     "and": "AND",
     "or": "OR",
     "delete": "条件を削除",
-    "group": "条件グループ"
+    "group": "条件グループ",
+    "emptyTip": "「条件を追加」または「条件グループを追加」をクリックしてルールを構築してください"
   },
   "action": {
     "title": "アクション設定",
@@ -90,6 +91,65 @@
     "publishConfirm": "このルールを公開しますか？公開後すぐに有効になります",
     "offlineConfirm": "このルールをオフラインにしますか？",
     "simulateSuccess": "シミュレーションが成功しました",
-    "cannotEditPublished": "公開済みルールは直接編集できません。新しいバージョンを作成してください"
+    "cannotEditPublished": "公開済みルールは直接編集できません。新しいバージョンを作成してください",
+    "enableSuccess": "ルールを有効にしました",
+    "disableSuccess": "ルールを無効にしました",
+    "copySuccess": "ルールをコピーしました",
+    "exportSuccess": "エクスポート成功",
+    "versionDescription": "高度なエディタで更新"
+  },
+  "action": {
+    "view": "表示",
+    "quickEdit": "クイック編集",
+    "advancedEdit": "高度な編集",
+    "copy": "コピー",
+    "export": "エクスポート",
+    "exportJson": "JSONとしてエクスポート",
+    "exportCsv": "CSVとしてエクスポート",
+    "exportAllJson": "すべてをJSONとしてエクスポート",
+    "exportAllCsv": "すべてをCSVとしてエクスポート"
+  },
+  "advancedEdit": {
+    "title": "高度な編集: {{name}}",
+    "basicInfo": "基本情報",
+    "conditions": "条件設定",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "ruleName": "ルール名",
+    "description": "説明",
+    "priority": "優先度",
+    "enterName": "ルール名を入力",
+    "enterDescription": "説明を入力"
+  },
+  "businessType": {
+    "food_delivery": "フードデリバリー",
+    "grocery_delivery": "生鮮配送",
+    "medicine_delivery": "医薬品配送"
+  },
+  "filterCategory": {
+    "rider": "ライダー",
+    "merchant": "店舗",
+    "order": "注文",
+    "time": "時間",
+    "geo": "地理"
+  },
+  "operator": {
+    "eq": "等しい",
+    "ne": "等しくない",
+    "contains": "含む",
+    "not_contains": "含まない",
+    "starts_with": "で始まる",
+    "ends_with": "で終わる",
+    "in": "リストに含む",
+    "not_in": "リストに含まない",
+    "gt": "より大きい",
+    "gte": "以上",
+    "lt": "より小さい",
+    "lte": "以下",
+    "between": "範囲内",
+    "true": "真",
+    "false": "偽",
+    "before": "より前",
+    "after": "より後"
   }
 }
