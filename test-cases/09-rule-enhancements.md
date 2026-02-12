@@ -457,7 +457,179 @@ const complexConditionTree = {
 
 ---
 
-## 5. 执行清单
+## 5. 潜在改进功能测试 (Future Enhancements)
+
+### 5.1 条件模板保存/加载 (Condition Templates)
+
+| ID | 场景 | 输入 | 预期输出 | 优先级 |
+|----|------|------|---------|--------|
+| TEMP-F-01 | 保存条件为模板 | 当前条件树 + 模板名称 | 模板保存成功 | P0 |
+| TEMP-F-02 | 查看模板列表 | 打开模板选择器 | 显示所有已保存模板 | P0 |
+| TEMP-F-03 | 从模板加载条件 | 选择模板 | 条件树填充到编辑器 | P0 |
+| TEMP-F-04 | 删除模板 | 点击删除模板按钮 | 模板从列表移除 | P0 |
+| TEMP-F-05 | 模板命名唯一性校验 | 重复名称 | 提示名称已存在 | P1 |
+| TEMP-F-06 | 模板分类管理 | 创建分类/标签 | 模板按分类展示 | P1 |
+| TEMP-F-07 | 系统预设模板 | 加载页面 | 显示系统推荐模板 | P1 |
+| TEMP-F-08 | 模板预览 | 悬停/点击预览 | 显示模板条件结构 | P1 |
+
+**模板功能测试代码:**
+```typescript
+// TEMP-F-01: 保存条件为模板
+describe('saveConditionTemplate', () => {
+  it('should save condition tree as template', async () => {
+    const template = {
+      name: '高优先级骑手筛选',
+      description: '评分>4.5且完成率>95%',
+      conditions: [
+        { field: 'rider.rating', operator: 'gte', value: 4.5 },
+        { field: 'rider.completionRate', operator: 'gte', value: 0.95 },
+      ],
+    };
+    
+    const result = await templateService.saveTemplate(template, 'user-id');
+    
+    expect(result.name).toBe('高优先级骑手筛选');
+    expect(prisma.conditionTemplate.create).toHaveBeenCalled();
+  });
+});
+
+// TEMP-F-03: 从模板加载条件
+describe('loadConditionTemplate', () => {
+  it('should load template conditions into editor', async () => {
+    const template = await templateService.getTemplate('template-id');
+    
+    render(<RuleConditionBuilder initialValue={template.conditions} />);
+    
+    expect(screen.getByText('rider.rating')).toBeInTheDocument();
+    expect(screen.getByText('rider.completionRate')).toBeInTheDocument();
+  });
+});
+```
+
+### 5.2 导出为 Excel 格式 (Excel Export)
+
+| ID | 场景 | 输入 | 预期输出 | 优先级 |
+|----|------|------|---------|--------|
+| XLS-F-01 | 单条规则导出Excel | format=xlsx | 下载.xlsx文件 | P0 |
+| XLS-F-02 | 批量规则导出Excel | 多个ruleIds + xlsx | 包含多个sheet的Excel | P0 |
+| XLS-F-03 | Excel包含多个Sheet | - | rules/versions/conditions 分sheet | P1 |
+| XLS-F-04 | Excel带样式 | - | 表头加粗、冻结首行 | P1 |
+| XLS-F-05 | 大文件分Sheet | >1000条规则 | 每1000条一个Sheet | P2 |
+| XLS-F-06 | Excel单元格格式 | 数字/日期字段 | 正确的数据格式 | P1 |
+
+**Excel导出测试代码:**
+```typescript
+// XLS-F-01: 单条规则导出Excel
+describe('exportRulesExcel', () => {
+  it('should export rules as Excel file', async () => {
+    const result = await rulesService.exportRules(['rule-1'], 'xlsx');
+    
+    expect(result.format).toBe('xlsx');
+    expect(result.filename).toMatch(/\.xlsx$/);
+    expect(result.contentType).toBe('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  });
+});
+```
+
+### 5.3 从文件导入规则 (Import Rules)
+
+| ID | 场景 | 输入 | 预期输出 | 优先级 |
+|----|------|------|---------|--------|
+| IMP-F-01 | 导入JSON文件 | 有效的rules.json | 规则成功导入 | P0 |
+| IMP-F-02 | 导入Excel文件 | 有效的rules.xlsx | 规则成功导入 | P0 |
+| IMP-F-03 | 文件上传组件 | 选择文件 | 文件上传成功 | P0 |
+| IMP-F-04 | 导入数据预览 | 上传后 | 显示导入预览表格 | P0 |
+| IMP-F-05 | 导入数据验证 | 无效数据 | 显示错误提示 | P0 |
+| IMP-F-06 | 批量导入处理 | 100条规则 | 全部导入成功 | P1 |
+| IMP-F-07 | 导入冲突处理 | 同名规则 | 提示跳过/覆盖/重命名 | P1 |
+| IMP-F-08 | 导入进度显示 | 大文件导入 | 显示进度条 | P1 |
+| IMP-F-09 | 导入结果报告 | 导入完成 | 显示成功/失败统计 | P1 |
+
+**导入功能测试代码:**
+```typescript
+// IMP-F-01: 导入JSON文件
+describe('importRulesFromJSON', () => {
+  it('should import rules from JSON file', async () => {
+    const jsonContent = {
+      rules: [
+        { name: '导入规则1', ruleType: 'distance', priority: 100 },
+        { name: '导入规则2', ruleType: 'rating', priority: 50 },
+      ],
+    };
+    
+    const result = await rulesService.importRules(jsonContent, 'user-id');
+    
+    expect(result.success).toBe(2);
+    expect(result.failed).toBe(0);
+    expect(prisma.rule.create).toHaveBeenCalledTimes(2);
+  });
+});
+
+// IMP-F-05: 导入数据验证
+describe('importRulesValidation', () => {
+  it('should validate imported data and show errors', async () => {
+    const invalidContent = {
+      rules: [
+        { name: '', ruleType: 'invalid_type', priority: -1 },
+      ],
+    };
+    
+    const result = await rulesService.importRules(invalidContent, 'user-id');
+    
+    expect(result.success).toBe(0);
+    expect(result.failed).toBe(1);
+    expect(result.errors[0]).toContain('name is required');
+  });
+});
+```
+
+### 5.4 规则版本对比 (Version Comparison)
+
+| ID | 场景 | 输入 | 预期输出 | 优先级 |
+|----|------|------|---------|--------|
+| DIFF-F-01 | 对比两个版本 | 选择v1和v2 | 显示差异对比视图 | P0 |
+| DIFF-F-02 | 高亮新增条件 | - | 新增条件绿色高亮 | P0 |
+| DIFF-F-03 | 高亮删除条件 | - | 删除条件红色高亮 | P0 |
+| DIFF-F-04 | 高亮修改条件 | - | 修改条件黄色高亮 | P0 |
+| DIFF-F-05 | 切换对比方向 | 点击交换 | v1↔v2对比方向切换 | P1 |
+| DIFF-F-06 | 并排对比视图 | - | 左右并排显示两个版本 | P1 |
+| DIFF-F-07 | 统一差异视图 | - | 合并显示所有差异 | P1 |
+
+### 5.5 可视化规则流程图 (Visual Flow Diagram)
+
+| ID | 场景 | 输入 | 预期输出 | P优先级 |
+|----|------|------|---------|--------|
+| FLOW-F-01 | 渲染规则流程图 | 条件树 | 显示流程图节点和连线 | P0 |
+| FLOW-F-02 | 节点点击查看详情 | 点击条件节点 | 显示条件详情弹窗 | P0 |
+| FLOW-F-03 | 流程图缩放 | 滚轮/按钮 | 流程图放大/缩小 | P1 |
+| FLOW-F-04 | 流程图拖拽 | 拖拽画布 | 移动视图位置 | P1 |
+| FLOW-F-05 | 导出流程图 | 点击导出 | 下载PNG/SVG图片 | P1 |
+| FLOW-F-06 | 流程图自动布局 | - | 节点自动排列整齐 | P1 |
+
+### 5.6 拖拽重新排序条件 (Drag & Drop Reordering)
+
+| ID | 场景 | 输入 | 预期输出 | 优先级 |
+|----|------|------|---------|--------|
+| DND-F-01 | 拖拽条件项 | 拖拽条件到新位置 | 顺序更新成功 | P0 |
+| DND-F-02 | 拖拽条件组 | 拖拽条件组 | 整个组移动 | P0 |
+| DND-F-03 | 跨组拖拽 | 条件拖到其他组 | 条件归属变更 | P1 |
+| DND-F-04 | 拖拽视觉反馈 | 拖拽中 | 显示占位符和阴影 | P1 |
+| DND-F-05 | 拖拽撤销 | 拖拽后 | 支持撤销操作 | P2 |
+
+### 5.7 实时规则效果预览 (Real-time Preview)
+
+| ID | 场景 | 输入 | 预期输出 | 优先级 |
+|----|------|------|---------|--------|
+| PREV-F-01 | 打开预览面板 | 点击预览按钮 | 显示预览侧边栏 | P0 |
+| PREV-F-02 | 模拟数据生成 | - | 生成测试订单/骑手数据 | P0 |
+| PREV-F-03 | 规则匹配结果 | 模拟数据 | 显示匹配/不匹配 | P0 |
+| PREV-F-04 | 高亮匹配条件 | - | 匹配的条件高亮显示 | P1 |
+| PREV-F-05 | 自定义模拟数据 | 修改模拟参数 | 预览结果更新 | P1 |
+| PREV-F-06 | 批量模拟测试 | 多条数据 | 批量显示匹配结果 | P1 |
+
+---
+
+## 6. 执行清单
 
 ### P0 必测项（24个）
 
@@ -503,6 +675,33 @@ const complexConditionTree = {
 - [ ] EDIT-P-04~05 编辑性能深度
 - [ ] EDIT-S-03,05 编辑安全深度
 
+### 潜在改进测试项（待实现后测试）
+
+**P0 - 条件模板**
+- [ ] TEMP-F-01~04 模板核心功能
+- [ ] TEMP-F-05 模板命名唯一性
+
+**P0 - Excel导出**
+- [ ] XLS-F-01~02 Excel导出核心
+- [ ] XLS-F-04 Excel样式
+
+**P0 - 规则导入**
+- [ ] IMP-F-01~05 导入核心功能
+- [ ] IMP-F-06 批量导入
+- [ ] IMP-F-07 导入冲突处理
+
+**P1 - 版本对比**
+- [ ] DIFF-F-01~04 对比核心功能
+
+**P1 - 拖拽排序**
+- [ ] DND-F-01~04 拖拽核心功能
+
+**P1 - 实时预览**
+- [ ] PREV-F-01~04 预览核心功能
+
+**P2 - 流程图**
+- [ ] FLOW-F-01~03 流程图核心功能
+
 ---
 
-*文档结束 - 规则增强功能共68个测试用例*
+*文档结束 - 规则增强功能共68个测试用例 + 45个潜在改进测试用例*

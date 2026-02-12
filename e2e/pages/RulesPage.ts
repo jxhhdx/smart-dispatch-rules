@@ -346,4 +346,166 @@ export class RulesPage {
       await this.page.waitForTimeout(500);
     }
   }
+
+  // ==================== 条件模板 ====================
+
+  /**
+   * 打开条件模板选择器
+   */
+  async openTemplateSelector() {
+    const templateBtn = this.page.locator('button').filter({ hasText: /从模板加载|Load Template/ });
+    await templateBtn.click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * 保存当前条件为模板
+   */
+  async saveAsTemplate(name: string, description?: string) {
+    const saveBtn = this.page.locator('button').filter({ hasText: /保存为模板|Save as Template/ });
+    await saveBtn.click();
+    await this.page.waitForTimeout(300);
+
+    // 填写模板信息
+    await this.page.locator('.ant-modal').locator('input').first().fill(name);
+    if (description) {
+      await this.page.locator('.ant-modal').locator('textarea').first().fill(description);
+    }
+    
+    // 点击确定
+    await this.page.locator('.ant-modal').locator('button').filter({ hasText: /OK|确定|保存/ }).first().click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * 从模板加载条件
+   */
+  async loadTemplate(templateName: string) {
+    await this.openTemplateSelector();
+    
+    // 查找并加载指定模板
+    const templateItem = this.page.locator('.ant-list-item').filter({ hasText: templateName });
+    await templateItem.locator('button').filter({ hasText: /加载|Load/ }).click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * 删除模板
+   */
+  async deleteTemplate(templateName: string) {
+    await this.openTemplateSelector();
+    
+    const templateItem = this.page.locator('.ant-list-item').filter({ hasText: templateName });
+    await templateItem.locator('button').filter({ has: this.page.locator('.anticon-delete') }).click();
+    
+    // 确认删除
+    await this.page.locator('.ant-popconfirm, .ant-modal-confirm').locator('button').filter({ hasText: /Yes|确定|OK/ }).first().click();
+    await this.page.waitForTimeout(500);
+  }
+
+  // ==================== 导入/导出 ====================
+
+  /**
+   * 打开导入对话框
+   */
+  async openImportDialog() {
+    const importBtn = this.page.locator('button').filter({ hasText: /导入|Import/ });
+    await importBtn.click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * 导入规则文件
+   */
+  async importRules(filePath: string, conflictStrategy: 'skip' | 'overwrite' | 'rename' = 'skip') {
+    await this.openImportDialog();
+
+    // 选择冲突处理策略
+    const strategyRadio = this.page.locator('.ant-radio-wrapper').filter({ hasText: 
+      conflictStrategy === 'skip' ? /跳过|Skip/ : 
+      conflictStrategy === 'overwrite' ? /覆盖|Overwrite/ : 
+      /重命名|Rename/ 
+    });
+    await strategyRadio.click();
+
+    // 上传文件
+    const fileInput = this.page.locator('input[type="file"]');
+    await fileInput.setInputFiles(filePath);
+    await this.page.waitForTimeout(1000);
+
+    // 点击导入
+    await this.page.locator('.ant-modal').locator('button').filter({ hasText: /OK|确定|导入/ }).first().click();
+    await this.page.waitForTimeout(2000);
+  }
+
+  /**
+   * 导出规则
+   */
+  async exportRules(format: 'json' | 'csv' | 'xlsx' = 'json') {
+    // 点击导出下拉按钮
+    const exportDropdown = this.page.locator('button').filter({ hasText: /导出|Export/ });
+    await exportDropdown.click();
+    await this.page.waitForTimeout(300);
+
+    // 选择格式
+    const formatLabel = format === 'json' ? 'JSON' : format === 'csv' ? 'CSV' : 'Excel';
+    await this.page.locator('.ant-dropdown-menu-item').filter({ hasText: new RegExp(formatLabel, 'i') }).click();
+    await this.page.waitForTimeout(1000);
+
+    // 等待下载完成
+    const downloadPath = await this.page.waitForEvent('download');
+    return downloadPath;
+  }
+
+  /**
+   * 导出单条规则
+   */
+  async exportSingleRule(ruleName: string, format: 'json' | 'csv' | 'xlsx' = 'json') {
+    const row = this.page.locator('.ant-table-row').filter({
+      has: this.page.locator('td').filter({ hasText: ruleName }),
+    });
+
+    // 点击导出下拉
+    await row.locator('button').filter({ has: this.page.locator('.anticon-export') }).click();
+    await this.page.waitForTimeout(300);
+
+    // 选择格式
+    const formatLabel = format === 'json' ? 'JSON' : format === 'csv' ? 'CSV' : 'Excel';
+    await this.page.locator('.ant-dropdown-menu-item').filter({ hasText: new RegExp(formatLabel, 'i') }).click();
+    await this.page.waitForTimeout(1000);
+  }
+
+  // ==================== 高级编辑 ====================
+
+  /**
+   * 打开高级编辑
+   */
+  async openAdvancedEdit(ruleName: string) {
+    const row = this.page.locator('.ant-table-row').filter({
+      has: this.page.locator('td').filter({ hasText: ruleName }),
+    });
+    
+    await row.locator('button').filter({ has: this.page.locator('.anticon-setting') }).first().click();
+    await this.page.waitForTimeout(500);
+  }
+
+  /**
+   * 添加条件
+   */
+  async addCondition(field: string, operator: string, value: string) {
+    // 点击添加条件按钮（在条件编辑器中）
+    const addBtn = this.page.locator('.rule-condition-builder button').filter({ hasText: /添加条件|Add/ });
+    await addBtn.click();
+    await this.page.waitForTimeout(300);
+
+    // 填写条件
+    const conditionRow = this.page.locator('.condition-row').last();
+    await conditionRow.locator('.ant-select').first().click();
+    await this.page.locator('.ant-select-dropdown').locator('.ant-select-item').filter({ hasText: field }).click();
+    
+    await conditionRow.locator('.ant-select').nth(1).click();
+    await this.page.locator('.ant-select-dropdown').locator('.ant-select-item').filter({ hasText: operator }).click();
+    
+    await conditionRow.locator('input').fill(value);
+  }
 }

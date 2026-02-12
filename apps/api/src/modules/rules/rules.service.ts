@@ -1,6 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { CreateRuleDto, UpdateRuleDto, CreateRuleVersionDto } from './dto/rule.dto';
+import * as XLSX from 'xlsx';
 
 @Injectable()
 export class RulesService {
@@ -306,6 +307,10 @@ export class RulesService {
       return this.exportToCsv(rules);
     }
 
+    if (format === 'xlsx') {
+      return this.exportToExcel(rules);
+    }
+
     return {
       exportTime: new Date().toISOString(),
       total: rules.length,
@@ -347,5 +352,196 @@ export class RulesService {
       content: csv,
       filename: `rules_export_${new Date().toISOString().slice(0, 10)}.csv`,
     };
+  }
+
+  // Excel 导出
+  private exportToExcel(rules: any[]) {
+    // 创建工作簿
+    const wb = XLSX.utils.book_new();
+
+    // Rules Sheet
+    const rulesData = rules.map(r => ({
+      'ID': r.id,
+      '名称': r.name,
+      '描述': r.description || '',
+      '规则类型': r.ruleType,
+      '业务类型': r.businessType || '',
+      '优先级': r.priority,
+      '状态': r.status === 1 ? '已发布' : r.status === 0 ? '草稿' : '已下线',
+      '创建时间': r.createdAt,
+    }));
+    const rulesWs = XLSX.utils.json_to_sheet(rulesData);
+    XLSX.utils.book_append_sheet(wb, rulesWs, '规则列表');
+
+    // Versions Sheet
+    const versionsData: any[] = [];
+    rules.forEach(r => {
+      r.versions?.forEach((v: any) => {
+        versionsData.push({
+          '规则ID': r.id,
+          '规则名称': r.name,
+          '版本号': v.version,
+          '版本描述': v.description || '',
+          '版本状态': v.status === 1 ? '已发布' : v.status === 0 ? '草稿' : '已下线',
+          '发布时间': v.publishedAt || '',
+        });
+      });
+    });
+    if (versionsData.length > 0) {
+      const versionsWs = XLSX.utils.json_to_sheet(versionsData);
+      XLSX.utils.book_append_sheet(wb, versionsWs, '版本信息');
+    }
+
+    // Conditions Sheet
+    const conditionsData: any[] = [];
+    rules.forEach(r => {
+      r.versions?.forEach((v: any) => {
+        v.conditions?.forEach((c: any) => {
+          conditionsData.push({
+            '规则ID': r.id,
+            '规则名称': r.name,
+            '版本号': v.version,
+            '条件字段': c.field || '',
+            '操作符': c.operator || '',
+            '条件值': c.value || '',
+            '逻辑类型': c.logicType || 'AND',
+          });
+        });
+      });
+    });
+    if (conditionsData.length > 0) {
+      const conditionsWs = XLSX.utils.json_to_sheet(conditionsData);
+      XLSX.utils.book_append_sheet(wb, conditionsWs, '条件配置');
+    }
+
+    // 生成 Buffer
+    const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '').slice(0, 15);
+
+    return {
+      format: 'xlsx',
+      content: buffer.toString('base64'),
+      contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      filename: `rules_export_${timestamp}.xlsx`,
+    };
+  }
+
+  // 导入规则
+  async importRules(data: any, userId: string, conflictStrategy: string = 'skip') {
+    const { rules } = data;
+    
+    if (!Array.isArray(rules) || rules.length === 0) {
+      throw new BadRequestException('无效的导入数据：规则数组为空');
+    }
+
+    const results = {
+      success: 0,
+      failed: 0,
+      errors: [] as string[],
+      imported: [] as any[],
+    };
+
+    for (let i = 0; i < rules.length; i++) {
+      const ruleData = rules[i];
+      
+      try {
+        // 验证必填字段
+        if (!ruleData.name) {
+          throw new Error('规则名称为必填项');
+        }
+        if (!ruleData.ruleType) {
+          throw new Error('规则类型为必填项');
+        }
+
+        // 检查名称冲突
+        const existingRule = await this.prisma.rule.findFirst({
+          where: { name: ruleData.name },
+        });
+
+        let ruleId: string;
+
+        if (existingRule) {
+          switch (conflictStrategy) {
+            case 'skip':
+              results.errors.push(`第${i + 1}条: 规则"${ruleData.name}"已存在，已跳过`);
+              continue;
+            case 'overwrite':
+              // 更新现有规则
+              await this.prisma.rule.update({
+                where: { id: existingRule.id },
+                data: {
+                  description: ruleData.description,
+                  ruleType: ruleData.ruleType,
+                  businessType: ruleData.businessType,
+                  priority: ruleData.priority || 0,
+                  updatedBy: userId,
+                },
+              });
+              ruleId = existingRule.id;
+              break;
+            case 'rename':
+              // 生成新名称
+              let newName = ruleData.name;
+              let counter = 1;
+              while (await this.prisma.rule.findFirst({ where: { name: newName } })) {
+                newName = `${ruleData.name} (${counter})`;
+                counter++;
+              }
+              ruleData.name = newName;
+              const newRule = await this.prisma.rule.create({
+                data: {
+                  name: ruleData.name,
+                  description: ruleData.description,
+                  ruleType: ruleData.ruleType,
+                  businessType: ruleData.businessType,
+                  priority: ruleData.priority || 0,
+                  status: 0,
+                  createdBy: userId,
+                  updatedBy: userId,
+                },
+              });
+              ruleId = newRule.id;
+              break;
+            default:
+              throw new Error('无效的冲突处理策略');
+          }
+        } else {
+          // 创建新规则
+          const newRule = await this.prisma.rule.create({
+            data: {
+              name: ruleData.name,
+              description: ruleData.description,
+              ruleType: ruleData.ruleType,
+              businessType: ruleData.businessType,
+              priority: ruleData.priority || 0,
+              status: 0,
+              createdBy: userId,
+              updatedBy: userId,
+            },
+          });
+          ruleId = newRule.id;
+        }
+
+        // 导入版本（如果有）
+        if (ruleData.versions && Array.isArray(ruleData.versions)) {
+          for (const versionData of ruleData.versions) {
+            await this.createVersion(ruleId, {
+              configJson: versionData.configJson || {},
+              description: versionData.description || 'Imported version',
+              conditions: versionData.conditions || [],
+              actions: versionData.actions || [],
+            }, userId);
+          }
+        }
+
+        results.success++;
+        results.imported.push({ id: ruleId, name: ruleData.name });
+      } catch (error: any) {
+        results.failed++;
+        results.errors.push(`第${i + 1}条: ${error.message || '导入失败'}`);
+      }
+    }
+
+    return results;
   }
 }

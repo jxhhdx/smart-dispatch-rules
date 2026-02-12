@@ -9,10 +9,12 @@ import {
   Query,
   Request,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { RulesService } from './rules.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CreateRuleDto, UpdateRuleDto, CreateRuleVersionDto } from './dto/rule.dto';
+import { ImportRulesDto } from './dto/template.dto';
 
 @Controller('rules')
 @UseGuards(JwtAuthGuard)
@@ -32,6 +34,37 @@ export class RulesController {
       status: status ? parseInt(status, 10) : undefined,
       keyword,
     });
+  }
+
+  // 导出规则 - 必须在 :id 路由之前定义
+  @Get('export')
+  async exportRules(@Query('ids') ids: string, @Query('format') format: string = 'json') {
+    const ruleIds = ids ? ids.split(',') : [];
+    const validFormats = ['json', 'csv', 'xlsx'];
+    if (!validFormats.includes(format)) {
+      throw new BadRequestException('不支持的导出格式，支持: json, csv, xlsx');
+    }
+    return this.rulesService.exportRules(ruleIds, format);
+  }
+
+  // 导入规则 - 必须在 :id 路由之前定义
+  @Post('import')
+  async importRules(
+    @Body() importDto: ImportRulesDto,
+    @Request() req,
+  ) {
+    return this.rulesService.importRules(
+      { rules: importDto.rules },
+      req.user.userId,
+      importDto.conflictStrategy || 'skip',
+    );
+  }
+
+  // 模拟执行 - 必须在 :id 路由之前定义
+  @Post('simulate')
+  simulate(@Body() data: any) {
+    // TODO: 实现规则模拟执行
+    return { message: '模拟执行功能待实现', data };
   }
 
   @Get(':id')
@@ -102,23 +135,13 @@ export class RulesController {
     return this.rulesService.cloneRule(id, req.user.userId);
   }
 
-  // 导出规则
-  @Get('export')
-  async exportRules(@Query('ids') ids: string, @Query('format') format: string = 'json') {
-    const ruleIds = ids ? ids.split(',') : [];
-    return this.rulesService.exportRules(ruleIds, format);
-  }
-
   // 导出单条规则
   @Get(':id/export')
   async exportSingleRule(@Param('id') id: string, @Query('format') format: string = 'json') {
+    const validFormats = ['json', 'csv', 'xlsx'];
+    if (!validFormats.includes(format)) {
+      throw new BadRequestException('不支持的导出格式，支持: json, csv, xlsx');
+    }
     return this.rulesService.exportRules([id], format);
-  }
-
-  // 模拟执行
-  @Post('simulate')
-  simulate(@Body() data: any) {
-    // TODO: 实现规则模拟执行
-    return { message: '模拟执行功能待实现', data };
   }
 }

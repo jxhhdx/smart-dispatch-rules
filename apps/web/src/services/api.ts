@@ -139,10 +139,22 @@ export const ruleApi = {
     api.get('/rules/export', { params: { ids: ids?.join(','), format } }),
   exportSingle: (id: string, format: string = 'json') =>
     api.get(`/rules/${id}/export`, { params: { format } }),
+  import: (rules: any[], conflictStrategy: string = 'skip') =>
+    api.post('/rules/import', { rules, conflictStrategy }),
   getVersions: (id: string) => api.get(`/rules/${id}/versions`),
   createVersion: (id: string, data: any) => api.post(`/rules/${id}/versions`, data),
   publishVersion: (ruleId: string, versionId: string) =>
     api.post(`/rules/${ruleId}/versions/${versionId}/publish`),
+}
+
+// 条件模板 API
+export const templateApi = {
+  getList: (params?: { category?: string; keyword?: string }) => api.get('/templates', { params }),
+  getDetail: (id: string) => api.get(`/templates/${id}`),
+  create: (data: { name: string; description?: string; category?: string; conditions: any }) =>
+    api.post('/templates', data),
+  update: (id: string, data: any) => api.put(`/templates/${id}`, data),
+  delete: (id: string) => api.delete(`/templates/${id}`),
 }
 
 // 日志管理 API

@@ -212,3 +212,18 @@ model DispatchStatistic {
   @@unique([statDate, statHour])
   @@map("dispatch_statistics")
 }
+
+// 条件模板 - 用于保存和复用常用条件
+model ConditionTemplate {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  category    String    @default("custom") // custom, system
+  conditions  Json      // 存储条件树结构
+  createdBy   String?   @map("created_by")
+  updatedBy   String?   @map("updated_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@map("condition_templates")
+}
