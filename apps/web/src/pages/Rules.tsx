@@ -226,7 +226,7 @@ export default function Rules() {
             })),
           })
         }
-        message.success('Rule updated successfully')
+        message.success(t('rule:message.updateSuccess'))
         setAdvancedModalVisible(false)
         fetchRules(pagination.current, pagination.pageSize)
       }
