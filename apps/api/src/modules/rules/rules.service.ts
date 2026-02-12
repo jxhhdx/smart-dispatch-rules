@@ -234,4 +234,118 @@ export class RulesService {
   async rollbackVersion(ruleId: string, versionId: string, userId: string) {
     return this.publishVersion(ruleId, versionId, userId);
   }
+
+  // 复制规则
+  async cloneRule(id: string, userId: string) {
+    const rule = await this.findOne(id);
+    
+    // 创建新规则
+    const newRule = await this.prisma.rule.create({
+      data: {
+        name: `${rule.name} - Copy`,
+        description: rule.description,
+        ruleType: rule.ruleType,
+        businessType: rule.businessType,
+        priority: rule.priority,
+        status: 0, // 草稿状态
+        createdBy: userId,
+        updatedBy: userId,
+      },
+    });
+
+    // 复制最新版本
+    const latestVersion = rule.versions?.[0];
+    if (latestVersion) {
+      await this.createVersion(newRule.id, {
+        configJson: latestVersion.configJson,
+        description: `Copied from "${rule.name}" v${latestVersion.version}`,
+        conditions: latestVersion.conditions?.map((c: any) => ({
+          conditionType: c.conditionType,
+          field: c.field,
+          operator: c.operator,
+          value: c.value,
+          valueType: c.valueType,
+          logicType: c.logicType,
+        })),
+        actions: latestVersion.actions?.map((a: any) => ({
+          actionType: a.actionType,
+          config: a.configJson,
+        })),
+      }, userId);
+    }
+
+    return this.findOne(newRule.id);
+  }
+
+  // 导出规则
+  async exportRules(ruleIds: string[], format: string = 'json') {
+    let rules: any[];
+
+    if (ruleIds.length === 0) {
+      // 导出所有规则
+      rules = await this.prisma.rule.findMany({
+        include: {
+          versions: {
+            include: {
+              conditions: true,
+              actions: true,
+            },
+            orderBy: { version: 'desc' },
+          },
+        },
+      });
+    } else {
+      // 导出指定规则
+      rules = await Promise.all(
+        ruleIds.map(id => this.findOne(id).catch(() => null))
+      );
+      rules = rules.filter(r => r !== null);
+    }
+
+    if (format === 'csv') {
+      return this.exportToCsv(rules);
+    }
+
+    return {
+      exportTime: new Date().toISOString(),
+      total: rules.length,
+      rules: rules.map(r => ({
+        id: r.id,
+        name: r.name,
+        description: r.description,
+        ruleType: r.ruleType,
+        businessType: r.businessType,
+        priority: r.priority,
+        status: r.status,
+        versions: r.versions?.map((v: any) => ({
+          version: v.version,
+          description: v.description,
+          status: v.status,
+          conditions: v.conditions,
+          actions: v.actions,
+        })),
+      })),
+    };
+  }
+
+  private exportToCsv(rules: any[]) {
+    const headers = ['ID', 'Name', 'Description', 'Rule Type', 'Business Type', 'Priority', 'Status'];
+    const rows = rules.map(r => [
+      r.id,
+      `"${r.name}"`,
+      `"${r.description || ''}"`,
+      r.ruleType,
+      r.businessType || '',
+      r.priority,
+      r.status === 1 ? 'Published' : r.status === 0 ? 'Draft' : 'Offline',
+    ]);
+
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    
+    return {
+      format: 'csv',
+      content: csv,
+      filename: `rules_export_${new Date().toISOString().slice(0, 10)}.csv`,
+    };
+  }
 }

@@ -96,6 +96,25 @@ export class RulesController {
     return this.rulesService.rollbackVersion(id, versionId, req.user.userId);
   }
 
+  // 复制规则
+  @Post(':id/clone')
+  cloneRule(@Param('id') id: string, @Request() req) {
+    return this.rulesService.cloneRule(id, req.user.userId);
+  }
+
+  // 导出规则
+  @Get('export')
+  async exportRules(@Query('ids') ids: string, @Query('format') format: string = 'json') {
+    const ruleIds = ids ? ids.split(',') : [];
+    return this.rulesService.exportRules(ruleIds, format);
+  }
+
+  // 导出单条规则
+  @Get(':id/export')
+  async exportSingleRule(@Param('id') id: string, @Query('format') format: string = 'json') {
+    return this.rulesService.exportRules([id], format);
+  }
+
   // 模拟执行
   @Post('simulate')
   simulate(@Body() data: any) {
