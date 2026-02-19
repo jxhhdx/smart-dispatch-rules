@@ -7,7 +7,7 @@ services:
     name: smart-dispatch-api
     runtime: node
     region: singapore
-    plan: free
+    instanceType: free
     branch: main
     rootDir: apps/api
     buildCommand: npm install && npx prisma generate && npm run build
@@ -31,7 +31,7 @@ services:
   - type: web
     name: smart-dispatch-web
     runtime: static
-    plan: free
+    instanceType: free
     branch: main
     rootDir: apps/web
     buildCommand: npm install && npm run build
@@ -51,6 +51,6 @@ services:
 databases:
   - name: smart-dispatch-db
     region: singapore
-    plan: free
+    instanceType: free
     databaseName: smart_dispatch
     user: smart_dispatch_user
