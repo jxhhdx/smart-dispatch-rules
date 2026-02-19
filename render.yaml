@@ -7,7 +7,6 @@ services:
     name: smart-dispatch-api
     runtime: node
     region: singapore
-    instanceType: free
     branch: main
     rootDir: apps/api
     buildCommand: npm install && npx prisma generate && npm run build
