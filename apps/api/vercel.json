@@ -4,13 +4,14 @@
   "buildCommand": "npx prisma generate && npx nest build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/test", "destination": "/api/test.js" },
     { "source": "/health", "destination": "/api/health.js" },
+    { "source": "/test", "destination": "/api/test.js" },
     { "source": "/api/v1/(.*)", "destination": "/api/index.js" }
   ],
   "functions": {
     "api/index.js": {
-      "includeFiles": "dist/**"
+      "includeFiles": "dist/**",
+      "maxDuration": 10
     }
   }
 }
