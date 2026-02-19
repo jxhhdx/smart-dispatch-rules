@@ -1,0 +1,36 @@
+name: Test Production Environment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install chromium
+
+      - name: Run Playwright tests against production
+        run: npx playwright test e2e/tests/all-critical.spec.ts --config=playwright.prod.config.ts --project=chromium --reporter=list
+        env:
+          BASE_URL: https://web-o9a5z01n1-javon-gaos-projects.vercel.app
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-prod
+          path: playwright-report-prod/
+          retention-days: 7
