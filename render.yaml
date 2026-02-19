@@ -31,7 +31,6 @@ services:
   - type: web
     name: smart-dispatch-web
     runtime: static
-    region: singapore
     plan: free
     branch: main
     rootDir: apps/web
