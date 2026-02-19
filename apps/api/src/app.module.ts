@@ -8,6 +8,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { RulesModule } from './modules/rules/rules.module';
 import { LogsModule } from './modules/logs/logs.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { HealthModule } from './modules/health/health.module';
 import { DatabaseModule } from './modules/common/database.module';
 import { I18nConfigModule } from './i18n/i18n.module';
 import { HttpExceptionFilter, AllExceptionsFilter } from './common/filters/http-exception.filter';
@@ -29,6 +30,7 @@ import { LogsService } from './modules/logs/logs.service';
     RulesModule,
     LogsModule,
     DashboardModule,
+    HealthModule,
   ],
   providers: [
     {
