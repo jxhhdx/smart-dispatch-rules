@@ -6,7 +6,7 @@
   "rewrites": [
     {
       "source": "/api/v1/(.*)",
-      "destination": "https://api-d7rlaoid4-javon-gaos-projects.vercel.app/api/v1/$1"
+      "destination": "https://api-rcf8ahm4f-javon-gaos-projects.vercel.app/api/v1/$1"
     }
   ]
 }
