@@ -6,8 +6,18 @@ let prismaClient: PrismaClient | null = null;
 
 export function getPrismaClient(): PrismaClient {
   if (!prismaClient) {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      console.error('DATABASE_URL environment variable is not set');
+    }
+    
     prismaClient = new PrismaClient({
       log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+      datasources: {
+        db: {
+          url: databaseUrl,
+        },
+      },
     });
   }
   return prismaClient;
