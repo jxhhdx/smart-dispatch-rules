@@ -1,12 +1,9 @@
 {
   "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npx prisma generate && npx nest build",
+  "buildCommand": "npx prisma generate && npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/health", "destination": "/api/health.js" },
-    { "source": "/test", "destination": "/api/test.js" },
-    { "source": "/api/v1/(.*)", "destination": "/api/index.js" }
+    { "source": "/(.*)", "destination": "/api/index.js" }
   ],
   "functions": {
     "api/index.js": {
