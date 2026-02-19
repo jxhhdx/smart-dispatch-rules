@@ -31,7 +31,6 @@ services:
   - type: web
     name: smart-dispatch-web
     runtime: static
-    instanceType: free
     branch: main
     rootDir: apps/web
     buildCommand: npm install && npm run build
@@ -51,6 +50,6 @@ services:
 databases:
   - name: smart-dispatch-db
     region: singapore
-    instanceType: free
+    plan: free
     databaseName: smart_dispatch
     user: smart_dispatch_user
