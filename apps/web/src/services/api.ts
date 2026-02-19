@@ -4,7 +4,7 @@ import i18n from '../i18n'
 import { useAuthStore } from '../stores/auth'
 
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
   timeout: 10000,
 })
 
