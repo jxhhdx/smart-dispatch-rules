@@ -1,0 +1,43 @@
+use sea_orm::entity::prelude::*;
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
+#[sea_orm(table_name = "roles")]
+pub struct Model {
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub id: Uuid,
+    pub name: String,
+    #[sea_orm(unique)]
+    pub code: String,
+    pub description: Option<String>,
+    pub status: i32,
+    #[sea_orm(column_name = "created_at")]
+    pub created_at: DateTimeWithTimeZone,
+    #[sea_orm(column_name = "updated_at")]
+    pub updated_at: DateTimeWithTimeZone,
+}
+
+#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+pub enum Relation {
+    #[sea_orm(has_many = "super::users::Entity")]
+    Users,
+    #[sea_orm(has_many = "super::role_permissions::Entity")]
+    RolePermissions,
+}
+
+impl Related<super::users::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Users.def()
+    }
+}
+
+impl Related<super::permissions::Entity> for Entity {
+    fn to() -> RelationDef {
+        super::role_permissions::Relation::Permission.def()
+    }
+    fn via() -> Option<RelationDef> {
+        Some(super::role_permissions::Relation::Role.def().rev())
+    }
+}
+
+impl ActiveModelBehavior for ActiveModel {}

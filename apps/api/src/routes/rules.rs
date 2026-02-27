@@ -2,11 +2,12 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
-use sea_orm::DatabaseConnection;
 
+use crate::AppState;
 use crate::handlers::rules;
+use crate::middleware::auth::require_auth;
 
-pub fn router() -> Router<DatabaseConnection> {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(rules::list).post(rules::create))
         .route("/:id", get(rules::detail).put(rules::update).delete(rules::delete))
@@ -18,4 +19,5 @@ pub fn router() -> Router<DatabaseConnection> {
         .route("/:id/export", get(rules::export_rule))
         .route("/export", get(rules::export_all_rules))
         .route("/simulate", post(rules::simulate))
+        .layer(axum::middleware::from_fn(require_auth))
 }

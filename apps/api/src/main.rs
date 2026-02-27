@@ -3,6 +3,7 @@ use axum::{
     Router,
 };
 use std::net::SocketAddr;
+use sea_orm::DatabaseConnection;
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
@@ -13,9 +14,12 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod db;
 mod handlers;
 mod middleware;
-mod models;
 mod routes;
-mod services;
+
+#[derive(Clone)]
+pub struct AppState {
+    pub db: DatabaseConnection,
+}
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -33,6 +37,7 @@ async fn main() -> anyhow::Result<()> {
 
     // 数据库连接
     let db_pool = db::init_db().await?;
+    let state = AppState { db: db_pool };
 
     // CORS 配置
     let cors = CorsLayer::new()
@@ -49,10 +54,11 @@ async fn main() -> anyhow::Result<()> {
         .nest("/api/v1/rules", routes::rules::router())
         .nest("/api/v1/logs", routes::logs::router())
         .nest("/api/v1/dashboard", routes::dashboard::router())
+        .nest("/api/v1/templates", routes::templates::router())
         .layer(cors)
         .layer(CompressionLayer::new())
         .layer(TraceLayer::new_for_http())
-        .with_state(db_pool);
+        .with_state(state);
 
     // 启动服务
     let port = std::env::var("PORT").unwrap_or_else(|_| "3001".to_string());

@@ -26,9 +26,7 @@
           <template #header>
             <span>订单趋势</span>
           </template>
-          <div class="chart-placeholder">
-            <el-empty description="图表组件待实现" />
-          </div>
+          <v-chart class="chart" :option="orderChartOption" autoresize />
         </el-card>
       </el-col>
       <el-col :span="8">
@@ -36,9 +34,7 @@
           <template #header>
             <span>规则触发统计</span>
           </template>
-          <div class="chart-placeholder">
-            <el-empty description="图表组件待实现" />
-          </div>
+          <v-chart class="chart" :option="ruleChartOption" autoresize />
         </el-card>
       </el-col>
     </el-row>
@@ -65,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import * as dashboardApi from '@/api/dashboard'
 import type { DashboardStats } from '@/types'
 
@@ -87,6 +83,79 @@ const realtimeItems = ref([
   { label: '空闲骑手', value: 0, type: 'info' }
 ])
 
+// 订单趋势图表配置
+const orderChartOption = computed(() => ({
+  tooltip: {
+    trigger: 'axis'
+  },
+  legend: {
+    data: ['订单量', '派单量']
+  },
+  xAxis: {
+    type: 'category',
+    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [
+    {
+      name: '订单量',
+      type: 'line',
+      data: [120, 132, 101, 134, 90, 230, 210],
+      smooth: true,
+      itemStyle: { color: '#409eff' }
+    },
+    {
+      name: '派单量',
+      type: 'line',
+      data: [220, 182, 191, 234, 290, 330, 310],
+      smooth: true,
+      itemStyle: { color: '#67c23a' }
+    }
+  ]
+}))
+
+// 规则触发图表配置
+const ruleChartOption = computed(() => ({
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    orient: 'vertical',
+    right: 10,
+    top: 'center'
+  },
+  series: [
+    {
+      name: '规则触发',
+      type: 'pie',
+      radius: ['50%', '70%'],
+      avoidLabelOverlap: false,
+      label: {
+        show: false,
+        position: 'center'
+      },
+      emphasis: {
+        label: {
+          show: true,
+          fontSize: 20,
+          fontWeight: 'bold'
+        }
+      },
+      labelLine: {
+        show: false
+      },
+      data: [
+        { value: 1048, name: '距离优先', itemStyle: { color: '#409eff' } },
+        { value: 735, name: '负载均衡', itemStyle: { color: '#67c23a' } },
+        { value: 580, name: '时效优先', itemStyle: { color: '#e6a23c' } },
+        { value: 484, name: '评分优先', itemStyle: { color: '#f56c6c' } }
+      ]
+    }
+  ]
+}))
+
 const fetchStats = async () => {
   try {
     stats.value = await dashboardApi.getStats()
@@ -95,6 +164,15 @@ const fetchStats = async () => {
     statCards.value[1].value = String(stats.value?.todayDispatched || 0)
     statCards.value[2].value = (stats.value?.todaySuccessRate || 0).toFixed(1) + '%'
     statCards.value[3].value = String(stats.value?.activeRiders || 0)
+    
+    // 更新实时数据
+    const realtime = await dashboardApi.getRealtime()
+    realtimeItems.value[0].value = realtime.pendingOrders
+    realtimeItems.value[1].value = realtime.dispatchingOrders
+    realtimeItems.value[2].value = realtime.deliveringOrders
+    realtimeItems.value[3].value = realtime.completedToday
+    realtimeItems.value[4].value = realtime.activeRiders
+    realtimeItems.value[5].value = realtime.idleRiders
   } catch (error) {
     console.error('获取统计数据失败:', error)
   }
@@ -145,11 +223,8 @@ onMounted(() => {
   margin-top: 10px;
 }
 
-.chart-placeholder {
+.chart {
   height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .realtime-card {

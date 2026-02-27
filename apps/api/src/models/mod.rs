@@ -1,6 +1,4 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 pub mod user;
 pub mod role;
@@ -71,7 +69,7 @@ pub struct PaginatedResponse<T> {
 
 impl<T> PaginatedResponse<T> {
     pub fn new(list: Vec<T>, total: u64, page: u64, page_size: u64) -> Self {
-        let total_pages = (total + page_size - 1) / page_size;
+        let total_pages = if total == 0 { 0 } else { (total + page_size - 1) / page_size };
         Self {
             list,
             total,

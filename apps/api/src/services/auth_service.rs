@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use uuid::Uuid;
 
-use crate::models::{User, UserInfo};
+use crate::models::UserInfo;
+use entity::users::Model as User;
 
 const JWT_EXPIRES_IN_DAYS: i64 = 7;
 

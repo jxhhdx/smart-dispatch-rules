@@ -1,34 +1,5 @@
-use chrono::{DateTime, NaiveDate, Utc};
-use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JsonValue;
 use uuid::Uuid;
-
-/// 派单统计
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DispatchStatistic {
-    pub id: Uuid,
-    pub stat_date: NaiveDate,
-    pub stat_hour: Option<i32>,
-    pub total_orders: i32,
-    pub dispatched_orders: i32,
-    pub success_orders: i32,
-    pub failed_orders: i32,
-    pub timeout_orders: i32,
-    pub dispatch_rate: Option<Decimal>,
-    pub success_rate: Option<Decimal>,
-    pub ontime_rate: Option<Decimal>,
-    pub avg_dispatch_time: Option<i32>,
-    pub avg_delivery_time: Option<i32>,
-    pub avg_accept_time: Option<i32>,
-    pub avg_distance: Option<Decimal>,
-    pub total_distance: Option<Decimal>,
-    pub active_riders: Option<i32>,
-    pub avg_rider_load: Option<Decimal>,
-    pub rules_triggered: Option<JsonValue>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-}
 
 /// 仪表盘统计数据
 #[derive(Debug, Serialize)]

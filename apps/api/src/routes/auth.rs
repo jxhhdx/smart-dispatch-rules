@@ -2,11 +2,11 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use sea_orm::DatabaseConnection;
 
+use crate::AppState;
 use crate::handlers::auth;
 
-pub fn router() -> Router<DatabaseConnection> {
+pub fn router() -> Router<AppState> {
     Router::new()
         .route("/login", post(auth::login))
         .route("/logout", post(auth::logout))

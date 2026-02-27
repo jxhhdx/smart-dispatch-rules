@@ -3,24 +3,6 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
 
-/// 用户模型
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct User {
-    pub id: Uuid,
-    pub username: String,
-    pub email: String,
-    #[serde(skip_serializing)]
-    pub password_hash: String,
-    pub real_name: Option<String>,
-    pub phone: Option<String>,
-    pub avatar_url: Option<String>,
-    pub role_id: Option<Uuid>,
-    pub status: i32,
-    pub last_login_at: Option<DateTime<Utc>>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-}
-
 /// 创建用户请求
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateUserRequest {
@@ -75,20 +57,4 @@ pub struct UserInfo {
     pub role_name: Option<String>,
     pub status: i32,
     pub permissions: Vec<String>,
-}
-
-/// 用户列表项
-#[derive(Debug, Serialize)]
-pub struct UserListItem {
-    pub id: Uuid,
-    pub username: String,
-    pub email: String,
-    pub real_name: Option<String>,
-    pub phone: Option<String>,
-    pub avatar_url: Option<String>,
-    pub role_id: Option<Uuid>,
-    pub role_name: Option<String>,
-    pub status: i32,
-    pub last_login_at: Option<DateTime<Utc>>,
-    pub created_at: DateTime<Utc>,
 }

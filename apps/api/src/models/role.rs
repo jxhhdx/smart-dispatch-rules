@@ -1,34 +1,6 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use validator::Validate;
-
-/// 角色模型
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Role {
-    pub id: Uuid,
-    pub name: String,
-    pub code: String,
-    pub description: Option<String>,
-    pub status: i32,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-}
-
-/// 权限模型
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Permission {
-    pub id: Uuid,
-    pub name: String,
-    pub code: String,
-    pub r#type: String,
-    pub parent_id: Option<Uuid>,
-    pub path: Option<String>,
-    pub sort_order: i32,
-    pub status: i32,
-    pub created_at: DateTime<Utc>,
-    pub children: Option<Vec<Permission>>,
-}
+use uuid::Uuid;
 
 /// 创建角色请求
 #[derive(Debug, Deserialize, Validate)]
@@ -52,29 +24,4 @@ pub struct UpdateRoleRequest {
 #[derive(Debug, Deserialize)]
 pub struct UpdateRolePermissionsRequest {
     pub permission_ids: Vec<Uuid>,
-}
-
-/// 角色列表项
-#[derive(Debug, Serialize)]
-pub struct RoleListItem {
-    pub id: Uuid,
-    pub name: String,
-    pub code: String,
-    pub description: Option<String>,
-    pub status: i32,
-    pub user_count: i64,
-    pub created_at: DateTime<Utc>,
-}
-
-/// 角色详情
-#[derive(Debug, Serialize)]
-pub struct RoleDetail {
-    pub id: Uuid,
-    pub name: String,
-    pub code: String,
-    pub description: Option<String>,
-    pub status: i32,
-    pub permissions: Vec<Permission>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
 }

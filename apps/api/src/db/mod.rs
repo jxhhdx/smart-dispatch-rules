@@ -11,14 +11,3 @@ pub async fn init_db() -> Result<DatabaseConnection, DbErr> {
     
     Ok(db)
 }
-
-#[derive(Clone)]
-pub struct AppState {
-    pub db: DatabaseConnection,
-}
-
-impl From<DatabaseConnection> for AppState {
-    fn from(db: DatabaseConnection) -> Self {
-        Self { db }
-    }
-}

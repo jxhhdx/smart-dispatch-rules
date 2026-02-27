@@ -5,15 +5,13 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use sea_orm::DatabaseConnection;
-use serde_json::json;
 
+use crate::AppState;
 use crate::services::auth_service::AuthService;
 
-pub async fn jwt_auth_middleware(
-    State(_db): State<DatabaseConnection>,
+pub async fn require_auth(
     headers: HeaderMap,
-    req: Request,
+    request: Request,
     next: Next,
 ) -> Response {
     // 从 Authorization header 中提取 token
@@ -27,9 +25,9 @@ pub async fn jwt_auth_middleware(
         None => {
             return (
                 StatusCode::UNAUTHORIZED,
-                Json(json!({
+                Json(serde_json::json!({
                     "code": 401,
-                    "message": "Missing or invalid authorization header",
+                    "message": "缺少认证信息",
                     "data": null
                 })),
             )
@@ -40,17 +38,27 @@ pub async fn jwt_auth_middleware(
     // 验证 token
     match AuthService::verify_token(token) {
         Ok(_claims) => {
-            // TODO: 将 claims 添加到请求扩展中
-            next.run(req).await
+            // TODO: 将 claims 添加到请求扩展中，供后续使用
+            next.run(request).await
         }
         Err(_) => (
             StatusCode::UNAUTHORIZED,
-            Json(json!({
+            Json(serde_json::json!({
                 "code": 401,
-                "message": "Invalid or expired token",
+                "message": "认证已过期或无效",
                 "data": null
             })),
         )
             .into_response(),
     }
+}
+
+// 用于从 State 中提取的 auth 中间件
+pub async fn auth_middleware(
+    State(_state): State<AppState>,
+    headers: HeaderMap,
+    request: Request,
+    next: Next,
+) -> Response {
+    require_auth(headers, request, next).await
 }
