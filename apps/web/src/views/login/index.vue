@@ -1,116 +1,123 @@
 <template>
   <div class="login-container">
-    <el-card class="login-card">
-      <template #header>
-        <h2 class="login-title">智能派单系统</h2>
-      </template>
+    <a-card class="login-card">
+      <div class="login-header">
+        <h2 class="login-title">{{ $t('login.title') }}</h2>
+      </div>
       
-      <el-form
-        ref="loginFormRef"
-        :model="loginForm"
-        :rules="loginRules"
-        @keyup.enter="handleLogin"
-        class="ant-form"
+      <a-form
+        ref="formRef"
+        :model="formState"
+        :rules="rules"
+        @finish="handleLogin"
+        class="login-form"
       >
-        <el-form-item prop="username" class="ant-form-item">
-          <el-input
-            v-model="loginForm.username"
-            placeholder="Username / 用户名"
-            :prefix-icon="User"
+        <a-form-item name="username">
+          <a-input
+            v-model:value="formState.username"
             size="large"
-            class="ant-input"
-          />
-        </el-form-item>
-        
-        <el-form-item prop="password" class="ant-form-item">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="Password / 密码"
-            :prefix-icon="Lock"
-            size="large"
-            show-password
-            class="ant-input"
-          />
-        </el-form-item>
-        
-        <el-form-item>
-          <el-button
-            type="primary"
-            :loading="loading"
-            size="large"
-            style="width: 100%"
-            @click="handleLogin"
-            class="ant-btn"
+            :placeholder="$t('login.username')"
           >
-            Login / 登录
-          </el-button>
-        </el-form-item>
-      </el-form>
+            <template #prefix>
+              <user-outlined />
+            </template>
+          </a-input>
+        </a-form-item>
+        
+        <a-form-item name="password">
+          <a-input-password
+            v-model:value="formState.password"
+            size="large"
+            :placeholder="$t('login.password')"
+          >
+            <template #prefix>
+              <lock-outlined />
+            </template>
+          </a-input-password>
+        </a-form-item>
+        
+        <a-form-item>
+          <a-button
+            type="primary"
+            html-type="submit"
+            size="large"
+            :loading="loading"
+            block
+          >
+            {{ $t('login.submit') }}
+          </a-button>
+        </a-form-item>
+      </a-form>
       
       <div class="login-tips">
-        <p>默认账号: admin</p>
-        <p>默认密码: admin123</p>
+        <p>默认账号: admin / admin123</p>
       </div>
-    </el-card>
+      
+      <!-- 语言切换 -->
+      <div class="lang-switch">
+        <a-select
+          v-model:value="currentLang"
+          size="small"
+          style="width: 100px"
+          @change="handleLangChange"
+        >
+          <a-select-option value="zh-CN">中文</a-select-option>
+          <a-select-option value="en-US">English</a-select-option>
+        </a-select>
+      </div>
+    </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
+import { message } from 'ant-design-vue'
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores/user'
-import type { FormInstance, FormRules } from 'element-plus'
+import i18n from '@/i18n'
 
 const router = useRouter()
 const userStore = useUserStore()
-
-const loginFormRef = ref<FormInstance>()
+const formRef = ref()
 const loading = ref(false)
 
-const loginForm = reactive({
+const currentLang = computed(() => i18n.global.locale.value)
+
+const formState = reactive({
   username: '',
   password: ''
 })
 
-const loginRules: FormRules = {
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' }
-  ],
-  password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度至少6位', trigger: 'blur' }
-  ]
+const rules = {
+  username: [{ required: true, message: '请输入用户名' }],
+  password: [{ required: true, message: '请输入密码' }]
 }
 
 const handleLogin = async () => {
-  if (!loginFormRef.value) return
-  
-  await loginFormRef.value.validate(async (valid) => {
-    if (!valid) return
-    
+  try {
+    await formRef.value.validate()
     loading.value = true
-    try {
-      await userStore.login({
-        username: loginForm.username,
-        password: loginForm.password
-      })
-      ElMessage.success({
-        message: '登录成功',
-        customClass: 'ant-message-success'
-      })
-      router.push('/dashboard')
-    } catch (error: any) {
-      ElMessage.error({
-        message: error.message || '登录失败',
-        customClass: 'ant-message-error'
-      })
-    } finally {
-      loading.value = false
+    await userStore.login({
+      username: formState.username,
+      password: formState.password
+    })
+    message.success(i18n.global.t('login.success'))
+    router.push('/dashboard')
+  } catch (error: any) {
+    if (error.response?.status === 422) {
+      message.error('请求格式错误，请检查输入')
+    } else {
+      message.error(error.message || i18n.global.t('login.error'))
     }
-  })
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleLangChange = (val: string) => {
+  i18n.global.locale.value = val
+  localStorage.setItem('locale', val)
 }
 </script>
 
@@ -120,41 +127,45 @@ const handleLogin = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1890ff 0%, #722ed1 100%);
 }
 
 .login-card {
   width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .login-title {
-  text-align: center;
+  font-size: 24px;
+  color: #1890ff;
   margin: 0;
-  color: #303133;
+}
+
+.login-form {
+  margin-top: 20px;
 }
 
 .login-tips {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #ebeef5;
-  color: #909399;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  color: #999;
   font-size: 14px;
   text-align: center;
 }
 
 .login-tips p {
-  margin: 5px 0;
+  margin: 0;
 }
 
-/* 适配 E2E 测试的 Ant Design 类名 */
-:deep(.ant-form-item__error) {
-  color: #f56c6c;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-:deep(.el-form-item__error) {
-  color: #f56c6c;
-  font-size: 12px;
+.lang-switch {
+  margin-top: 16px;
+  text-align: center;
 }
 </style>

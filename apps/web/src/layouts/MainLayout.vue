@@ -1,154 +1,199 @@
 <template>
-  <el-container class="layout-container">
+  <a-layout class="layout-container">
     <!-- 侧边栏 -->
-    <el-aside :width="appStore.sidebarCollapsed ? '64px' : '220px'" class="sidebar ant-layout-sider">
+    <a-layout-sider
+      v-model:collapsed="collapsed"
+      :trigger="null"
+      collapsible
+      class="sidebar"
+    >
       <div class="logo">
-        <img src="/logo.svg" alt="logo" v-if="false">
-        <span v-show="!appStore.sidebarCollapsed">智能派单系统</span>
+        <span v-if="!collapsed">{{ $t('login.title') }}</span>
+        <span v-else>派单</span>
       </div>
-      <el-menu
-        :default-active="$route.path"
-        :collapse="appStore.sidebarCollapsed"
-        :collapse-transition="false"
-        router
-        background-color="#304156"
-        text-color="#bfcbd9"
-        active-text-color="#409eff"
-        class="ant-menu"
+      
+      <a-menu
+        :selected-keys="[selectedKey]"
+        :open-keys="openKeys"
+        mode="inline"
+        theme="dark"
+        @click="handleMenuClick"
       >
-        <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path" class="ant-menu-item">
-          <el-icon>
-            <component :is="item.icon" />
-          </el-icon>
-          <template #title>{{ item.title }}</template>
-        </el-menu-item>
-      </el-menu>
-    </el-aside>
+        <a-menu-item key="/dashboard">
+          <dashboard-outlined />
+          <span>{{ $t('menu.dashboard') }}</span>
+        </a-menu-item>
+        
+        <a-menu-item key="/rules">
+          <file-text-outlined />
+          <span>{{ $t('menu.rules') }}</span>
+        </a-menu-item>
+        
+        <a-sub-menu key="/system">
+          <template #title>
+            <setting-outlined />
+            <span>系统管理</span>
+          </template>
+          <a-menu-item key="/users">
+            <user-outlined />
+            <span>{{ $t('menu.users') }}</span>
+          </a-menu-item>
+          <a-menu-item key="/roles">
+            <team-outlined />
+            <span>{{ $t('menu.roles') }}</span>
+          </a-menu-item>
+          <a-menu-item key="/logs">
+            <file-search-outlined />
+            <span>{{ $t('menu.logs') }}</span>
+          </a-menu-item>
+        </a-sub-menu>
+      </a-menu>
+    </a-layout-sider>
     
-    <el-container>
+    <a-layout>
       <!-- 顶部导航 -->
-      <el-header class="header ant-layout-header">
+      <a-layout-header class="header">
         <div class="header-left">
-          <el-icon class="collapse-btn" @click="appStore.toggleSidebar">
-            <Fold v-if="!appStore.sidebarCollapsed" />
-            <Expand v-else />
-          </el-icon>
-          <breadcrumb />
+          <menu-unfold-outlined
+            v-if="collapsed"
+            class="trigger"
+            @click="() => (collapsed = !collapsed)"
+          />
+          <menu-fold-outlined
+            v-else
+            class="trigger"
+            @click="() => (collapsed = !collapsed)"
+          />
         </div>
+        
         <div class="header-right">
-          <el-dropdown @command="handleCommand" class="user-dropdown">
+          <!-- 语言切换 -->
+          <a-select
+            v-model:value="currentLang"
+            size="small"
+            style="width: 100px; margin-right: 16px"
+            @change="handleLangChange"
+          >
+            <a-select-option value="zh-CN">中文</a-select-option>
+            <a-select-option value="en-US">English</a-select-option>
+          </a-select>
+          
+          <a-dropdown>
             <span class="user-info">
+              <user-outlined />
               {{ userStore.username || 'admin' }}
-              <el-icon><ArrowDown /></el-icon>
+              <down-outlined />
             </span>
-            <template #dropdown>
-              <el-dropdown-menu class="ant-dropdown-menu">
-                <el-dropdown-item command="profile">个人中心</el-dropdown-item>
-                <el-dropdown-item command="settings">系统设置</el-dropdown-item>
-                <el-dropdown-item divided command="logout" class="logout-item">Logout / 退出登录</el-dropdown-item>
-              </el-dropdown-menu>
+            <template #overlay>
+              <a-menu @click="handleUserMenuClick">
+                <a-menu-item key="logout">
+                  <logout-outlined />
+                  {{ $t('menu.logout') }}
+                </a-menu-item>
+              </a-menu>
             </template>
-          </el-dropdown>
+          </a-dropdown>
         </div>
-      </el-header>
+      </a-layout-header>
       
       <!-- 主内容区 -->
-      <el-main class="main">
+      <a-layout-content class="content">
         <router-view />
-      </el-main>
-    </el-container>
-  </el-container>
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessageBox, ElMessage } from 'element-plus'
-import { useAppStore } from '@/stores/app'
+import { Modal } from 'ant-design-vue'
+import {
+  DashboardOutlined,
+  FileTextOutlined,
+  SettingOutlined,
+  UserOutlined,
+  TeamOutlined,
+  FileSearchOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  DownOutlined,
+  LogoutOutlined
+} from '@ant-design/icons-vue'
 import { useUserStore } from '@/stores/user'
-import Breadcrumb from '@/components/Breadcrumb.vue'
+import i18n from '@/i18n'
 
 const route = useRoute()
 const router = useRouter()
-const appStore = useAppStore()
 const userStore = useUserStore()
 
-const menuItems = computed(() => {
-  return router.getRoutes()
-    .find(r => r.name === 'Layout')?.children
-    ?.filter(r => !r.meta?.hidden)
-    ?.map(r => ({
-      path: r.path,
-      title: r.meta?.title as string,
-      icon: r.meta?.icon as string
-    })) || []
-})
+const collapsed = ref(false)
+const openKeys = ref(['/system'])
 
-const handleCommand = (command: string) => {
-  switch (command) {
-    case 'profile':
-      router.push('/profile')
-      break
-    case 'settings':
-      router.push('/settings')
-      break
-    case 'logout':
-      ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
+const selectedKey = computed(() => route.path)
+
+const currentLang = computed(() => i18n.global.locale.value)
+
+const handleMenuClick = ({ key }: { key: string }) => {
+  router.push(key)
+}
+
+const handleLangChange = (val: string) => {
+  i18n.global.locale.value = val
+  localStorage.setItem('locale', val)
+}
+
+const handleUserMenuClick = ({ key }: { key: string }) => {
+  if (key === 'logout') {
+    Modal.confirm({
+      title: '确认退出',
+      content: '确定要退出登录吗？',
+      onOk: () => {
         userStore.logout()
         router.push('/login')
-        ElMessage.success('已退出登录')
-      })
-      break
+      }
+    })
   }
 }
 </script>
 
 <style scoped>
 .layout-container {
-  height: 100vh;
+  min-height: 100vh;
 }
 
 .sidebar {
-  background-color: #304156;
-  transition: width 0.3s;
+  background: #001529;
 }
 
 .logo {
-  height: 60px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-size: 18px;
   font-weight: bold;
-  border-bottom: 1px solid #1f2d3d;
-}
-
-.logo span {
-  margin-left: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .header {
+  background: #fff;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #fff;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
+.trigger {
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s;
 }
 
-.collapse-btn {
-  font-size: 20px;
-  cursor: pointer;
-  margin-right: 15px;
+.trigger:hover {
+  color: #1890ff;
 }
 
 .header-right {
@@ -160,17 +205,14 @@ const handleCommand = (command: string) => {
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
 }
 
-.main {
-  background-color: #f0f2f5;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-/* 适配 E2E 测试 */
-:deep(.ant-dropdown-menu) {
-  min-width: 120px;
+.content {
+  margin: 24px;
+  padding: 24px;
+  background: #fff;
+  min-height: 280px;
+  overflow: auto;
 }
 </style>

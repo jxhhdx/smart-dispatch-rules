@@ -1,5 +1,5 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { message, Modal } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
 import router from '@/router'
 
@@ -33,18 +33,20 @@ request.interceptors.response.use(
     
     // 如果响应 code 不为 0，说明有错误
     if (res.code !== 0) {
-      ElMessage.error(res.message || '请求失败')
+      message.error(res.message || '请求失败')
       
       // 401: Token 过期或无效
       if (res.code === 401) {
-        ElMessageBox.confirm('登录状态已过期，请重新登录', '提示', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          const userStore = useUserStore()
-          userStore.logout()
-          router.push('/login')
+        Modal.confirm({
+          title: '提示',
+          content: '登录状态已过期，请重新登录',
+          okText: '重新登录',
+          cancelText: '取消',
+          onOk: () => {
+            const userStore = useUserStore()
+            userStore.logout()
+            router.push('/login')
+          }
         })
       }
       
@@ -54,29 +56,29 @@ request.interceptors.response.use(
     return res.data
   },
   (error) => {
-    let message = error.message
+    let msg = error.message
     if (error.response) {
       switch (error.response.status) {
         case 400:
-          message = '请求参数错误'
+          msg = '请求参数错误'
           break
         case 401:
-          message = '未授权，请登录'
+          msg = '未授权，请登录'
           break
         case 403:
-          message = '拒绝访问'
+          msg = '拒绝访问'
           break
         case 404:
-          message = '请求地址不存在'
+          msg = '请求地址不存在'
           break
         case 500:
-          message = '服务器内部错误'
+          msg = '服务器内部错误'
           break
         default:
-          message = `请求失败: ${error.response.status}`
+          msg = `请求失败: ${error.response.status}`
       }
     }
-    ElMessage.error(message)
+    message.error(msg)
     return Promise.reject(error)
   }
 )

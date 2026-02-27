@@ -1,0 +1,40 @@
+{
+  "login": {
+    "title": "Smart Dispatch System",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Login",
+    "remember": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "success": "Login successful",
+    "error": "Login failed"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "rules": "Rules",
+    "users": "Users",
+    "roles": "Roles",
+    "logs": "Logs",
+    "logout": "Logout"
+  },
+  "common": {
+    "search": "Search",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "submit": "Submit",
+    "reset": "Reset",
+    "back": "Back",
+    "operation": "Operation",
+    "status": "Status",
+    "enable": "Enable",
+    "disable": "Disable",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info"
+  }
+}

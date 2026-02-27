@@ -1,171 +1,152 @@
 <template>
-  <div class="app-container">
+  <div class="users-container">
     <!-- 搜索栏 -->
-    <div class="filter-container">
-      <el-input
-        v-model="searchQuery"
-        placeholder="搜索用户名/姓名 / Search user"
-        style="width: 200px"
-        class="filter-item ant-input"
-        clearable
+    <div class="search-bar">
+      <a-input-search
+        v-model:value="searchQuery"
+        placeholder="搜索用户名/姓名"
+        enter-button
+        @search="handleSearch"
+        style="width: 300px"
       />
-      <el-button type="primary" @click="handleSearch" class="ant-btn">
-        <el-icon><Search /></el-icon>
-        搜索 / Search
-      </el-button>
-      <el-button type="success" @click="handleCreate" class="ant-btn">
-        <el-icon><Plus /></el-icon>
-        新增用户 / Add User
-      </el-button>
+      <a-button type="primary" @click="handleCreate">
+        <plus-outlined />
+        新增用户
+      </a-button>
     </div>
     
     <!-- 数据表格 -->
-    <div class="table-container">
-      <el-table
-        v-loading="loading"
-        :data="userList"
-        border
-        stripe
-        class="ant-table"
-        row-class-name="ant-table-row"
-      >
-        <el-table-column type="index" width="50" />
-        <el-table-column prop="username" label="用户名 / Username" min-width="120" />
-        <el-table-column prop="realName" label="姓名 / Name" min-width="100" />
-        <el-table-column prop="email" label="邮箱 / Email" min-width="180" />
-        <el-table-column prop="phone" label="电话 / Phone" min-width="120" />
-        <el-table-column prop="roleName" label="角色 / Role" min-width="120" />
-        <el-table-column prop="status" label="状态 / Status" width="100">
-          <template #default="{ row }">
-            <el-tag :type="row.status === 1 ? 'success' : 'danger'">
-              {{ row.status === 1 ? '启用' : '禁用' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间 / Created" min-width="180">
-          <template #default="{ row }">
-            {{ formatDate(row.createdAt) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作 / Actions" width="200" fixed="right">
-          <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)" class="ant-btn">编辑 / Edit</el-button>
-            <el-button type="danger" link @click="handleDelete(row)" class="ant-btn">删除 / Delete</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    
-    <!-- 分页 -->
-    <div class="pagination-container">
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :total="pagination.total"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handlePageChange"
-        class="ant-pagination"
-      />
-    </div>
+    <a-table
+      :columns="columns"
+      :data-source="userList"
+      :loading="loading"
+      :pagination="pagination"
+      @change="handleTableChange"
+      row-key="id"
+    >
+      <template #bodyCell="{ column, record }">
+        <template v-if="column.key === 'status'">
+          <a-tag :color="record.status === 1 ? 'green' : 'red'">
+            {{ record.status === 1 ? '启用' : '禁用' }}
+          </a-tag>
+        </template>
+        
+        <template v-if="column.key === 'action'">
+          <a-space>
+            <a-button type="link" @click="handleEdit(record)">编辑</a-button>
+            <a-button type="link" danger @click="handleDelete(record)">删除</a-button>
+          </a-space>
+        </template>
+      </template>
+    </a-table>
     
     <!-- 新增/编辑对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="600px"
-      class="ant-modal"
+    <a-modal
+      v-model:open="modalVisible"
+      :title="isEdit ? '编辑用户' : '新增用户'"
+      @ok="handleSubmit"
+      :confirm-loading="submitLoading"
     >
-      <el-form
+      <a-form
         ref="formRef"
-        :model="form"
+        :model="formState"
         :rules="formRules"
-        label-width="100px"
-        class="ant-form"
+        layout="vertical"
       >
-        <el-form-item label="用户名" prop="username" class="ant-form-item">
-          <el-input v-model="form.username" :disabled="isEdit" class="ant-input" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="!isEdit" class="ant-form-item">
-          <el-input v-model="form.password" type="password" show-password class="ant-input" />
-        </el-form-item>
-        <el-form-item label="姓名" prop="realName" class="ant-form-item">
-          <el-input v-model="form.realName" class="ant-input" />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email" class="ant-form-item">
-          <el-input v-model="form.email" class="ant-input" />
-        </el-form-item>
-        <el-form-item label="电话" prop="phone" class="ant-form-item">
-          <el-input v-model="form.phone" class="ant-input" />
-        </el-form-item>
-        <el-form-item label="角色" prop="roleId" class="ant-form-item">
-          <el-select v-model="form.roleId" placeholder="请选择角色" style="width: 100%">
-            <el-option label="管理员 / Admin" value="admin" />
-            <el-option label="操作员 / Operator" value="operator" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="状态" prop="status" class="ant-form-item">
-          <el-radio-group v-model="form.status">
-            <el-radio :label="1">启用 / Enabled</el-radio>
-            <el-radio :label="0">禁用 / Disabled</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false" class="ant-btn">取消 / Cancel</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit" class="ant-btn ant-btn-primary">
-          确定 / Save
-        </el-button>
-      </template>
-    </el-dialog>
+        <a-form-item label="用户名" name="username">
+          <a-input v-model:value="formState.username" :disabled="isEdit" />
+        </a-form-item>
+        
+        <a-form-item label="密码" name="password" v-if="!isEdit">
+          <a-input-password v-model:value="formState.password" />
+        </a-form-item>
+        
+        <a-form-item label="姓名" name="realName">
+          <a-input v-model:value="formState.realName" />
+        </a-form-item>
+        
+        <a-form-item label="邮箱" name="email">
+          <a-input v-model:value="formState.email" />
+        </a-form-item>
+        
+        <a-form-item label="电话" name="phone">
+          <a-input v-model:value="formState.phone" />
+        </a-form-item>
+        
+        <a-form-item label="角色" name="roleId">
+          <a-select v-model:value="formState.roleId" placeholder="请选择角色">
+            <a-select-option value="admin">管理员</a-select-option>
+            <a-select-option value="operator">操作员</a-select-option>
+          </a-select>
+        </a-form-item>
+        
+        <a-form-item label="状态" name="status">
+          <a-radio-group v-model:value="formState.status">
+            <a-radio :value="1">启用</a-radio>
+            <a-radio :value="0">禁用</a-radio>
+          </a-radio-group>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import type { FormInstance, FormRules } from 'element-plus'
+import { message, Modal } from 'ant-design-vue'
+import { PlusOutlined } from '@ant-design/icons-vue'
 import * as userApi from '@/api/users'
 import type { User } from '@/types'
 
 const loading = ref(false)
 const searchQuery = ref('')
 const userList = ref<User[]>([])
+
 const pagination = reactive({
-  page: 1,
+  current: 1,
   pageSize: 10,
   total: 0
 })
 
-const dialogVisible = ref(false)
-const dialogTitle = ref('')
+const columns = [
+  { title: '用户名', dataIndex: 'username', key: 'username' },
+  { title: '姓名', dataIndex: 'realName', key: 'realName' },
+  { title: '邮箱', dataIndex: 'email', key: 'email' },
+  { title: '电话', dataIndex: 'phone', key: 'phone' },
+  { title: '角色', dataIndex: 'roleName', key: 'roleName' },
+  { title: '状态', dataIndex: 'status', key: 'status' },
+  { title: '创建时间', dataIndex: 'createdAt', key: 'createdAt' },
+  { title: '操作', key: 'action', width: 150 }
+]
+
+// 模态框相关
+const modalVisible = ref(false)
 const isEdit = ref(false)
 const submitLoading = ref(false)
-const formRef = ref<FormInstance>()
+const formRef = ref()
 
-const form = reactive({
+const formState = reactive({
   id: '',
   username: '',
   password: '',
   realName: '',
   email: '',
   phone: '',
-  roleId: '',
+  roleId: undefined,
   status: 1
 })
 
-const formRules: FormRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur', min: 6 }],
-  email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' }]
+const formRules = {
+  username: [{ required: true, message: '请输入用户名' }],
+  password: [{ required: true, message: '请输入密码' }],
+  email: [{ type: 'email', message: '请输入正确的邮箱地址' }]
 }
 
 const fetchUsers = async () => {
   loading.value = true
   try {
     const res = await userApi.getUserList({
-      page: pagination.page,
+      page: pagination.current,
       pageSize: pagination.pageSize
     })
     userList.value = res.list
@@ -178,85 +159,75 @@ const fetchUsers = async () => {
 }
 
 const handleSearch = () => {
-  pagination.page = 1
+  pagination.current = 1
   fetchUsers()
 }
 
-const handleSizeChange = (size: number) => {
-  pagination.pageSize = size
-  fetchUsers()
-}
-
-const handlePageChange = (page: number) => {
-  pagination.page = page
+const handleTableChange = (pag: any) => {
+  pagination.current = pag.current
+  pagination.pageSize = pag.pageSize
   fetchUsers()
 }
 
 const handleCreate = () => {
   isEdit.value = false
-  dialogTitle.value = '新增用户 / Add User'
-  Object.assign(form, {
+  Object.assign(formState, {
     id: '',
     username: '',
     password: '',
     realName: '',
     email: '',
     phone: '',
-    roleId: '',
+    roleId: undefined,
     status: 1
   })
-  dialogVisible.value = true
+  modalVisible.value = true
 }
 
-const handleEdit = (row: User) => {
+const handleEdit = (record: User) => {
   isEdit.value = true
-  dialogTitle.value = '编辑用户 / Edit User'
-  Object.assign(form, row)
-  dialogVisible.value = true
+  Object.assign(formState, record)
+  modalVisible.value = true
 }
 
-const handleDelete = async (row: User) => {
-  try {
-    await ElMessageBox.confirm(`确定要删除用户 "${row.username}" 吗？`, '提示', {
-      type: 'warning'
-    })
-    await userApi.deleteUser(row.id)
-    ElMessage.success('删除成功')
-    fetchUsers()
-  } catch (error: any) {
-    if (error !== 'cancel') {
-      ElMessage.error(error.message || '删除失败')
+const handleDelete = (record: User) => {
+  Modal.confirm({
+    title: '确认删除',
+    content: `确定要删除用户 "${record.username}" 吗？`,
+    onOk: async () => {
+      try {
+        await userApi.deleteUser(record.id)
+        message.success('删除成功')
+        fetchUsers()
+      } catch (error: any) {
+        message.error(error.message || '删除失败')
+      }
     }
-  }
+  })
 }
 
 const handleSubmit = async () => {
-  if (!formRef.value) return
-  
-  await formRef.value.validate(async (valid) => {
-    if (!valid) return
-    
+  try {
+    await formRef.value.validate()
     submitLoading.value = true
-    try {
-      if (isEdit.value) {
-        await userApi.updateUser(form.id, form)
-        ElMessage.success('更新成功')
-      } else {
-        await userApi.createUser(form)
-        ElMessage.success('创建成功')
-      }
-      dialogVisible.value = false
-      fetchUsers()
-    } catch (error: any) {
-      ElMessage.error(error.message || '操作失败')
-    } finally {
-      submitLoading.value = false
+    
+    if (isEdit.value) {
+      await userApi.updateUser(formState.id, formState)
+      message.success('更新成功')
+    } else {
+      await userApi.createUser(formState)
+      message.success('创建成功')
     }
-  })
-}
-
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleString()
+    
+    modalVisible.value = false
+    fetchUsers()
+  } catch (error: any) {
+    if (error.message) {
+      message.error(error.message)
+    }
+  } finally {
+    submitLoading.value = false
+  }
 }
 
 onMounted(() => {
@@ -265,20 +236,13 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.filter-container {
-  margin-bottom: 20px;
+.users-container {
+  padding: 0;
 }
 
-.filter-item {
-  margin-right: 10px;
-}
-
-.table-container {
-  margin-top: 20px;
-}
-
-.pagination-container {
-  margin-top: 20px;
-  text-align: right;
+.search-bar {
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
 }
 </style>

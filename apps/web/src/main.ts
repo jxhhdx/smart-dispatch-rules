@@ -1,9 +1,8 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import ElementPlus from 'element-plus'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import 'element-plus/dist/index.css'
-import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/reset.css'
+import i18n from './i18n'
 import VueECharts from 'vue-echarts'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -37,16 +36,10 @@ use([
 
 const app = createApp(App)
 
-// 注册所有图标
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
-}
-
-// 注册 ECharts 组件
-app.component('v-chart', VueECharts)
-
 app.use(createPinia())
 app.use(router)
-app.use(ElementPlus, { locale: zhCn })
+app.use(Antd)
+app.use(i18n)
+app.component('v-chart', VueECharts)
 
 app.mount('#app')

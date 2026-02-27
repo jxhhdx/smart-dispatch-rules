@@ -1,87 +1,86 @@
 <template>
   <div class="dashboard-container">
-    <h4 class="ant-typography dashboard-title" style="position: absolute; left: -9999px;">Dashboard</h4>
+    <h2>Dashboard</h2>
+    
     <!-- 统计卡片 -->
-    <el-row :gutter="20">
-      <el-col :span="6" v-for="item in statCards" :key="item.title">
-        <el-card class="stat-card ant-card" :body-style="{ padding: '20px' }">
-          <div class="stat-item">
-            <div class="stat-icon" :style="{ backgroundColor: item.color }">
-              <el-icon :size="40" color="#fff">
-                <component :is="item.icon" />
-              </el-icon>
-            </div>
-            <div class="stat-info">
-              <div class="stat-title">{{ item.title }}</div>
-              <div class="stat-value ant-statistic-content">{{ item.value }}</div>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+    <a-row :gutter="16">
+      <a-col :span="6" v-for="item in statCards" :key="item.title">
+        <a-card>
+          <a-statistic
+            :title="item.title"
+            :value="item.value"
+            :value-style="{ color: item.color }"
+          >
+            <template #prefix>
+              <component :is="item.icon" />
+            </template>
+          </a-statistic>
+        </a-card>
+      </a-col>
+    </a-row>
     
     <!-- 图表区域 -->
-    <el-row :gutter="20" class="chart-row">
-      <el-col :span="16">
-        <el-card class="ant-card">
-          <template #header>
-            <span>订单趋势 / Order Trend</span>
-          </template>
+    <a-row :gutter="16" class="chart-row">
+      <a-col :span="16">
+        <a-card title="订单趋势 / Order Trend">
           <v-chart class="chart" :option="orderChartOption" autoresize />
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card class="ant-card">
-          <template #header>
-            <span>规则触发统计 / Rule Stats</span>
-          </template>
+        </a-card>
+      </a-col>
+      <a-col :span="8">
+        <a-card title="规则触发统计 / Rule Stats">
           <v-chart class="chart" :option="ruleChartOption" autoresize />
-        </el-card>
-      </el-col>
-    </el-row>
+        </a-card>
+      </a-col>
+    </a-row>
     
     <!-- 实时数据 -->
-    <el-card class="realtime-card ant-card">
-      <template #header>
-        <span>实时数据 / Realtime Data</span>
-        <el-tag type="success" effect="dark" class="online-tag">
-          <el-icon><CircleCheck /></el-icon>
+    <a-card title="实时数据 / Realtime Data" class="realtime-card">
+      <template #extra>
+        <a-tag color="green">
+          <check-circle-outlined />
           系统运行中
-        </el-tag>
+        </a-tag>
       </template>
-      <el-row :gutter="20">
-        <el-col :span="4" v-for="item in realtimeItems" :key="item.label">
+      <a-row :gutter="16">
+        <a-col :span="4" v-for="item in realtimeItems" :key="item.label">
           <div class="realtime-item">
             <div class="realtime-label">{{ item.label }}</div>
-            <div class="realtime-value" :class="item.type">{{ item.value }}</div>
+            <div class="realtime-value" :style="{ color: item.color }">{{ item.value }}</div>
           </div>
-        </el-col>
-      </el-row>
-    </el-card>
+        </a-col>
+      </a-row>
+    </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import {
+  ShoppingCartOutlined,
+  CheckCircleOutlined,
+  RiseOutlined,
+  UserOutlined,
+  TeamOutlined
+} from '@ant-design/icons-vue'
 import * as dashboardApi from '@/api/dashboard'
 import type { DashboardStats } from '@/types'
 
 const stats = ref<DashboardStats | null>(null)
 
 const statCards = ref([
-  { title: '今日订单 / Today Orders', value: '0', icon: 'ShoppingCart', color: '#409eff' },
-  { title: '已派单 / Dispatched', value: '0', icon: 'Position', color: '#67c23a' },
-  { title: '成功率 / Success Rate', value: '0%', icon: 'TrendCharts', color: '#e6a23c' },
-  { title: '活跃骑手 / Active Riders', value: '0', icon: 'User', color: '#f56c6c' }
+  { title: '今日订单', value: 0, icon: 'ShoppingCartOutlined', color: '#1890ff' },
+  { title: '已派单', value: 0, icon: 'CheckCircleOutlined', color: '#52c41a' },
+  { title: '成功率', value: '0%', icon: 'RiseOutlined', color: '#faad14' },
+  { title: '活跃骑手', value: 0, icon: 'TeamOutlined', color: '#f5222d' }
 ])
 
 const realtimeItems = ref([
-  { label: '待派单', value: 0, type: 'warning' },
-  { label: '派单中', value: 0, type: 'primary' },
-  { label: '配送中', value: 0, type: 'success' },
-  { label: '今日完成', value: 0, type: '' },
-  { label: '在线骑手', value: 0, type: 'success' },
-  { label: '空闲骑手', value: 0, type: 'info' }
+  { label: '待派单', value: 0, color: '#faad14' },
+  { label: '派单中', value: 0, color: '#1890ff' },
+  { label: '配送中', value: 0, color: '#52c41a' },
+  { label: '今日完成', value: 0, color: '#722ed1' },
+  { label: '在线骑手', value: 0, color: '#52c41a' },
+  { label: '空闲骑手', value: 0, color: '#8c8c8c' }
 ])
 
 // 订单趋势图表配置
@@ -90,7 +89,7 @@ const orderChartOption = computed(() => ({
     trigger: 'axis'
   },
   legend: {
-    data: ['订单量 / Orders', '派单量 / Dispatched']
+    data: ['订单量', '派单量']
   },
   xAxis: {
     type: 'category',
@@ -101,18 +100,18 @@ const orderChartOption = computed(() => ({
   },
   series: [
     {
-      name: '订单量 / Orders',
+      name: '订单量',
       type: 'line',
       data: [120, 132, 101, 134, 90, 230, 210],
       smooth: true,
-      itemStyle: { color: '#409eff' }
+      itemStyle: { color: '#1890ff' }
     },
     {
-      name: '派单量 / Dispatched',
+      name: '派单量',
       type: 'line',
       data: [220, 182, 191, 234, 290, 330, 310],
       smooth: true,
-      itemStyle: { color: '#67c23a' }
+      itemStyle: { color: '#52c41a' }
     }
   ]
 }))
@@ -129,7 +128,7 @@ const ruleChartOption = computed(() => ({
   },
   series: [
     {
-      name: '规则触发 / Rule Trigger',
+      name: '规则触发',
       type: 'pie',
       radius: ['50%', '70%'],
       avoidLabelOverlap: false,
@@ -148,10 +147,10 @@ const ruleChartOption = computed(() => ({
         show: false
       },
       data: [
-        { value: 1048, name: '距离优先 / Distance', itemStyle: { color: '#409eff' } },
-        { value: 735, name: '负载均衡 / Load', itemStyle: { color: '#67c23a' } },
-        { value: 580, name: '时效优先 / Time', itemStyle: { color: '#e6a23c' } },
-        { value: 484, name: '评分优先 / Rating', itemStyle: { color: '#f56c6c' } }
+        { value: 1048, name: '距离优先', itemStyle: { color: '#1890ff' } },
+        { value: 735, name: '负载均衡', itemStyle: { color: '#52c41a' } },
+        { value: 580, name: '时效优先', itemStyle: { color: '#faad14' } },
+        { value: 484, name: '评分优先', itemStyle: { color: '#f5222d' } }
       ]
     }
   ]
@@ -161,10 +160,10 @@ const fetchStats = async () => {
   try {
     stats.value = await dashboardApi.getStats()
     // 更新统计卡片数据
-    statCards.value[0].value = String(stats.value?.todayOrders || 0)
-    statCards.value[1].value = String(stats.value?.todayDispatched || 0)
+    statCards.value[0].value = stats.value?.todayOrders || 0
+    statCards.value[1].value = stats.value?.todayDispatched || 0
     statCards.value[2].value = (stats.value?.todaySuccessRate || 0).toFixed(1) + '%'
-    statCards.value[3].value = String(stats.value?.activeRiders || 0)
+    statCards.value[3].value = stats.value?.activeRiders || 0
     
     // 更新实时数据
     const realtime = await dashboardApi.getRealtime()
@@ -186,76 +185,40 @@ onMounted(() => {
 
 <style scoped>
 .dashboard-container {
-  padding: 20px;
+  padding: 0;
 }
 
-.stat-card {
-  margin-bottom: 20px;
-}
-
-.stat-item {
-  display: flex;
-  align-items: center;
-}
-
-.stat-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 20px;
-}
-
-.stat-title {
-  color: #909399;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-
-.stat-value {
-  font-size: 28px;
-  font-weight: bold;
-  color: #303133;
+h2 {
+  margin-bottom: 24px;
 }
 
 .chart-row {
-  margin-top: 10px;
+  margin-top: 24px;
 }
 
 .chart {
-  height: 300px;
+  height: 350px;
 }
 
 .realtime-card {
-  margin-top: 20px;
-}
-
-.online-tag {
-  float: right;
+  margin-top: 24px;
 }
 
 .realtime-item {
   text-align: center;
-  padding: 15px;
-  background: #f5f7fa;
+  padding: 16px;
+  background: #f5f5f5;
   border-radius: 4px;
 }
 
 .realtime-label {
-  color: #909399;
+  color: #666;
   font-size: 14px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .realtime-value {
   font-size: 24px;
   font-weight: bold;
 }
-
-.realtime-value.primary { color: #409eff; }
-.realtime-value.success { color: #67c23a; }
-.realtime-value.warning { color: #e6a23c; }
-.realtime-value.info { color: #909399; }
 </style>
