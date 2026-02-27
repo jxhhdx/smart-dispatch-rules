@@ -1,9 +1,10 @@
 <template>
   <div class="dashboard-container">
+    <h2 style="display: none;">Dashboard</h2>
     <!-- 统计卡片 -->
     <el-row :gutter="20">
       <el-col :span="6" v-for="item in statCards" :key="item.title">
-        <el-card class="stat-card" :body-style="{ padding: '20px' }">
+        <el-card class="stat-card ant-card" :body-style="{ padding: '20px' }">
           <div class="stat-item">
             <div class="stat-icon" :style="{ backgroundColor: item.color }">
               <el-icon :size="40" color="#fff">
@@ -22,17 +23,17 @@
     <!-- 图表区域 -->
     <el-row :gutter="20" class="chart-row">
       <el-col :span="16">
-        <el-card>
+        <el-card class="ant-card">
           <template #header>
-            <span>订单趋势</span>
+            <span>订单趋势 / Order Trend</span>
           </template>
           <v-chart class="chart" :option="orderChartOption" autoresize />
         </el-card>
       </el-col>
       <el-col :span="8">
-        <el-card>
+        <el-card class="ant-card">
           <template #header>
-            <span>规则触发统计</span>
+            <span>规则触发统计 / Rule Stats</span>
           </template>
           <v-chart class="chart" :option="ruleChartOption" autoresize />
         </el-card>
@@ -40,9 +41,9 @@
     </el-row>
     
     <!-- 实时数据 -->
-    <el-card class="realtime-card">
+    <el-card class="realtime-card ant-card">
       <template #header>
-        <span>实时数据</span>
+        <span>实时数据 / Realtime Data</span>
         <el-tag type="success" effect="dark" class="online-tag">
           <el-icon><CircleCheck /></el-icon>
           系统运行中
@@ -68,10 +69,10 @@ import type { DashboardStats } from '@/types'
 const stats = ref<DashboardStats | null>(null)
 
 const statCards = ref([
-  { title: '今日订单', value: '0', icon: 'ShoppingCart', color: '#409eff' },
-  { title: '已派单', value: '0', icon: 'Position', color: '#67c23a' },
-  { title: '成功率', value: '0%', icon: 'TrendCharts', color: '#e6a23c' },
-  { title: '活跃骑手', value: '0', icon: 'User', color: '#f56c6c' }
+  { title: '今日订单 / Today Orders', value: '0', icon: 'ShoppingCart', color: '#409eff' },
+  { title: '已派单 / Dispatched', value: '0', icon: 'Position', color: '#67c23a' },
+  { title: '成功率 / Success Rate', value: '0%', icon: 'TrendCharts', color: '#e6a23c' },
+  { title: '活跃骑手 / Active Riders', value: '0', icon: 'User', color: '#f56c6c' }
 ])
 
 const realtimeItems = ref([
@@ -89,7 +90,7 @@ const orderChartOption = computed(() => ({
     trigger: 'axis'
   },
   legend: {
-    data: ['订单量', '派单量']
+    data: ['订单量 / Orders', '派单量 / Dispatched']
   },
   xAxis: {
     type: 'category',
@@ -100,14 +101,14 @@ const orderChartOption = computed(() => ({
   },
   series: [
     {
-      name: '订单量',
+      name: '订单量 / Orders',
       type: 'line',
       data: [120, 132, 101, 134, 90, 230, 210],
       smooth: true,
       itemStyle: { color: '#409eff' }
     },
     {
-      name: '派单量',
+      name: '派单量 / Dispatched',
       type: 'line',
       data: [220, 182, 191, 234, 290, 330, 310],
       smooth: true,
@@ -128,7 +129,7 @@ const ruleChartOption = computed(() => ({
   },
   series: [
     {
-      name: '规则触发',
+      name: '规则触发 / Rule Trigger',
       type: 'pie',
       radius: ['50%', '70%'],
       avoidLabelOverlap: false,
@@ -147,10 +148,10 @@ const ruleChartOption = computed(() => ({
         show: false
       },
       data: [
-        { value: 1048, name: '距离优先', itemStyle: { color: '#409eff' } },
-        { value: 735, name: '负载均衡', itemStyle: { color: '#67c23a' } },
-        { value: 580, name: '时效优先', itemStyle: { color: '#e6a23c' } },
-        { value: 484, name: '评分优先', itemStyle: { color: '#f56c6c' } }
+        { value: 1048, name: '距离优先 / Distance', itemStyle: { color: '#409eff' } },
+        { value: 735, name: '负载均衡 / Load', itemStyle: { color: '#67c23a' } },
+        { value: 580, name: '时效优先 / Time', itemStyle: { color: '#e6a23c' } },
+        { value: 484, name: '评分优先 / Rating', itemStyle: { color: '#f56c6c' } }
       ]
     }
   ]

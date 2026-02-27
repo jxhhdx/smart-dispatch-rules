@@ -4,17 +4,18 @@
     <div class="filter-container">
       <el-input
         v-model="searchQuery"
-        placeholder="搜索用户名/姓名"
+        placeholder="搜索用户名/姓名 / Search user"
         style="width: 200px"
-        class="filter-item"
+        class="filter-item ant-input"
+        clearable
       />
-      <el-button type="primary" @click="handleSearch">
+      <el-button type="primary" @click="handleSearch" class="ant-btn">
         <el-icon><Search /></el-icon>
-        搜索
+        搜索 / Search
       </el-button>
-      <el-button type="success" @click="handleCreate">
+      <el-button type="success" @click="handleCreate" class="ant-btn">
         <el-icon><Plus /></el-icon>
-        新增用户
+        新增用户 / Add User
       </el-button>
     </div>
     
@@ -25,33 +26,31 @@
         :data="userList"
         border
         stripe
+        class="ant-table"
+        row-class-name="ant-table-row"
       >
         <el-table-column type="index" width="50" />
-        <el-table-column prop="username" label="用户名" min-width="120" />
-        <el-table-column prop="realName" label="姓名" min-width="100" />
-        <el-table-column prop="email" label="邮箱" min-width="180" />
-        <el-table-column prop="phone" label="电话" min-width="120" />
-        <el-table-column prop="roleName" label="角色" min-width="120" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="username" label="用户名 / Username" min-width="120" />
+        <el-table-column prop="realName" label="姓名 / Name" min-width="100" />
+        <el-table-column prop="email" label="邮箱 / Email" min-width="180" />
+        <el-table-column prop="phone" label="电话 / Phone" min-width="120" />
+        <el-table-column prop="roleName" label="角色 / Role" min-width="120" />
+        <el-table-column prop="status" label="状态 / Status" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">
               {{ row.status === 1 ? '启用' : '禁用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间" min-width="180">
+        <el-table-column prop="createdAt" label="创建时间 / Created" min-width="180">
           <template #default="{ row }">
             {{ formatDate(row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作 / Actions" width="200" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)">
-              编辑
-            </el-button>
-            <el-button type="danger" link @click="handleDelete(row)">
-              删除
-            </el-button>
+            <el-button type="primary" link @click="handleEdit(row)" class="ant-btn">编辑 / Edit</el-button>
+            <el-button type="danger" link @click="handleDelete(row)" class="ant-btn">删除 / Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -67,6 +66,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         @size-change="handleSizeChange"
         @current-change="handlePageChange"
+        class="ant-pagination"
       />
     </div>
     
@@ -75,45 +75,47 @@
       v-model="dialogVisible"
       :title="dialogTitle"
       width="600px"
+      class="ant-modal"
     >
       <el-form
         ref="formRef"
         :model="form"
         :rules="formRules"
         label-width="100px"
+        class="ant-form"
       >
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" :disabled="isEdit" />
+        <el-form-item label="用户名" prop="username" class="ant-form-item">
+          <el-input v-model="form.username" :disabled="isEdit" class="ant-input" />
         </el-form-item>
-        <el-form-item label="密码" prop="password" v-if="!isEdit">
-          <el-input v-model="form.password" type="password" show-password />
+        <el-form-item label="密码" prop="password" v-if="!isEdit" class="ant-form-item">
+          <el-input v-model="form.password" type="password" show-password class="ant-input" />
         </el-form-item>
-        <el-form-item label="姓名" prop="realName">
-          <el-input v-model="form.realName" />
+        <el-form-item label="姓名" prop="realName" class="ant-form-item">
+          <el-input v-model="form.realName" class="ant-input" />
         </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" />
+        <el-form-item label="邮箱" prop="email" class="ant-form-item">
+          <el-input v-model="form.email" class="ant-input" />
         </el-form-item>
-        <el-form-item label="电话" prop="phone">
-          <el-input v-model="form.phone" />
+        <el-form-item label="电话" prop="phone" class="ant-form-item">
+          <el-input v-model="form.phone" class="ant-input" />
         </el-form-item>
-        <el-form-item label="角色" prop="roleId">
+        <el-form-item label="角色" prop="roleId" class="ant-form-item">
           <el-select v-model="form.roleId" placeholder="请选择角色" style="width: 100%">
-            <el-option label="管理员" value="admin" />
-            <el-option label="操作员" value="operator" />
+            <el-option label="管理员 / Admin" value="admin" />
+            <el-option label="操作员 / Operator" value="operator" />
           </el-select>
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item label="状态" prop="status" class="ant-form-item">
           <el-radio-group v-model="form.status">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">禁用</el-radio>
+            <el-radio :label="1">启用 / Enabled</el-radio>
+            <el-radio :label="0">禁用 / Disabled</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">
-          确定
+        <el-button @click="dialogVisible = false" class="ant-btn">取消 / Cancel</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="handleSubmit" class="ant-btn ant-btn-primary">
+          确定 / Save
         </el-button>
       </template>
     </el-dialog>
@@ -192,7 +194,7 @@ const handlePageChange = (page: number) => {
 
 const handleCreate = () => {
   isEdit.value = false
-  dialogTitle.value = '新增用户'
+  dialogTitle.value = '新增用户 / Add User'
   Object.assign(form, {
     id: '',
     username: '',
@@ -208,7 +210,7 @@ const handleCreate = () => {
 
 const handleEdit = (row: User) => {
   isEdit.value = true
-  dialogTitle.value = '编辑用户'
+  dialogTitle.value = '编辑用户 / Edit User'
   Object.assign(form, row)
   dialogVisible.value = true
 }
@@ -261,3 +263,22 @@ onMounted(() => {
   fetchUsers()
 })
 </script>
+
+<style scoped>
+.filter-container {
+  margin-bottom: 20px;
+}
+
+.filter-item {
+  margin-right: 10px;
+}
+
+.table-container {
+  margin-top: 20px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  text-align: right;
+}
+</style>

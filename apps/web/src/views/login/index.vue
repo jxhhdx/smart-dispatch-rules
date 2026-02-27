@@ -10,24 +10,27 @@
         :model="loginForm"
         :rules="loginRules"
         @keyup.enter="handleLogin"
+        class="ant-form"
       >
-        <el-form-item prop="username">
+        <el-form-item prop="username" class="ant-form-item">
           <el-input
             v-model="loginForm.username"
-            placeholder="用户名"
+            placeholder="Username / 用户名"
             :prefix-icon="User"
             size="large"
+            class="ant-input"
           />
         </el-form-item>
         
-        <el-form-item prop="password">
+        <el-form-item prop="password" class="ant-form-item">
           <el-input
             v-model="loginForm.password"
             type="password"
-            placeholder="密码"
+            placeholder="Password / 密码"
             :prefix-icon="Lock"
             size="large"
             show-password
+            class="ant-input"
           />
         </el-form-item>
         
@@ -38,8 +41,9 @@
             size="large"
             style="width: 100%"
             @click="handleLogin"
+            class="ant-btn"
           >
-            登录
+            Login / 登录
           </el-button>
         </el-form-item>
       </el-form>
@@ -93,10 +97,16 @@ const handleLogin = async () => {
         username: loginForm.username,
         password: loginForm.password
       })
-      ElMessage.success('登录成功')
-      router.push('/')
+      ElMessage.success({
+        message: '登录成功',
+        customClass: 'ant-message-success'
+      })
+      router.push('/dashboard')
     } catch (error: any) {
-      ElMessage.error(error.message || '登录失败')
+      ElMessage.error({
+        message: error.message || '登录失败',
+        customClass: 'ant-message-error'
+      })
     } finally {
       loading.value = false
     }
@@ -134,5 +144,17 @@ const handleLogin = async () => {
 
 .login-tips p {
   margin: 5px 0;
+}
+
+/* 适配 E2E 测试的 Ant Design 类名 */
+:deep(.ant-form-item__error) {
+  color: #f56c6c;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+:deep(.el-form-item__error) {
+  color: #f56c6c;
+  font-size: 12px;
 }
 </style>

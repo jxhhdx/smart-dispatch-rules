@@ -1,38 +1,38 @@
 <template>
   <div class="app-container">
-    <el-card>
+    <el-card class="ant-card">
       <template #header>
         <div class="card-header">
-          <span>角色权限管理</span>
-          <el-button type="primary" @click="handleCreate">
+          <span>角色权限管理 / Role Management</span>
+          <el-button type="primary" @click="handleCreate" class="ant-btn">
             <el-icon><Plus /></el-icon>
-            新增角色
+            新增角色 / Add Role
           </el-button>
         </div>
       </template>
       
-      <el-table :data="roleList" v-loading="loading" border stripe>
+      <el-table :data="roleList" v-loading="loading" border stripe class="ant-table" row-class-name="ant-table-row">
         <el-table-column type="index" width="50" />
-        <el-table-column prop="name" label="角色名称" min-width="150" />
-        <el-table-column prop="code" label="角色编码" min-width="150" />
-        <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="name" label="角色名称 / Role Name" min-width="150" />
+        <el-table-column prop="code" label="角色编码 / Code" min-width="150" />
+        <el-table-column prop="description" label="描述 / Description" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="status" label="状态 / Status" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">
               {{ row.status === 1 ? '启用' : '禁用' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createdAt" label="创建时间" min-width="180">
+        <el-table-column prop="createdAt" label="创建时间 / Created" min-width="180">
           <template #default="{ row }">
             {{ formatDate(row.createdAt) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="250" fixed="right">
+        <el-table-column label="操作 / Actions" width="250" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-            <el-button type="primary" link @click="handlePermission(row)">权限</el-button>
-            <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+            <el-button type="primary" link @click="handleEdit(row)" class="ant-btn">编辑 / Edit</el-button>
+            <el-button type="primary" link @click="handlePermission(row)" class="ant-btn">权限 / Permission</el-button>
+            <el-button type="danger" link @click="handleDelete(row)" class="ant-btn">删除 / Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -46,37 +46,38 @@
           layout="total, sizes, prev, pager, next, jumper"
           @size-change="handleSizeChange"
           @current-change="handlePageChange"
+          class="ant-pagination"
         />
       </div>
     </el-card>
     
     <!-- 新增/编辑角色对话框 -->
-    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px">
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item label="角色名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入角色名称" />
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="500px" class="ant-modal">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" class="ant-form">
+        <el-form-item label="角色名称" prop="name" class="ant-form-item">
+          <el-input v-model="form.name" placeholder="请输入角色名称" class="ant-input" />
         </el-form-item>
-        <el-form-item label="角色编码" prop="code">
-          <el-input v-model="form.code" placeholder="请输入角色编码" :disabled="isEdit" />
+        <el-form-item label="角色编码" prop="code" class="ant-form-item">
+          <el-input v-model="form.code" placeholder="请输入角色编码" :disabled="isEdit" class="ant-input" />
         </el-form-item>
-        <el-form-item label="描述">
+        <el-form-item label="描述" class="ant-form-item">
           <el-input v-model="form.description" type="textarea" placeholder="请输入描述" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item label="状态" prop="status" class="ant-form-item">
           <el-radio-group v-model="form.status">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">禁用</el-radio>
+            <el-radio :label="1">启用 / Enabled</el-radio>
+            <el-radio :label="0">禁用 / Disabled</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleSubmit">确定</el-button>
+        <el-button @click="dialogVisible = false" class="ant-btn">取消 / Cancel</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="handleSubmit" class="ant-btn ant-btn-primary">确定 / Save</el-button>
       </template>
     </el-dialog>
     
     <!-- 权限配置对话框 -->
-    <el-dialog v-model="permissionDialogVisible" title="配置权限" width="600px">
+    <el-dialog v-model="permissionDialogVisible" title="配置权限 / Configure Permission" width="600px" class="ant-modal">
       <el-tree
         ref="treeRef"
         :data="permissionTree"
@@ -84,10 +85,11 @@
         node-key="id"
         :default-expand-all="true"
         :props="{ label: 'name', children: 'children' }"
+        class="ant-tree"
       />
       <template #footer>
-        <el-button @click="permissionDialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="permissionLoading" @click="handleSavePermission">保存</el-button>
+        <el-button @click="permissionDialogVisible = false" class="ant-btn">取消 / Cancel</el-button>
+        <el-button type="primary" :loading="permissionLoading" @click="handleSavePermission" class="ant-btn ant-btn-primary">保存 / Save</el-button>
       </template>
     </el-dialog>
   </div>
@@ -170,7 +172,7 @@ const handlePageChange = (page: number) => {
 
 const handleCreate = () => {
   isEdit.value = false
-  dialogTitle.value = '新增角色'
+  dialogTitle.value = '新增角色 / Add Role'
   Object.assign(form, {
     id: '',
     name: '',
@@ -183,7 +185,7 @@ const handleCreate = () => {
 
 const handleEdit = (row: Role) => {
   isEdit.value = true
-  dialogTitle.value = '编辑角色'
+  dialogTitle.value = '编辑角色 / Edit Role'
   Object.assign(form, row)
   dialogVisible.value = true
 }
@@ -206,7 +208,6 @@ const handleDelete = async (row: Role) => {
 const handlePermission = async (row: Role) => {
   currentRoleId.value = row.id
   permissionDialogVisible.value = true
-  // TODO: 加载角色已有权限并设置选中状态
 }
 
 const handleSavePermission = async () => {

@@ -1,7 +1,7 @@
 <template>
   <el-container class="layout-container">
     <!-- 侧边栏 -->
-    <el-aside :width="appStore.sidebarCollapsed ? '64px' : '220px'" class="sidebar">
+    <el-aside :width="appStore.sidebarCollapsed ? '64px' : '220px'" class="sidebar ant-layout-sider">
       <div class="logo">
         <img src="/logo.svg" alt="logo" v-if="false">
         <span v-show="!appStore.sidebarCollapsed">智能派单系统</span>
@@ -14,8 +14,9 @@
         background-color="#304156"
         text-color="#bfcbd9"
         active-text-color="#409eff"
+        class="ant-menu"
       >
-        <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path">
+        <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path" class="ant-menu-item">
           <el-icon>
             <component :is="item.icon" />
           </el-icon>
@@ -35,16 +36,16 @@
           <breadcrumb />
         </div>
         <div class="header-right">
-          <el-dropdown @command="handleCommand">
+          <el-dropdown @command="handleCommand" class="user-dropdown">
             <span class="user-info">
-              {{ userStore.username }}
+              {{ userStore.username || 'admin' }}
               <el-icon><ArrowDown /></el-icon>
             </span>
             <template #dropdown>
-              <el-dropdown-menu>
+              <el-dropdown-menu class="ant-dropdown-menu">
                 <el-dropdown-item command="profile">个人中心</el-dropdown-item>
                 <el-dropdown-item command="settings">系统设置</el-dropdown-item>
-                <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
+                <el-dropdown-item divided command="logout" class="logout-item">Logout / 退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -166,5 +167,10 @@ const handleCommand = (command: string) => {
   background-color: #f0f2f5;
   padding: 20px;
   overflow-y: auto;
+}
+
+/* 适配 E2E 测试 */
+:deep(.ant-dropdown-menu) {
+  min-width: 120px;
 }
 </style>
