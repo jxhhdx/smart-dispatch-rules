@@ -1,26 +1,14 @@
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import { fileURLToPath } from 'node:url'
+import { mergeConfig, defineConfig, configDefaults } from 'vitest/config'
+import viteConfig from './vite.config'
 
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: ['./src/test/setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
-    pool: 'forks',
-    deps: {
-      optimizer: {
-        web: {
-          include: ['antd'],
-        },
-      },
+export default mergeConfig(
+  viteConfig,
+  defineConfig({
+    test: {
+      environment: 'jsdom',
+      exclude: [...configDefaults.exclude, 'e2e/**'],
+      root: fileURLToPath(new URL('./', import.meta.url)),
     },
-  },
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, './src'),
-    },
-  },
-})
+  }),
+)
