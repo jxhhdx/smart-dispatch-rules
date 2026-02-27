@@ -1,35 +1,70 @@
-@import './base.css';
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+/* 全局样式 */
+html, body, #app {
+  height: 100%;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+/* Element Plus 自定义主题变量 */
+:root {
+  --el-color-primary: #409eff;
+  --el-color-success: #67c23a;
+  --el-color-warning: #e6a23c;
+  --el-color-danger: #f56c6c;
+  --el-color-info: #909399;
+  
+  /* 侧边栏 */
+  --sidebar-width: 220px;
+  --sidebar-collapsed-width: 64px;
+  --sidebar-bg: #304156;
+  --sidebar-text: #bfcbd9;
+  --sidebar-active-text: #409eff;
+  
+  /* 顶部导航 */
+  --navbar-height: 60px;
+  --tags-view-height: 40px;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+/* 通用布局 */
+.app-container {
+  padding: 20px;
 }
 
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
+/* 卡片样式 */
+.filter-container {
+  padding-bottom: 10px;
+}
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+.table-container {
+  margin-top: 20px;
+}
+
+.pagination-container {
+  margin-top: 20px;
+  text-align: right;
+}
+
+/* 链接样式 */
+.link-type {
+  color: var(--el-color-primary);
+  cursor: pointer;
+}
+
+.link-type:hover {
+  color: var(--el-color-primary-light-3);
+}
+
+/* 状态标签 */
+.status-success {
+  color: var(--el-color-success);
+}
+
+.status-warning {
+  color: var(--el-color-warning);
+}
+
+.status-danger {
+  color: var(--el-color-danger);
+}
+
+.status-info {
+  color: var(--el-color-info);
 }
