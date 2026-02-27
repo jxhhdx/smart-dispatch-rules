@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "login_logs")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     #[sea_orm(column_name = "user_id")]
-    pub user_id: Option<Uuid>,
+    pub user_id: Option<String>,
     pub username: Option<String>,
     #[sea_orm(column_name = "login_type")]
     pub login_type: String,

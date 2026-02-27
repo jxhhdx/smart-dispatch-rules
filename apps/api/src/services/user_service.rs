@@ -16,7 +16,7 @@ impl UserService {
         
         // TODO: 使用 Sea-ORM Entity 创建用户
         // let user = user::ActiveModel {
-        //     id: Set(Uuid::new_v4()),
+        //     id: Set(uuid::Uuid::new_v4().to_string()),
         //     username: Set(req.username),
         //     email: Set(req.email),
         //     password_hash: Set(password_hash),

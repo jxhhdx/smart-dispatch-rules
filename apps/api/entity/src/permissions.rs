@@ -5,13 +5,13 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "permissions")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     pub name: String,
     #[sea_orm(unique)]
     pub code: String,
     pub r#type: String,
     #[sea_orm(column_name = "parent_id")]
-    pub parent_id: Option<Uuid>,
+    pub parent_id: Option<String>,
     pub path: Option<String>,
     #[sea_orm(column_name = "sort_order")]
     pub sort_order: i32,
@@ -23,22 +23,11 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        self_reference = true,
+        belongs_to = "Entity",
         from = "Column::ParentId",
         to = "Column::Id"
     )]
     Parent,
-    #[sea_orm(has_many = "super::role_permissions::Entity")]
-    RolePermissions,
-}
-
-impl Related<super::roles::Entity> for Entity {
-    fn to() -> RelationDef {
-        super::role_permissions::Relation::Role.def()
-    }
-    fn via() -> Option<RelationDef> {
-        Some(super::role_permissions::Relation::Permission.def().rev())
-    }
 }
 
 impl ActiveModelBehavior for ActiveModel {}

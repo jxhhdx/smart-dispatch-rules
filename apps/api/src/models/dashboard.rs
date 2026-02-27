@@ -1,6 +1,4 @@
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-
 /// 仪表盘统计数据
 #[derive(Debug, Serialize)]
 pub struct DashboardStats {
@@ -32,7 +30,7 @@ pub struct DashboardTrends {
 /// 规则触发统计
 #[derive(Debug, Serialize)]
 pub struct RuleTriggerStat {
-    pub rule_id: Uuid,
+    pub rule_id: String,
     pub rule_name: String,
     pub trigger_count: i64,
     pub success_count: i64,

@@ -6,9 +6,9 @@ use serde_json::Value as JsonValue;
 #[sea_orm(table_name = "system_logs")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     #[sea_orm(column_name = "user_id")]
-    pub user_id: Option<Uuid>,
+    pub user_id: Option<String>,
     pub username: Option<String>,
     pub action: String,
     pub module: String,

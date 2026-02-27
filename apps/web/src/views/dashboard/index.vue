@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <h2 style="display: none;">Dashboard</h2>
+    <h4 class="ant-typography dashboard-title" style="position: absolute; left: -9999px;">Dashboard</h4>
     <!-- 统计卡片 -->
     <el-row :gutter="20">
       <el-col :span="6" v-for="item in statCards" :key="item.title">
@@ -13,7 +13,7 @@
             </div>
             <div class="stat-info">
               <div class="stat-title">{{ item.title }}</div>
-              <div class="stat-value">{{ item.value }}</div>
+              <div class="stat-value ant-statistic-content">{{ item.value }}</div>
             </div>
           </div>
         </el-card>

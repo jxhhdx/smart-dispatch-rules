@@ -27,8 +27,8 @@ pub async fn login(
                     if user.status != 1 {
                         // 记录登录失败日志
                         let log = login_logs::ActiveModel {
-                            id: Set(uuid::Uuid::new_v4()),
-                            user_id: Set(Some(user.id)),
+                            id: Set(uuid::Uuid::new_v4().to_string()),
+                            user_id: Set(Some(user.id.clone())),
                             username: Set(Some(user.username.clone())),
                             login_type: Set("password".to_string()),
                             ip_address: Set(None),
@@ -55,8 +55,8 @@ pub async fn login(
 
                     // 记录登录成功日志
                     let log = login_logs::ActiveModel {
-                        id: Set(uuid::Uuid::new_v4()),
-                        user_id: Set(Some(user.id)),
+                        id: Set(uuid::Uuid::new_v4().to_string()),
+                        user_id: Set(Some(user.id.clone())),
                         username: Set(Some(user.username.clone())),
                         login_type: Set("password".to_string()),
                         ip_address: Set(None),
@@ -72,7 +72,7 @@ pub async fn login(
 
                     let response = LoginResponse {
                         token,
-                        user: AuthService::to_user_info(user, permissions),
+                        user: AuthService::to_user_info(user.clone(), permissions),
                     };
 
                     Json(ApiResponse::success(response))
@@ -80,8 +80,8 @@ pub async fn login(
                 Ok(false) => {
                     // 记录登录失败日志
                     let log = login_logs::ActiveModel {
-                        id: Set(uuid::Uuid::new_v4()),
-                        user_id: Set(Some(user.id)),
+                        id: Set(uuid::Uuid::new_v4().to_string()),
+                        user_id: Set(Some(user.id.clone())),
                         username: Set(Some(user.username.clone())),
                         login_type: Set("password".to_string()),
                         ip_address: Set(None),
@@ -100,7 +100,7 @@ pub async fn login(
         Ok(None) => {
             // 记录登录失败日志
             let log = login_logs::ActiveModel {
-                id: Set(uuid::Uuid::new_v4()),
+                id: Set(uuid::Uuid::new_v4().to_string()),
                 user_id: Set(None),
                 username: Set(Some(req.username)),
                 login_type: Set("password".to_string()),

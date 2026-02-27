@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-use uuid::Uuid;
+
 
 /// 创建角色请求
 #[derive(Debug, Deserialize, Validate)]
@@ -23,5 +23,5 @@ pub struct UpdateRoleRequest {
 /// 更新角色权限请求
 #[derive(Debug, Deserialize)]
 pub struct UpdateRolePermissionsRequest {
-    pub permission_ids: Vec<Uuid>,
+    pub permission_ids: Vec<String>,
 }

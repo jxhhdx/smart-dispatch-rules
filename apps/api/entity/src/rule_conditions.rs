@@ -5,11 +5,11 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "rule_conditions")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     #[sea_orm(column_name = "rule_version_id")]
-    pub rule_version_id: Uuid,
+    pub rule_version_id: String,
     #[sea_orm(column_name = "parent_id")]
-    pub parent_id: Option<Uuid>,
+    pub parent_id: Option<String>,
     #[sea_orm(column_name = "condition_type")]
     pub condition_type: String,
     pub field: Option<String>,
@@ -33,12 +33,6 @@ pub enum Relation {
         to = "super::rule_versions::Column::Id"
     )]
     RuleVersion,
-    #[sea_orm(
-        self_reference = true,
-        from = "Column::ParentId",
-        to = "Column::Id"
-    )]
-    Parent,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

@@ -14,7 +14,9 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod db;
 mod handlers;
 mod middleware;
+mod models;
 mod routes;
+mod services;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -54,7 +56,6 @@ async fn main() -> anyhow::Result<()> {
         .nest("/api/v1/rules", routes::rules::router())
         .nest("/api/v1/logs", routes::logs::router())
         .nest("/api/v1/dashboard", routes::dashboard::router())
-        .nest("/api/v1/templates", routes::templates::router())
         .layer(cors)
         .layer(CompressionLayer::new())
         .layer(TraceLayer::new_for_http())

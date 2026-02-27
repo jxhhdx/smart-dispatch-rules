@@ -39,9 +39,9 @@ impl AuthService {
         let exp = now + Duration::days(JWT_EXPIRES_IN_DAYS);
 
         let claims = Claims {
-            sub: user.id.to_string(),
+            sub: user.id.clone(),
             username: user.username.clone(),
-            role_id: user.role_id.map(|r| r.to_string()),
+            role_id: user.role_id.clone(),
             exp: exp.timestamp() as usize,
             iat: now.timestamp() as usize,
         };

@@ -11,13 +11,13 @@ use entity::roles::{self, Entity as Role};
 
 #[derive(Debug, serde::Serialize)]
 pub struct UserListItem {
-    pub id: Uuid,
+    pub id: String,
     pub username: String,
     pub email: String,
     pub real_name: Option<String>,
     pub phone: Option<String>,
     pub avatar_url: Option<String>,
-    pub role_id: Option<Uuid>,
+    pub role_id: Option<String>,
     pub role_name: Option<String>,
     pub status: i32,
     pub last_login_at: Option<String>,
@@ -67,7 +67,7 @@ pub async fn list(
     };
 
     // 获取角色信息
-    let role_ids: Vec<Uuid> = users.iter().filter_map(|u| u.role_id).collect();
+    let role_ids: Vec<String> = users.iter().filter_map(|u| u.role_id.clone()).collect();
     let roles = if !role_ids.is_empty() {
         Role::find()
             .filter(roles::Column::Id.is_in(role_ids))
@@ -88,8 +88,8 @@ pub async fn list(
         real_name: u.real_name,
         phone: u.phone,
         avatar_url: u.avatar_url,
-        role_id: u.role_id,
-        role_name: u.role_id.and_then(|id| roles.get(&id).cloned()),
+        role_id: u.role_id.clone(),
+        role_name: u.role_id.clone().and_then(|id| roles.get(&id).cloned()),
         status: u.status,
         last_login_at: u.last_login_at.map(|t| t.to_string()),
         created_at: u.created_at.to_string(),
@@ -100,17 +100,17 @@ pub async fn list(
 
 pub async fn detail(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<UserListItem>> {
-    let user = match User::find_by_id(id).one(&state.db).await {
+    let user = match User::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(u)) => u,
         Ok(None) => return Json(ApiResponse::error(404, "用户不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
     };
 
     // 获取角色名
-    let role_name = if let Some(role_id) = user.role_id {
-        Role::find_by_id(role_id)
+    let role_name = if let Some(role_id) = user.role_id.clone() {
+        Role::find_by_id(role_id.clone())
             .one(&state.db)
             .await
             .ok()
@@ -127,7 +127,7 @@ pub async fn detail(
         real_name: user.real_name,
         phone: user.phone,
         avatar_url: user.avatar_url,
-        role_id: user.role_id,
+        role_id: user.role_id.clone(),
         role_name,
         status: user.status,
         last_login_at: user.last_login_at.map(|t| t.to_string()),
@@ -169,7 +169,7 @@ pub async fn create(
 
     let now = Utc::now();
     let user = users::ActiveModel {
-        id: Set(Uuid::new_v4()),
+        id: Set(uuid::Uuid::new_v4().to_string()),
         username: Set(req.username),
         email: Set(req.email),
         password_hash: Set(password_hash),
@@ -192,7 +192,7 @@ pub async fn create(
                 real_name: u.real_name,
                 phone: u.phone,
                 avatar_url: u.avatar_url,
-                role_id: u.role_id,
+                role_id: u.role_id.clone(),
                 role_name: None,
                 status: u.status,
                 last_login_at: None,
@@ -206,10 +206,10 @@ pub async fn create(
 
 pub async fn update(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
     Json(req): Json<UpdateUserRequest>,
 ) -> Json<ApiResponse<UserListItem>> {
-    let user = match User::find_by_id(id).one(&state.db).await {
+    let user = match User::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(u)) => u,
         Ok(None) => return Json(ApiResponse::error(404, "用户不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
@@ -247,7 +247,7 @@ pub async fn update(
                 real_name: u.real_name,
                 phone: u.phone,
                 avatar_url: u.avatar_url,
-                role_id: u.role_id,
+                role_id: u.role_id.clone(),
                 role_name: None,
                 status: u.status,
                 last_login_at: u.last_login_at.map(|t| t.to_string()),
@@ -261,10 +261,10 @@ pub async fn update(
 
 pub async fn delete(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<()>> {
     // 检查用户是否存在
-    let user = match User::find_by_id(id).one(&state.db).await {
+    let user = match User::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(_)) => (),
         Ok(None) => return Json(ApiResponse::error(404, "用户不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
@@ -281,12 +281,12 @@ pub async fn delete(
 
 pub async fn update_status(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
     Json(req): Json<serde_json::Value>,
 ) -> Json<ApiResponse<UserListItem>> {
     let status = req.get("status").and_then(|v| v.as_i64()).unwrap_or(1) as i32;
 
-    let user = match User::find_by_id(id).one(&state.db).await {
+    let user = match User::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(u)) => u,
         Ok(None) => return Json(ApiResponse::error(404, "用户不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
@@ -305,7 +305,7 @@ pub async fn update_status(
                 real_name: u.real_name,
                 phone: u.phone,
                 avatar_url: u.avatar_url,
-                role_id: u.role_id,
+                role_id: u.role_id.clone(),
                 role_name: None,
                 status: u.status,
                 last_login_at: u.last_login_at.map(|t| t.to_string()),

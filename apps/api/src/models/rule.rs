@@ -1,7 +1,7 @@
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, FixedOffset};
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
-use uuid::Uuid;
+
 use validator::Validate;
 
 /// 创建规则请求
@@ -14,8 +14,8 @@ pub struct CreateRuleRequest {
     pub rule_type: String,
     pub business_type: Option<String>,
     pub priority: Option<i32>,
-    pub effective_time: Option<DateTime<Utc>>,
-    pub expire_time: Option<DateTime<Utc>>,
+    pub effective_time: Option<DateTime<FixedOffset>>,
+    pub expire_time: Option<DateTime<FixedOffset>>,
 }
 
 /// 更新规则请求
@@ -25,8 +25,8 @@ pub struct UpdateRuleRequest {
     pub description: Option<String>,
     pub priority: Option<i32>,
     pub status: Option<i32>,
-    pub effective_time: Option<DateTime<Utc>>,
-    pub expire_time: Option<DateTime<Utc>>,
+    pub effective_time: Option<DateTime<FixedOffset>>,
+    pub expire_time: Option<DateTime<FixedOffset>>,
 }
 
 /// 创建规则版本请求
@@ -41,7 +41,7 @@ pub struct CreateVersionRequest {
 /// 创建条件请求
 #[derive(Debug, Deserialize, Clone)]
 pub struct CreateConditionRequest {
-    pub parent_id: Option<Uuid>,
+    pub parent_id: Option<String>,
     pub condition_type: String,
     pub field: Option<String>,
     pub operator: Option<String>,

@@ -1,6 +1,6 @@
 use axum::{extract::State, Json};
 use chrono::{Local, Datelike};
-use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, QueryOrder};
+use sea_orm::{ColumnTrait, EntityTrait, PaginatorTrait, QueryFilter, QueryOrder};
 
 use crate::AppState;
 use crate::models::{ApiResponse, DashboardStats, DashboardTrends, TrendPoint, RuleTriggerStat, RiderPerformance, HeatmapData, RealtimeData};
@@ -21,7 +21,7 @@ pub async fn stats(
         .unwrap_or_default();
 
     // 获取活跃规则数量
-    let active_rules = Rule::find()
+    let active_rules: u64 = Rule::find()
         .filter(rules::Column::Status.eq(1))
         .count(&state.db)
         .await
@@ -84,14 +84,14 @@ pub async fn rule_stats(
     // TODO: 实现规则触发统计
     Json(ApiResponse::success(vec![
         RuleTriggerStat {
-            rule_id: uuid::Uuid::new_v4(),
+            rule_id: uuid::Uuid::new_v4().to_string(),
             rule_name: "距离优先".to_string(),
             trigger_count: 150,
             success_count: 142,
             success_rate: 94.7,
         },
         RuleTriggerStat {
-            rule_id: uuid::Uuid::new_v4(),
+            rule_id: uuid::Uuid::new_v4().to_string(),
             rule_name: "负载均衡".to_string(),
             trigger_count: 89,
             success_count: 85,

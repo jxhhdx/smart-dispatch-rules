@@ -8,7 +8,7 @@ use entity::condition_templates::{self, Entity as ConditionTemplate};
 
 #[derive(Debug, serde::Serialize)]
 pub struct TemplateResponse {
-    pub id: Uuid,
+    pub id: String,
     pub name: String,
     pub description: Option<String>,
     pub category: String,
@@ -58,7 +58,7 @@ pub async fn list(
 
 pub async fn detail(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<TemplateResponse>> {
     let template = ConditionTemplate::find_by_id(id)
         .one(&state.db)
@@ -87,7 +87,7 @@ pub async fn create(
 ) -> Json<ApiResponse<TemplateResponse>> {
     let now = chrono::Utc::now();
     let template = condition_templates::ActiveModel {
-        id: Set(Uuid::new_v4()),
+        id: Set(uuid::Uuid::new_v4().to_string()),
         name: Set(req.name),
         description: Set(req.description),
         category: Set(req.category.unwrap_or_else(|| "custom".to_string())),
@@ -116,7 +116,7 @@ pub async fn create(
 
 pub async fn update(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
     Json(req): Json<UpdateTemplateRequest>,
 ) -> Json<ApiResponse<TemplateResponse>> {
     let template = ConditionTemplate::find_by_id(id)
@@ -161,7 +161,7 @@ pub async fn update(
 
 pub async fn delete(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<()>> {
     let result = ConditionTemplate::delete_by_id(id)
         .exec(&state.db)

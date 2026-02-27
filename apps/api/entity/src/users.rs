@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "users")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     #[sea_orm(unique)]
     pub username: String,
     #[sea_orm(unique)]
@@ -18,7 +18,7 @@ pub struct Model {
     #[sea_orm(column_name = "avatar_url")]
     pub avatar_url: Option<String>,
     #[sea_orm(column_name = "role_id")]
-    pub role_id: Option<Uuid>,
+    pub role_id: Option<String>,
     pub status: i32,
     #[sea_orm(column_name = "last_login_at")]
     pub last_login_at: Option<DateTimeWithTimeZone>,
@@ -36,14 +36,6 @@ pub enum Relation {
         to = "super::roles::Column::Id"
     )]
     Role,
-    #[sea_orm(has_many = "super::rules::Entity")]
-    CreatedRules,
-    #[sea_orm(has_many = "super::rules::Entity")]
-    UpdatedRules,
-    #[sea_orm(has_many = "super::system_logs::Entity")]
-    SystemLogs,
-    #[sea_orm(has_many = "super::login_logs::Entity")]
-    LoginLogs,
 }
 
 impl Related<super::roles::Entity> for Entity {

@@ -1,6 +1,4 @@
-use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 use validator::Validate;
 
 /// 创建用户请求
@@ -14,7 +12,7 @@ pub struct CreateUserRequest {
     pub password: String,
     pub real_name: Option<String>,
     pub phone: Option<String>,
-    pub role_id: Option<Uuid>,
+    pub role_id: Option<String>,
 }
 
 /// 更新用户请求
@@ -24,7 +22,7 @@ pub struct UpdateUserRequest {
     pub real_name: Option<String>,
     pub phone: Option<String>,
     pub avatar_url: Option<String>,
-    pub role_id: Option<Uuid>,
+    pub role_id: Option<String>,
     pub status: Option<i32>,
 }
 
@@ -47,13 +45,13 @@ pub struct LoginResponse {
 /// 用户信息（脱敏）
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserInfo {
-    pub id: Uuid,
+    pub id: String,
     pub username: String,
     pub email: String,
     pub real_name: Option<String>,
     pub phone: Option<String>,
     pub avatar_url: Option<String>,
-    pub role_id: Option<Uuid>,
+    pub role_id: Option<String>,
     pub role_name: Option<String>,
     pub status: i32,
     pub permissions: Vec<String>,

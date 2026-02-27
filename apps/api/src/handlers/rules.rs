@@ -14,7 +14,7 @@ use entity::users::{self, Entity as User};
 
 #[derive(Debug, serde::Serialize)]
 pub struct RuleListItem {
-    pub id: Uuid,
+    pub id: String,
     pub name: String,
     pub description: Option<String>,
     pub rule_type: String,
@@ -28,8 +28,8 @@ pub struct RuleListItem {
 
 #[derive(Debug, serde::Serialize)]
 pub struct RuleVersionItem {
-    pub id: Uuid,
-    pub rule_id: Uuid,
+    pub id: String,
+    pub rule_id: String,
     pub version: i32,
     pub description: Option<String>,
     pub status: i32,
@@ -80,7 +80,7 @@ pub async fn list(
     };
 
     // 获取创建者信息
-    let user_ids: Vec<Uuid> = rules.iter().filter_map(|r| r.created_by).collect();
+    let user_ids: Vec<String> = rules.iter().filter_map(|r| r.created_by.clone()).collect();
     let users = if !user_ids.is_empty() {
         User::find()
             .filter(users::Column::Id.is_in(user_ids))
@@ -95,7 +95,7 @@ pub async fn list(
     };
 
     let list: Vec<RuleListItem> = rules.into_iter().map(|r| RuleListItem {
-        id: r.id,
+        id: r.id.clone(),
         name: r.name,
         description: r.description,
         rule_type: r.rule_type,
@@ -112,9 +112,9 @@ pub async fn list(
 
 pub async fn detail(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<serde_json::Value>> {
-    let rule = match Rule::find_by_id(id).one(&state.db).await {
+    let rule = match Rule::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(r)) => r,
         Ok(None) => return Json(ApiResponse::error(404, "规则不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
@@ -122,7 +122,7 @@ pub async fn detail(
 
     // 获取版本列表
     let versions = RuleVersion::find()
-        .filter(rule_versions::Column::RuleId.eq(id))
+        .filter(rule_versions::Column::RuleId.eq(id.clone()))
         .order_by_desc(rule_versions::Column::Version)
         .all(&state.db)
         .await
@@ -157,7 +157,7 @@ pub async fn create(
 ) -> Json<ApiResponse<RuleListItem>> {
     let now = Utc::now();
     let rule = rules::ActiveModel {
-        id: Set(Uuid::new_v4()),
+        id: Set(uuid::Uuid::new_v4().to_string()),
         name: Set(req.name),
         description: Set(req.description),
         rule_type: Set(req.rule_type),
@@ -165,8 +165,8 @@ pub async fn create(
         priority: Set(req.priority.unwrap_or(0)),
         status: Set(0), // 草稿状态
         version_id: Set(None),
-        effective_time: Set(req.effective_time.map(|t| t.into())),
-        expire_time: Set(req.expire_time.map(|t| t.into())),
+        effective_time: Set(req.effective_time),
+        expire_time: Set(req.expire_time),
         created_by: Set(None), // TODO: 从 JWT 获取当前用户
         updated_by: Set(None),
         created_at: Set(now.into()),
@@ -176,7 +176,7 @@ pub async fn create(
     match rule.insert(&state.db).await {
         Ok(r) => {
             let item = RuleListItem {
-                id: r.id,
+                id: r.id.clone(),
                 name: r.name,
                 description: r.description,
                 rule_type: r.rule_type,
@@ -195,10 +195,10 @@ pub async fn create(
 
 pub async fn update(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
     Json(req): Json<UpdateRuleRequest>,
 ) -> Json<ApiResponse<RuleListItem>> {
-    let rule = match Rule::find_by_id(id).one(&state.db).await {
+    let rule = match Rule::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(r)) => r,
         Ok(None) => return Json(ApiResponse::error(404, "规则不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
@@ -220,17 +220,17 @@ pub async fn update(
         active.status = Set(status);
     }
     if let Some(effective_time) = req.effective_time {
-        active.effective_time = Set(Some(effective_time.into()));
+        active.effective_time = Set(Some(effective_time));
     }
     if let Some(expire_time) = req.expire_time {
-        active.expire_time = Set(Some(expire_time.into()));
+        active.expire_time = Set(Some(expire_time));
     }
     active.updated_at = Set(now.into());
 
     match active.update(&state.db).await {
         Ok(r) => {
             let item = RuleListItem {
-                id: r.id,
+                id: r.id.clone(),
                 name: r.name,
                 description: r.description,
                 rule_type: r.rule_type,
@@ -249,7 +249,7 @@ pub async fn update(
 
 pub async fn delete(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<()>> {
     // 开启事务
     let txn = match state.db.begin().await {
@@ -259,24 +259,24 @@ pub async fn delete(
 
     // 删除规则相关的所有版本、条件、动作
     let versions = RuleVersion::find()
-        .filter(rule_versions::Column::RuleId.eq(id))
+        .filter(rule_versions::Column::RuleId.eq(id.clone()))
         .all(&txn)
         .await
         .unwrap_or_default();
 
     for version in versions {
         let _ = RuleCondition::delete_many()
-            .filter(rule_conditions::Column::RuleVersionId.eq(version.id))
+            .filter(rule_conditions::Column::RuleVersionId.eq(version.id.clone()))
             .exec(&txn)
             .await;
         let _ = RuleAction::delete_many()
-            .filter(rule_actions::Column::RuleVersionId.eq(version.id))
+            .filter(rule_actions::Column::RuleVersionId.eq(version.id.clone()))
             .exec(&txn)
             .await;
     }
 
     let _ = RuleVersion::delete_many()
-        .filter(rule_versions::Column::RuleId.eq(id))
+        .filter(rule_versions::Column::RuleId.eq(id.clone()))
         .exec(&txn)
         .await;
 
@@ -296,12 +296,12 @@ pub async fn delete(
 
 pub async fn update_status(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
     Json(req): Json<serde_json::Value>,
 ) -> Json<ApiResponse<RuleListItem>> {
     let status = req.get("status").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
 
-    let rule = match Rule::find_by_id(id).one(&state.db).await {
+    let rule = match Rule::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(r)) => r,
         Ok(None) => return Json(ApiResponse::error(404, "规则不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
@@ -314,7 +314,7 @@ pub async fn update_status(
     match active.update(&state.db).await {
         Ok(r) => {
             let item = RuleListItem {
-                id: r.id,
+                id: r.id.clone(),
                 name: r.name,
                 description: r.description,
                 rule_type: r.rule_type,
@@ -333,16 +333,16 @@ pub async fn update_status(
 
 async fn create_conditions_recursive(
     db: &sea_orm::DatabaseTransaction,
-    version_id: Uuid,
+    version_id: String,
     conditions: Vec<crate::models::CreateConditionRequest>,
-    parent_id: Option<Uuid>,
+    parent_id: Option<String>,
 ) -> Result<(), sea_orm::DbErr> {
     for (idx, cond) in conditions.into_iter().enumerate() {
-        let cond_id = Uuid::new_v4();
+        let cond_id = uuid::Uuid::new_v4().to_string();
         let condition = rule_conditions::ActiveModel {
-            id: Set(cond_id),
-            rule_version_id: Set(version_id),
-            parent_id: Set(parent_id),
+            id: Set(cond_id.clone()),
+            rule_version_id: Set(version_id.clone()),
+            parent_id: Set(parent_id.clone()),
             condition_type: Set(cond.condition_type),
             field: Set(cond.field),
             operator: Set(cond.operator),
@@ -355,8 +355,8 @@ async fn create_conditions_recursive(
         condition.insert(db).await?;
 
         // 递归创建子条件
-        if let Some(children) = cond.children {
-            Box::pin(create_conditions_recursive(db, version_id, children, Some(cond_id))).await?;
+        if !cond.children.is_empty() {
+            Box::pin(create_conditions_recursive(db, version_id.clone(), cond.children, Some(cond_id.clone()))).await?;
         }
     }
     Ok(())
@@ -364,10 +364,10 @@ async fn create_conditions_recursive(
 
 pub async fn list_versions(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<Vec<RuleVersionItem>>> {
     let versions = match RuleVersion::find()
-        .filter(rule_versions::Column::RuleId.eq(id))
+        .filter(rule_versions::Column::RuleId.eq(id.clone()))
         .order_by_desc(rule_versions::Column::Version)
         .all(&state.db)
         .await
@@ -392,12 +392,12 @@ pub async fn list_versions(
 
 pub async fn create_version(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
     Json(req): Json<CreateVersionRequest>,
 ) -> Json<ApiResponse<serde_json::Value>> {
     // 获取当前最大版本号
     let max_version = RuleVersion::find()
-        .filter(rule_versions::Column::RuleId.eq(id))
+        .filter(rule_versions::Column::RuleId.eq(id.clone()))
         .order_by_desc(rule_versions::Column::Version)
         .one(&state.db)
         .await
@@ -411,10 +411,10 @@ pub async fn create_version(
         Err(e) => return Json(ApiResponse::error(500, format!("事务开启失败: {}", e))),
     };
 
-    let version_id = Uuid::new_v4();
+    let version_id = uuid::Uuid::new_v4().to_string();
     let version = rule_versions::ActiveModel {
-        id: Set(version_id),
-        rule_id: Set(id),
+        id: Set(version_id.clone()),
+        rule_id: Set(id.to_string()),
         version: Set(max_version + 1),
         config_json: Set(req.config_json),
         description: Set(req.description),
@@ -431,7 +431,7 @@ pub async fn create_version(
     }
 
     // 创建条件
-    if let Err(e) = create_conditions_recursive(&txn, version_id, req.conditions, None).await {
+    if let Err(e) = create_conditions_recursive(&txn, version_id.to_string(), req.conditions, None).await {
         let _ = txn.rollback().await;
         return Json(ApiResponse::error(500, format!("创建条件失败: {}", e)));
     }
@@ -439,8 +439,8 @@ pub async fn create_version(
     // 创建动作
     for (idx, action) in req.actions.into_iter().enumerate() {
         let action_model = rule_actions::ActiveModel {
-            id: Set(Uuid::new_v4()),
-            rule_version_id: Set(version_id),
+            id: Set(uuid::Uuid::new_v4().to_string()),
+            rule_version_id: Set(version_id.to_string()),
             action_type: Set(action.action_type),
             config_json: Set(action.config_json),
             sort_order: Set(action.sort_order.unwrap_or(idx as i32)),
@@ -463,7 +463,7 @@ pub async fn create_version(
 
 pub async fn publish_version(
     State(state): State<AppState>,
-    Path((rule_id, version_id)): Path<(Uuid, Uuid)>,
+    Path((rule_id, version_id)): Path<(String, String)>,
 ) -> Json<ApiResponse<()>> {
     let txn = match state.db.begin().await {
         Ok(t) => t,
@@ -472,7 +472,7 @@ pub async fn publish_version(
 
     // 将其他版本设为未发布
     let _ = RuleVersion::update_many()
-        .filter(rule_versions::Column::RuleId.eq(rule_id))
+        .filter(rule_versions::Column::RuleId.eq(rule_id.clone()))
         .set(rule_versions::ActiveModel {
             status: Set(0),
             ..Default::default()
@@ -482,7 +482,7 @@ pub async fn publish_version(
 
     // 发布指定版本
     let result = RuleVersion::update_many()
-        .filter(rule_versions::Column::Id.eq(version_id))
+        .filter(rule_versions::Column::Id.eq(version_id.clone()))
         .set(rule_versions::ActiveModel {
             status: Set(1),
             published_at: Set(Some(Utc::now().into())),
@@ -517,16 +517,16 @@ pub async fn publish_version(
 
 pub async fn rollback_version(
     State(state): State<AppState>,
-    Path((rule_id, version_id)): Path<(Uuid, Uuid)>,
+    Path((rule_id, version_id)): Path<(String, String)>,
 ) -> Json<ApiResponse<()>> {
     publish_version(State(state), Path((rule_id, version_id))).await
 }
 
 pub async fn clone_rule(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<RuleListItem>> {
-    let rule = match Rule::find_by_id(id).one(&state.db).await {
+    let rule = match Rule::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(r)) => r,
         Ok(None) => return Json(ApiResponse::error(404, "规则不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
@@ -534,7 +534,7 @@ pub async fn clone_rule(
 
     let now = Utc::now();
     let new_rule = rules::ActiveModel {
-        id: Set(Uuid::new_v4()),
+        id: Set(uuid::Uuid::new_v4().to_string()),
         name: Set(format!("{} (复制)", rule.name)),
         description: Set(rule.description),
         rule_type: Set(rule.rule_type),
@@ -553,7 +553,7 @@ pub async fn clone_rule(
     match new_rule.insert(&state.db).await {
         Ok(r) => {
             let item = RuleListItem {
-                id: r.id,
+                id: r.id.clone(),
                 name: r.name,
                 description: r.description,
                 rule_type: r.rule_type,
@@ -572,9 +572,9 @@ pub async fn clone_rule(
 
 pub async fn export_rule(
     State(state): State<AppState>,
-    Path(id): Path<Uuid>,
+    Path(id): Path<String>,
 ) -> Json<ApiResponse<serde_json::Value>> {
-    let rule = match Rule::find_by_id(id).one(&state.db).await {
+    let rule = match Rule::find_by_id(id.clone()).one(&state.db).await {
         Ok(Some(r)) => r,
         Ok(None) => return Json(ApiResponse::error(404, "规则不存在")),
         Err(e) => return Json(ApiResponse::error(500, format!("查询失败: {}", e))),
@@ -582,7 +582,7 @@ pub async fn export_rule(
 
     // 获取版本详情
     let versions = RuleVersion::find()
-        .filter(rule_versions::Column::RuleId.eq(id))
+        .filter(rule_versions::Column::RuleId.eq(id.clone()))
         .all(&state.db)
         .await
         .unwrap_or_default();

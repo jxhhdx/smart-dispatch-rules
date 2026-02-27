@@ -27,7 +27,7 @@
     
     <el-container>
       <!-- 顶部导航 -->
-      <el-header class="header">
+      <el-header class="header ant-layout-header">
         <div class="header-left">
           <el-icon class="collapse-btn" @click="appStore.toggleSidebar">
             <Fold v-if="!appStore.sidebarCollapsed" />

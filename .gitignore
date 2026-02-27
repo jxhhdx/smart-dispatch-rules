@@ -65,3 +65,4 @@ tmp
 
 # Project-level skills (confidential)
 .agents/skills/
+apps/api/target/debug/

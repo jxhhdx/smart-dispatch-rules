@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "rules")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     pub name: String,
     pub description: Option<String>,
     #[sea_orm(column_name = "rule_type")]
@@ -15,15 +15,15 @@ pub struct Model {
     pub priority: i32,
     pub status: i32,
     #[sea_orm(column_name = "version_id")]
-    pub version_id: Option<Uuid>,
+    pub version_id: Option<String>,
     #[sea_orm(column_name = "effective_time")]
     pub effective_time: Option<DateTimeWithTimeZone>,
     #[sea_orm(column_name = "expire_time")]
     pub expire_time: Option<DateTimeWithTimeZone>,
     #[sea_orm(column_name = "created_by")]
-    pub created_by: Option<Uuid>,
+    pub created_by: Option<String>,
     #[sea_orm(column_name = "updated_by")]
-    pub updated_by: Option<Uuid>,
+    pub updated_by: Option<String>,
     #[sea_orm(column_name = "created_at")]
     pub created_at: DateTimeWithTimeZone,
     #[sea_orm(column_name = "updated_at")]
@@ -38,14 +38,6 @@ pub enum Relation {
         to = "super::users::Column::Id"
     )]
     Creator,
-    #[sea_orm(
-        belongs_to = "super::users::Entity",
-        from = "Column::UpdatedBy",
-        to = "super::users::Column::Id"
-    )]
-    Updater,
-    #[sea_orm(has_many = "super::rule_versions::Entity")]
-    Versions,
 }
 
 impl ActiveModelBehavior for ActiveModel {}

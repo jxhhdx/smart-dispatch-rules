@@ -7,7 +7,7 @@ use rust_decimal::Decimal;
 #[sea_orm(table_name = "dispatch_statistics")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     #[sea_orm(column_name = "stat_date")]
     pub stat_date: Date,
     #[sea_orm(column_name = "stat_hour")]

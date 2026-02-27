@@ -6,15 +6,15 @@ use serde_json::Value as JsonValue;
 #[sea_orm(table_name = "condition_templates")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     pub name: String,
     pub description: Option<String>,
     pub category: String,
     pub conditions: JsonValue,
     #[sea_orm(column_name = "created_by")]
-    pub created_by: Option<Uuid>,
+    pub created_by: Option<String>,
     #[sea_orm(column_name = "updated_by")]
-    pub updated_by: Option<Uuid>,
+    pub updated_by: Option<String>,
     #[sea_orm(column_name = "created_at")]
     pub created_at: DateTimeWithTimeZone,
     #[sea_orm(column_name = "updated_at")]

@@ -6,9 +6,9 @@ use serde_json::Value as JsonValue;
 #[sea_orm(table_name = "rule_versions")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: Uuid,
+    pub id: String,
     #[sea_orm(column_name = "rule_id")]
-    pub rule_id: Uuid,
+    pub rule_id: String,
     pub version: i32,
     #[sea_orm(column_name = "config_json")]
     pub config_json: JsonValue,
@@ -17,9 +17,9 @@ pub struct Model {
     #[sea_orm(column_name = "published_at")]
     pub published_at: Option<DateTimeWithTimeZone>,
     #[sea_orm(column_name = "published_by")]
-    pub published_by: Option<Uuid>,
+    pub published_by: Option<String>,
     #[sea_orm(column_name = "created_by")]
-    pub created_by: Option<Uuid>,
+    pub created_by: Option<String>,
     #[sea_orm(column_name = "created_at")]
     pub created_at: DateTimeWithTimeZone,
 }
@@ -32,22 +32,6 @@ pub enum Relation {
         to = "super::rules::Column::Id"
     )]
     Rule,
-    #[sea_orm(has_many = "super::rule_conditions::Entity")]
-    Conditions,
-    #[sea_orm(has_many = "super::rule_actions::Entity")]
-    Actions,
-}
-
-impl Related<super::rule_conditions::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Conditions.def()
-    }
-}
-
-impl Related<super::rule_actions::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Actions.def()
-    }
 }
 
 impl ActiveModelBehavior for ActiveModel {}
