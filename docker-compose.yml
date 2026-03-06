@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # PostgreSQL 数据库
   postgres:
     image: postgres:15-alpine
     container_name: smart-dispatch-db
@@ -18,7 +19,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - smart-dispatch-network
 
+  # Redis 缓存
   redis:
     image: redis:7-alpine
     container_name: smart-dispatch-redis
@@ -27,7 +31,57 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - smart-dispatch-network
+
+  # API 后端服务
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: smart-dispatch-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:postgres123@postgres:5432/smart_dispatch?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: your-super-secret-jwt-key-change-this-in-production
+      JWT_EXPIRES_IN: 7d
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - smart-dispatch-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/api/v1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Web 前端服务
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: smart-dispatch-web
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - smart-dispatch-network
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  smart-dispatch-network:
+    driver: bridge
